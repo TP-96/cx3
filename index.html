@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CX-3 Flight Computer</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-deep: #070d1a;
+  --bg-panel: #0c1528;
+  --bg-card: #111d35;
+  --bg-input: #0a1428;
+  --amber: #FFB347;
+  --amber-dim: #a6752e;
+  --cyan: #00B4D8;
+  --cyan-dim: #007a94;
+  --green: #39FF14;
+  --green-dim: #1a7a0a;
+  --red: #ff3355;
+  --text: #c8d6e5;
+  --text-dim: #5a6a7e;
+  --border: #1a2d4a;
+  --border-glow: rgba(0, 180, 216, 0.15);
+  --font-display: 'Share Tech Mono', monospace;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --radius: 2px;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Animated background grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0, 180, 216, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 216, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Subtle radial glow */
+body::after {
+  content: '';
+  position: fixed;
+  top: -50vh;
+  left: -50vw;
+  width: 200vw;
+  height: 200vh;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(0, 180, 216, 0.03) 0%, transparent 60%);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Header */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--amber);
+  position: relative;
+}
+
+.logo-icon::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 1px solid rgba(255, 179, 71, 0.2);
+}
+
+.logo h1 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  font-weight: 400;
+}
+
+.logo .subtitle {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.header-badge {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--cyan-dim);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  letter-spacing: 0.1em;
+}
+
+/* Mode selector */
+.mode-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.mode-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.mode-btn:hover {
+  border-color: var(--cyan-dim);
+  color: var(--text);
+}
+
+.mode-btn.active {
+  background: transparent;
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 12px rgba(0, 180, 216, 0.1);
+}
+
+/* Calculator panel */
+.panel {
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-header {
+  margin-bottom: 1.25rem;
+}
+
+.panel-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--amber);
+  letter-spacing: 0.08em;
+  font-weight: 400;
+}
+
+.panel-header .desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 0.2rem;
+}
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.card-grid.full {
+  grid-template-columns: 1fr;
+}
+
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+
+.card h3 {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+.card.result-card {
+  border-color: rgba(0, 180, 216, 0.2);
+  background: rgba(0, 180, 216, 0.03);
+}
+
+.card.result-card h3 {
+  color: var(--cyan);
+}
+
+/* Form groups */
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 120px;
+}
+
+.form-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color 0.15s;
+}
+
+.input-wrap:focus-within {
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px rgba(0, 180, 216, 0.08);
+}
+
+.input-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0.55rem 0.6rem;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  width: 100%;
+  letter-spacing: 0.05em;
+}
+
+.input-wrap input::placeholder {
+  color: #2a3a50;
+}
+
+.input-wrap .unit {
+  padding: 0 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* Result display */
+.result-display {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 180, 216, 0.15);
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.result-display .label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.result-display .value {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--green);
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+  letter-spacing: 0.05em;
+}
+
+.result-display .value.amber {
+  color: var(--amber);
+  text-shadow: 0 0 10px rgba(255, 179, 71, 0.15);
+}
+
+.result-display .value.cyan {
+  color: var(--cyan);
+  text-shadow: 0 0 10px rgba(0, 180, 216, 0.15);
+}
+
+.result-display .value.red {
+  color: var(--red);
+  text-shadow: 0 0 10px rgba(255, 51, 85, 0.2);
+}
+
+.result-meta {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+/* Result grid */
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.result-item {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 180, 216, 0.08);
+  padding: 0.6rem 0.8rem;
+}
+
+.result-item .ri-label {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.result-item .ri-value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--green);
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.15);
+  margin-top: 0.15rem;
+}
+
+.result-item .ri-value.amber { color: var(--amber); text-shadow: 0 0 8px rgba(255, 179, 71, 0.1); }
+.result-item .ri-value.cyan { color: var(--cyan); text-shadow: 0 0 8px rgba(0, 180, 216, 0.1); }
+
+/* Buttons */
+.btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.btn-primary {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.btn-primary:hover {
+  background: rgba(0, 180, 216, 0.1);
+  box-shadow: 0 0 12px rgba(0, 180, 216, 0.15);
+}
+
+.btn-amber {
+  border-color: var(--amber-dim);
+  color: var(--amber);
+}
+
+.btn-amber:hover {
+  background: rgba(255, 179, 71, 0.08);
+  box-shadow: 0 0 12px rgba(255, 179, 71, 0.1);
+}
+
+/* W&B specific */
+.wb-stations {
+  margin-bottom: 1rem;
+}
+
+.wb-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(26, 45, 74, 0.5);
+}
+
+.wb-row.header {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.wb-row .wb-name {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.wb-row input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.35rem 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  width: 100%;
+  outline: none;
+}
+
+.wb-row input:focus {
+  border-color: var(--cyan);
+}
+
+.wb-row .wb-moment {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--cyan-dim);
+}
+
+/* Conversion grid */
+.conv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.conv-group {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  padding: 1rem;
+}
+
+.conv-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.conv-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conv-input-row input {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.45rem 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.conv-input-row input:focus {
+  border-color: var(--cyan);
+}
+
+.conv-input-row .conv-unit {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  min-width: 30px;
+}
+
+.conv-input-row .eq {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.conv-result {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--green);
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.15);
+  margin-top: 0.3rem;
+  min-height: 1.5rem;
+}
+
+/* Footer */
+footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+footer .version {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+footer .disclaimer {
+  font-size: 0.7rem;
+  color: #3a4a5e;
+  text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .result-grid { grid-template-columns: 1fr; }
+  .conv-grid { grid-template-columns: 1fr; }
+  .form-row { flex-direction: column; }
+  .form-group { min-width: 100%; }
+  .wb-row { grid-template-columns: 1fr 1fr; }
+  .wb-row.header { display: none; }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* Tooltip for keypad hints */
+.keypad-hint {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  color: #2a3a50;
+  margin-top: 0.5rem;
+  letter-spacing: 0.05em;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">CX</div>
+      <div>
+        <h1>CX-3 eFlight</h1>
+        <div class="subtitle">Digital Flight Computer</div>
+      </div>
+    </div>
+    <div class="header-badge">ASA CX-3 Emulation</div>
+  </header>
+
+  <div class="mode-selector" id="modeSelector">
+    <button class="mode-btn active" data-mode="tsd">TSD</button>
+    <button class="mode-btn" data-mode="fuel">Fuel</button>
+    <button class="mode-btn" data-mode="wind">Wind</button>
+    <button class="mode-btn" data-mode="alt">Altitude</button>
+    <button class="mode-btn" data-mode="conv">Conversions</button>
+    <button class="mode-btn" data-mode="wb">W&B</button>
+  </div>
+
+  <!-- ===== TSD ===== -->
+  <div class="panel active" id="panel-tsd">
+    <div class="panel-header">
+      <h2>Time · Speed · Distance</h2>
+      <div class="desc">Enter any two values to compute the third.</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Distance</label>
+            <div class="input-wrap"><input type="number" id="tsd-dist" placeholder="0" step="any"><span class="unit">NM</span></div>
+          </div>
+          <div class="form-group">
+            <label>Speed</label>
+            <div class="input-wrap"><input type="number" id="tsd-speed" placeholder="0" step="any"><span class="unit">KT</span></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Time (Hours)</label>
+            <div class="input-wrap"><input type="number" id="tsd-time-h" placeholder="0" step="any"><span class="unit">HR</span></div>
+          </div>
+          <div class="form-group">
+            <label>Time (Minutes)</label>
+            <div class="input-wrap"><input type="number" id="tsd-time-m" placeholder="0" step="any"><span class="unit">MIN</span></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="calcTSD()">Compute</button>
+        <button class="btn btn-amber" onclick="clearTSD()" style="margin-left:0.5rem">Clear</button>
+        <div class="keypad-hint">Press Enter on any field to compute</div>
+      </div>
+      <div class="card result-card">
+        <h3>Results</h3>
+        <div class="result-display"><span class="label">Distance</span><span class="value amber" id="tsd-r-dist">—</span></div>
+        <div class="result-display"><span class="label">Ground Speed</span><span class="value amber" id="tsd-r-speed">—</span></div>
+        <div class="result-display"><span class="label">Time</span><span class="value amber" id="tsd-r-time">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FUEL ===== -->
+  <div class="panel" id="panel-fuel">
+    <div class="panel-header">
+      <h2>Fuel Consumption</h2>
+      <div class="desc">Enter any two to compute the third. Supports US Gallons and Liters.</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fuel Used</label>
+            <div class="input-wrap"><input type="number" id="fuel-used" placeholder="0" step="any"><span class="unit">GAL</span></div>
+          </div>
+          <div class="form-group">
+            <label>Fuel Flow</label>
+            <div class="input-wrap"><input type="number" id="fuel-flow" placeholder="0" step="any"><span class="unit">GAL/HR</span></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Time (Hours)</label>
+            <div class="input-wrap"><input type="number" id="fuel-time-h" placeholder="0" step="any"><span class="unit">HR</span></div>
+          </div>
+          <div class="form-group">
+            <label>Time (Minutes)</label>
+            <div class="input-wrap"><input type="number" id="fuel-time-m" placeholder="0" step="any"><span class="unit">MIN</span></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fuel in Liters</label>
+            <div class="input-wrap"><input type="number" id="fuel-liters" placeholder="0" step="any"><span class="unit">L</span></div>
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end;">
+            <button class="btn btn-amber" onclick="fuelToGal()" style="width:100%;">L→GAL</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="calcFuel()">Compute</button>
+        <button class="btn btn-amber" onclick="clearFuel()" style="margin-left:0.5rem">Clear</button>
+      </div>
+      <div class="card result-card">
+        <h3>Results</h3>
+        <div class="result-display"><span class="label">Fuel Used</span><span class="value" id="fuel-r-used">—</span></div>
+        <div class="result-display"><span class="label">Fuel Flow</span><span class="value amber" id="fuel-r-flow">—</span></div>
+        <div class="result-display"><span class="label">Endurance</span><span class="value cyan" id="fuel-r-time">—</span></div>
+        <div class="result-meta" id="fuel-r-liters">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WIND ===== -->
+  <div class="panel" id="panel-wind">
+    <div class="panel-header">
+      <h2>Wind Triangle</h2>
+      <div class="desc">Calculate wind correction angle, ground speed, and true heading.</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>True Course</label>
+            <div class="input-wrap"><input type="number" id="wind-course" placeholder="0" step="any"><span class="unit">°</span></div>
+          </div>
+          <div class="form-group">
+            <label>True Airspeed</label>
+            <div class="input-wrap"><input type="number" id="wind-tas" placeholder="0" step="any"><span class="unit">KT</span></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Wind Direction</label>
+            <div class="input-wrap"><input type="number" id="wind-wdir" placeholder="0" step="any"><span class="unit">°</span></div>
+          </div>
+          <div class="form-group">
+            <label>Wind Speed</label>
+            <div class="input-wrap"><input type="number" id="wind-wspd" placeholder="0" step="any"><span class="unit">KT</span></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="calcWind()">Compute</button>
+        <button class="btn btn-amber" onclick="clearWind()" style="margin-left:0.5rem">Clear</button>
+        <div class="keypad-hint">Wind direction is FROM (meteorological convention)</div>
+      </div>
+      <div class="card result-card">
+        <h3>Results</h3>
+        <div class="result-display"><span class="label">Wind Correction</span><span class="value" id="wind-r-wca">—</span></div>
+        <div class="result-display"><span class="label">True Heading</span><span class="value amber" id="wind-r-heading">—</span></div>
+        <div class="result-display"><span class="label">Ground Speed</span><span class="value cyan" id="wind-r-gs">—</span></div>
+        <div class="result-meta" id="wind-r-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ALTITUDE ===== -->
+  <div class="panel" id="panel-alt">
+    <div class="panel-header">
+      <h2>Altitude & Atmosphere</h2>
+      <div class="desc">Pressure altitude, density altitude, and true altitude calculations.</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Indicated Altitude</label>
+            <div class="input-wrap"><input type="number" id="alt-indicated" placeholder="0" step="any"><span class="unit">FT</span></div>
+          </div>
+          <div class="form-group">
+            <label>Altimeter Setting</label>
+            <div class="input-wrap"><input type="number" id="alt-setting" placeholder="29.92" step="any" value="29.92"><span class="unit">inHg</span></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Outside Air Temp</label>
+            <div class="input-wrap"><input type="number" id="alt-oat" placeholder="0" step="any"><span class="unit">°C</span></div>
+          </div>
+          <div class="form-group">
+            <label>Runway Elevation</label>
+            <div class="input-wrap"><input type="number" id="alt-elev" placeholder="0" step="any"><span class="unit">FT</span></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="calcAlt()">Compute</button>
+        <button class="btn btn-amber" onclick="clearAlt()" style="margin-left:0.5rem">Clear</button>
+        <div class="keypad-hint">Standard: 29.92 inHg / 1013 hPa · ISA lapse rate 2°C/1000ft</div>
+      </div>
+      <div class="card result-card">
+        <h3>Results</h3>
+        <div class="result-display"><span class="label">Pressure Altitude</span><span class="value" id="alt-r-pa">—</span></div>
+        <div class="result-display"><span class="label">Density Altitude</span><span class="value amber" id="alt-r-da">—</span></div>
+        <div class="result-display"><span class="label">True Altitude</span><span class="value cyan" id="alt-r-ta">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONVERSIONS ===== -->
+  <div class="panel" id="panel-conv">
+    <div class="panel-header">
+      <h2>Conversions</h2>
+      <div class="desc">Temperature, distance, volume, and weight conversions.</div>
+    </div>
+    <div class="card">
+      <div class="conv-grid">
+        <!-- Temperature -->
+        <div class="conv-group">
+          <label>Temperature</label>
+          <div class="conv-input-row">
+            <input type="number" id="conv-f" placeholder="°F" step="any" oninput="convTempF()">
+            <span class="conv-unit">°F</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-f-result">— °C</span>
+          </div>
+          <div class="conv-input-row" style="margin-top:0.5rem;">
+            <input type="number" id="conv-c" placeholder="°C" step="any" oninput="convTempC()">
+            <span class="conv-unit">°C</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-c-result">— °F</span>
+          </div>
+        </div>
+        <!-- Distance -->
+        <div class="conv-group">
+          <label>Distance</label>
+          <div class="conv-input-row">
+            <input type="number" id="conv-nm" placeholder="NM" step="any" oninput="convDistNM()">
+            <span class="conv-unit">NM</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-nm-result">—</span>
+          </div>
+          <div class="conv-input-row" style="margin-top:0.5rem;">
+            <input type="number" id="conv-sm" placeholder="SM" step="any" oninput="convDistSM()">
+            <span class="conv-unit">SM</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-sm-result">—</span>
+          </div>
+          <div class="conv-input-row" style="margin-top:0.5rem;">
+            <input type="number" id="conv-km" placeholder="KM" step="any" oninput="convDistKM()">
+            <span class="conv-unit">KM</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-km-result">—</span>
+          </div>
+        </div>
+        <!-- Volume -->
+        <div class="conv-group">
+          <label>Volume</label>
+          <div class="conv-input-row">
+            <input type="number" id="conv-gal" placeholder="GAL" step="any" oninput="convVolG()">
+            <span class="conv-unit">GAL</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-gal-result">—</span>
+          </div>
+          <div class="conv-input-row" style="margin-top:0.5rem;">
+            <input type="number" id="conv-l" placeholder="L" step="any" oninput="convVolL()">
+            <span class="conv-unit">L</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-l-result">—</span>
+          </div>
+        </div>
+        <!-- Mass -->
+        <div class="conv-group">
+          <label>Mass</label>
+          <div class="conv-input-row">
+            <input type="number" id="conv-lbs" placeholder="LBS" step="any" oninput="convMassLbs()">
+            <span class="conv-unit">LBS</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-lbs-result">—</span>
+          </div>
+          <div class="conv-input-row" style="margin-top:0.5rem;">
+            <input type="number" id="conv-kg" placeholder="KG" step="any" oninput="convMassKg()">
+            <span class="conv-unit">KG</span>
+            <span class="eq">=</span>
+            <span class="conv-result" id="conv-kg-result">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== W&B ===== -->
+  <div class="panel" id="panel-wb">
+    <div class="panel-header">
+      <h2>Weight & Balance</h2>
+      <div class="desc">Enter station weights and arms. Negative arm = aft of datum.</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="wb-stations" id="wbStations"></div>
+        <button class="btn btn-amber" onclick="addWBRow()" style="margin-right:0.5rem;">+ Station</button>
+        <button class="btn btn-primary" onclick="calcWB()">Compute</button>
+      </div>
+      <div class="card result-card">
+        <h3>Results</h3>
+        <div class="result-display"><span class="label">Total Weight</span><span class="value" id="wb-r-weight">—</span></div>
+        <div class="result-display"><span class="label">Total Moment</span><span class="value amber" id="wb-r-moment">—</span></div>
+        <div class="result-display"><span class="label">C.G. Arm</span><span class="value cyan" id="wb-r-cg">—</span></div>
+        <div class="result-meta" id="wb-r-status" style="margin-top:0.5rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span class="version">CX-3 eFlight v1.0 · ASA CX-3 Emulation</span>
+    <span class="disclaimer">For training use only · Not for real flight planning</span>
+  </footer>
+</div>
+
+<script>
+// ===== MODE SWITCHING =====
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + btn.dataset.mode).classList.add('active');
+  });
+});
+
+// ===== Enter key triggers compute on every panel =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const active = document.querySelector('.panel.active');
+    if (!active) return;
+    const id = active.id;
+    if (id === 'panel-tsd') calcTSD();
+    else if (id === 'panel-fuel') calcFuel();
+    else if (id === 'panel-wind') calcWind();
+    else if (id === 'panel-alt') calcAlt();
+    else if (id === 'panel-wb') calcWB();
+  }
+});
+
+// ===== HELPERS =====
+const $ = id => document.getElementById(id);
+const v = el => { const val = parseFloat(el.value); return isNaN(val) ? null : val; };
+const fmt = (n, d) => { if (n == null || isNaN(n)) return '—'; return n.toFixed(d == null ? 1 : d); };
+const deg2rad = d => d * Math.PI / 180;
+const rad2deg = r => r * 180 / Math.PI;
+
+// ===== TSD =====
+function calcTSD() {
+  const d = v($('tsd-dist'));
+  const s = v($('tsd-speed'));
+  const th = v($('tsd-time-h'));
+  const tm = v($('tsd-time-m'));
+  let t = (th || 0) + (tm || 0) / 60;
+  if (t === 0) t = null;
+
+  let rd, rs, rt;
+  if (d && s && !t) { rt = d / s; rd = d; rs = s; }
+  else if (d && t && !s) { rs = d / t; rd = d; rt = t; }
+  else if (s && t && !d) { rd = s * t; rs = s; rt = t; }
+  else {
+    $('tsd-r-dist').textContent = '—';
+    $('tsd-r-speed').textContent = '—';
+    $('tsd-r-time').textContent = 'Enter exactly two values';
+    return;
+  }
+  $('tsd-r-dist').textContent = fmt(rd, 1) + ' NM';
+  $('tsd-r-speed').textContent = fmt(rs, 1) + ' KT';
+  const hrs = Math.floor(rt);
+  const mins = Math.round((rt - hrs) * 60);
+  $('tsd-r-time').textContent = hrs + 'h ' + mins + 'm';
+}
+
+function clearTSD() {
+  ['tsd-dist','tsd-speed','tsd-time-h','tsd-time-m'].forEach(id => $(id).value = '');
+  ['tsd-r-dist','tsd-r-speed','tsd-r-time'].forEach(id => $(id).textContent = '—');
+}
+
+// ===== FUEL =====
+function calcFuel() {
+  const used = v($('fuel-used'));
+  const flow = v($('fuel-flow'));
+  const th = v($('fuel-time-h'));
+  const tm = v($('fuel-time-m'));
+  const liters = v($('fuel-liters'));
+  let t = (th || 0) + (tm || 0) / 60;
+  if (t === 0) t = null;
+
+  let ru, rf, rt;
+  // Convert liters to gal if needed
+  const usedEff = liters ? liters / 3.78541 : used;
+
+  if (usedEff && flow && !t) { rt = usedEff / flow; ru = usedEff; rf = flow; }
+  else if (usedEff && t && !flow) { rf = usedEff / t; ru = usedEff; rt = t; }
+  else if (flow && t && !usedEff) { ru = flow * t; rf = flow; rt = t; }
+  else {
+    $('fuel-r-used').textContent = '—'; $('fuel-r-flow').textContent = '—'; $('fuel-r-time').textContent = '—';
+    $('fuel-r-liters').textContent = 'Enter any two values';
+    return;
+  }
+  $('fuel-r-used').textContent = fmt(ru, 1) + ' GAL';
+  $('fuel-r-flow').textContent = fmt(rf, 1) + ' GAL/HR';
+  const hrs = Math.floor(rt);
+  const mins = Math.round((rt - hrs) * 60);
+  $('fuel-r-time').textContent = hrs + 'h ' + mins + 'm';
+  $('fuel-r-liters').textContent = fmt(ru * 3.78541, 1) + ' L';
+}
+
+function fuelToGal() {
+  const l = v($('fuel-liters'));
+  if (l) { $('fuel-used').value = (l / 3.78541).toFixed(1); }
+}
+
+function clearFuel() {
+  ['fuel-used','fuel-flow','fuel-time-h','fuel-time-m','fuel-liters'].forEach(id => $(id).value = '');
+  ['fuel-r-used','fuel-r-flow','fuel-r-time'].forEach(id => $(id).textContent = '—');
+  $('fuel-r-liters').textContent = '—';
+}
+
+// ===== WIND =====
+function calcWind() {
+  const tc = v($('wind-course'));
+  const tas = v($('wind-tas'));
+  const wd = v($('wind-wdir'));
+  const ws = v($('wind-wspd'));
+
+  if (tc == null || tas == null || wd == null || ws == null) {
+    $('wind-r-wca').textContent = '—'; $('wind-r-heading').textContent = '—'; $('wind-r-gs').textContent = '—';
+    $('wind-r-meta').textContent = 'Enter all four values';
+    return;
+  }
+
+  const tcRad = deg2rad(tc);
+  const wdRad = deg2rad(wd);
+
+  // Relative wind angle (from true course)
+  let relAng = wd - tc;
+  while (relAng < -180) relAng += 360;
+  while (relAng > 180) relAng -= 360;
+  const relRad = deg2rad(relAng);
+
+  // Wind correction angle via law of sines: sin(WCA) / WS = sin(relAng) / TAS
+  // WCA positive = wind from right = turn right
+  let wca = rad2deg(Math.asin(Math.min(1, Math.max(-1, (ws * Math.sin(relRad)) / tas))));
+
+  // True heading = true course + WCA
+  // Wind from right: WCA > 0, heading = course + WCA (turn right into wind)
+  // Wind from left: WCA < 0, heading = course + WCA = course - |WCA| (turn left)
+  const heading = ((tc + wca) % 360 + 360) % 360;
+  const hdgRad = deg2rad(heading);
+
+  // TAS vector along true heading
+  const tvx = tas * Math.sin(hdgRad);
+  const tvy = tas * Math.cos(hdgRad);
+
+  // Wind vector (wind is FROM wd, so direction is wd + 180)
+  const wvx = ws * Math.sin(wdRad + Math.PI);
+  const wvy = ws * Math.cos(wdRad + Math.PI);
+
+  // Ground speed vector = TAS + Wind
+  const gsx = tvx + wvx;
+  const gsy = tvy + wvy;
+  const gs = Math.sqrt(gsx*gsx + gsy*gsy);
+
+  // Wind components relative to course
+  const xwind = ws * Math.sin(relRad);
+  const hwind = ws * Math.cos(relRad);
+
+  const wcaLabel = relAng >= 0 ? 'R' : 'L';
+  $('wind-r-wca').textContent = wcaLabel + ' ' + fmt(Math.abs(wca), 1) + '°';
+  $('wind-r-heading').textContent = fmt(heading, 1) + '°';
+  $('wind-r-gs').textContent = fmt(gs, 1) + ' KT';
+  $('wind-r-meta').textContent = 'X-wind: ' + fmt(Math.abs(xwind), 1) + ' KT  H-wind: ' + (hwind >= 0 ? 'Head' : 'Tail') + ' ' + fmt(Math.abs(hwind), 1) + ' KT';
+}
+
+function clearWind() {
+  ['wind-course','wind-tas','wind-wdir','wind-wspd'].forEach(id => $(id).value = '');
+  ['wind-r-wca','wind-r-heading','wind-r-gs'].forEach(id => $(id).textContent = '—');
+  $('wind-r-meta').textContent = '';
+}
+
+// ===== ALTITUDE =====
+function calcAlt() {
+  const indAlt = v($('alt-indicated'));
+  const altSet = v($('alt-setting')) || 29.92;
+  const oat = v($('alt-oat'));
+  const elev = v($('alt-elev'));
+
+  if (indAlt == null && oat == null) {
+    $('alt-r-pa').textContent = '—'; $('alt-r-da').textContent = '—'; $('alt-r-ta').textContent = '—';
+    return;
+  }
+
+  // Pressure altitude from indicated altitude and altimeter setting
+  let pa = null;
+  if (indAlt != null) {
+    pa = indAlt + (29.92 - altSet) * 1000;
+  } else if (elev != null && altSet != null) {
+    pa = elev + (29.92 - altSet) * 1000;
+  }
+
+  // Density altitude
+  let da = null;
+  if (pa != null && oat != null) {
+    // ISA temp at pressure altitude: 15°C - 2°C/1000ft
+    const isaTemp = 15 - (pa / 1000) * 2;
+    da = pa + (120 * (oat - isaTemp));
+  }
+
+  // True altitude (approximate: 4ft per 1°C deviation per 1000ft AGL)
+  let ta = null;
+  if (indAlt != null && oat != null && altSet != null) {
+    const isaDev = oat - (15 - (indAlt / 1000) * 2);
+    ta = indAlt + (isaDev * indAlt / 273.15 / 2); // simplified true altitude correction
+  }
+
+  $('alt-r-pa').textContent = pa != null ? fmt(pa, 0) + ' FT' : '—';
+  $('alt-r-da').textContent = da != null ? fmt(da, 0) + ' FT' : '—';
+  $('alt-r-ta').textContent = ta != null ? fmt(ta, 0) + ' FT' : '—';
+}
+
+function clearAlt() {
+  ['alt-indicated','alt-setting','alt-oat','alt-elev'].forEach(id => $(id).value = '');
+  $('alt-setting').value = '29.92';
+  ['alt-r-pa','alt-r-da','alt-r-ta'].forEach(id => $(id).textContent = '—');
+}
+
+// ===== CONVERSIONS =====
+function convTempF() {
+  const f = v($('conv-f'));
+  $('conv-f-result').textContent = f != null ? fmt((f - 32) * 5/9, 1) + ' °C' : '— °C';
+}
+function convTempC() {
+  const c = v($('conv-c'));
+  $('conv-c-result').textContent = c != null ? fmt(c * 9/5 + 32, 1) + ' °F' : '— °F';
+}
+function convDistNM() {
+  const nm = v($('conv-nm'));
+  if (nm != null) {
+    $('conv-nm-result').textContent = fmt(nm * 1.15078, 2) + ' SM · ' + fmt(nm * 1.852, 2) + ' KM';
+    $('conv-sm').value = (nm * 1.15078).toFixed(2);
+    $('conv-km').value = (nm * 1.852).toFixed(2);
+  } else {
+    $('conv-nm-result').textContent = '—';
+    $('conv-sm').value = '';
+    $('conv-km').value = '';
+  }
+}
+function convDistSM() {
+  const sm = v($('conv-sm'));
+  if (sm != null) {
+    $('conv-sm-result').textContent = fmt(sm / 1.15078, 2) + ' NM · ' + fmt(sm * 1.60934, 2) + ' KM';
+    $('conv-nm').value = (sm / 1.15078).toFixed(2);
+    $('conv-km').value = (sm * 1.60934).toFixed(2);
+  } else {
+    $('conv-sm-result').textContent = '—';
+    $('conv-nm').value = '';
+    $('conv-km').value = '';
+  }
+}
+function convDistKM() {
+  const km = v($('conv-km'));
+  if (km != null) {
+    $('conv-km-result').textContent = fmt(km / 1.852, 2) + ' NM · ' + fmt(km / 1.60934, 2) + ' SM';
+    $('conv-nm').value = (km / 1.852).toFixed(2);
+    $('conv-sm').value = (km / 1.60934).toFixed(2);
+  } else {
+    $('conv-km-result').textContent = '—';
+    $('conv-nm').value = '';
+    $('conv-sm').value = '';
+  }
+}
+function convVolG() {
+  const g = v($('conv-gal'));
+  $('conv-gal-result').textContent = g != null ? fmt(g * 3.78541, 2) + ' L' : '—';
+  $('conv-l').value = g != null ? (g * 3.78541).toFixed(2) : '';
+}
+function convVolL() {
+  const l = v($('conv-l'));
+  $('conv-l-result').textContent = l != null ? fmt(l / 3.78541, 2) + ' GAL' : '—';
+  $('conv-gal').value = l != null ? (l / 3.78541).toFixed(2) : '';
+}
+function convMassLbs() {
+  const lbs = v($('conv-lbs'));
+  $('conv-lbs-result').textContent = lbs != null ? fmt(lbs / 2.20462, 2) + ' KG' : '—';
+  $('conv-kg').value = lbs != null ? (lbs / 2.20462).toFixed(2) : '';
+}
+function convMassKg() {
+  const kg = v($('conv-kg'));
+  $('conv-kg-result').textContent = kg != null ? fmt(kg * 2.20462, 2) + ' LBS' : '—';
+  $('conv-lbs').value = kg != null ? (kg * 2.20462).toFixed(2) : '';
+}
+
+// ===== W&B =====
+let wbCount = 0;
+const DEFAULT_STATIONS = [
+  { name: 'Pilot & Front Pax', arm: 85 },
+  { name: 'Rear Passengers', arm: 117 },
+  { name: 'Baggage Area', arm: 140 },
+  { name: 'Fuel (6lb/gal)', arm: 95 }
+];
+
+function addWBRow(name, arm) {
+  const div = document.createElement('div');
+  div.className = 'wb-row';
+  div.dataset.index = wbCount++;
+  const n = name || 'Station ' + wbCount;
+  const a = arm != null ? arm : '';
+  div.innerHTML = `
+    <span class="wb-name"><input type="text" value="${n}" data-field="name" style="background:transparent;border:none;color:var(--text);font-size:0.85rem;width:100%;outline:none;"></span>
+    <input type="number" placeholder="Wt (lb)" data-field="weight" step="any">
+    <input type="number" placeholder="Arm (in)" value="${a}" data-field="arm" step="any">
+    <span class="wb-moment" data-field="moment">—</span>
+  `;
+  $('wbStations').appendChild(div);
+
+  // Auto-calculate moment on input
+  div.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => calcWBMoment(div));
+  });
+}
+
+function calcWBMoment(row) {
+  const wt = parseFloat(row.querySelector('[data-field="weight"]').value);
+  const arm = parseFloat(row.querySelector('[data-field="arm"]').value);
+  const mom = row.querySelector('[data-field="moment"]');
+  if (wt && arm) {
+    mom.textContent = (wt * arm).toFixed(1);
+  } else {
+    mom.textContent = '—';
+  }
+}
+
+function calcWB() {
+  let totalWt = 0, totalMoment = 0;
+  const rows = $('wbStations').querySelectorAll('.wb-row');
+  rows.forEach(row => {
+    const wt = parseFloat(row.querySelector('[data-field="weight"]').value) || 0;
+    const arm = parseFloat(row.querySelector('[data-field="arm"]').value) || 0;
+    totalWt += wt;
+    totalMoment += wt * arm;
+  });
+
+  $('wb-r-weight').textContent = totalWt > 0 ? fmt(totalWt, 1) + ' LBS' : '—';
+  $('wb-r-moment').textContent = totalMoment > 0 ? fmt(totalMoment, 1) + ' lb-in' : '—';
+  if (totalWt > 0) {
+    const cg = totalMoment / totalWt;
+    $('wb-r-cg').textContent = fmt(cg, 2) + ' in';
+
+    // Simple envelope check
+    const status = [];
+    if (totalWt > 3400) status.push('⚠ OVER GROSS (3400)');
+    if (totalWt > 0 && totalWt < 3400) status.push('✓ Within gross limit');
+    if (cg > 0 && (cg < 85 || cg > 130)) status.push('⚠ CG outside typical range (85-130 in)');
+    $('wb-r-status').textContent = status.join(' · ') || '—';
+  } else {
+    $('wb-r-cg').textContent = '—';
+    $('wb-r-status').textContent = '';
+  }
+}
+
+// Initialize W&B with default stations
+DEFAULT_STATIONS.forEach(s => addWBRow(s.name, s.arm));
+
+</script>
+</body>
+</html>
