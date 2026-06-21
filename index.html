@@ -367,6 +367,19 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 input[type="number"]{-moz-appearance:textfield}
 
 /* Responsive */
+/* ===== GRAPH CANVAS & CONTROLS ===== */
+.graph-wrap{position:relative;width:100%}
+.graph-wrap canvas{display:block;width:100%;height:160px;background:#060504;border:1px solid rgba(232,192,74,.08);cursor:crosshair}
+.graph-wrap canvas:active{cursor:crosshair}
+.graph-inputs{display:flex;flex-wrap:wrap;gap:.1rem;margin-top:.15rem;align-items:center}
+.graph-inputs .dl{font-size:.35rem;min-width:1rem;color:var(--text-deep)}
+.graph-inputs .di{font-size:.4rem;padding:.08rem .15rem;min-width:1.2rem;flex:0}
+.graph-inputs .du{font-size:.3rem;min-width:.6rem;color:var(--text-deep)}
+.graph-func-row{display:flex;gap:.15rem;align-items:center;width:100%;margin-bottom:.1rem}
+.graph-func-row .di{flex:1;font-size:.5rem;padding:.1rem .2rem;border-bottom:1px solid var(--gold-dim);color:var(--gold);font-family:var(--font-display)}
+.graph-func-row .dl{font-size:.4rem;color:var(--text-dim);min-width:auto}
+.graph-status{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);text-align:right;padding:.05rem 0;letter-spacing:.06em}
+
 @media(max-width:420px){
   body{padding:.25rem}
   .calc{max-width:100%}
@@ -376,6 +389,7 @@ input[type="number"]{-moz-appearance:textfield}
   .kp-btn{padding:.6rem .15rem;min-height:36px;font-size:.65rem}
   .mode-btn{font-size:.5rem;padding:.4rem .1rem}
   .soft-key{font-size:.6rem;padding:.4rem .15rem}
+  .graph-wrap canvas{height:140px}
 }
 </style>
 </head>
@@ -582,6 +596,29 @@ input[type="number"]{-moz-appearance:textfield}
         </div>
       </div>
 
+      <!-- ===== GRAPH ===== -->
+      <div class="panel" id="p-graph">
+        <div class="graph-wrap">
+          <canvas id="graphCanvas" height="160"></canvas>
+        </div>
+        <div class="graph-func-row">
+          <span class="dl">f(x)</span>
+          <input class="di" type="text" id="graph-func" value="sin(x)" spellcheck="false" placeholder="e.g. x^2, sin(x), x^3-2*x">
+          <button class="soft-key gold" id="graphPlotBtn" style="flex:none;padding:.15rem .3rem;font-size:.4rem;min-width:auto">PLOT</button>
+        </div>
+        <div class="graph-inputs">
+          <span class="dl">x:</span>
+          <input class="di" type="number" id="graph-xmin" value="-10" step="any">
+          <span class="du">to</span>
+          <input class="di" type="number" id="graph-xmax" value="10" step="any">
+          <span class="dl" style="margin-left:.3rem">y:</span>
+          <input class="di" type="number" id="graph-ymin" value="" placeholder="auto" step="any">
+          <span class="du">to</span>
+          <input class="di" type="number" id="graph-ymax" value="" placeholder="auto" step="any">
+        </div>
+        <div class="graph-status" id="graphStatus">f(x) = sin(x)</div>
+      </div>
+
     </div><!-- /screen -->
   </div><!-- /screen-wrap -->
 
@@ -620,6 +657,7 @@ input[type="number"]{-moz-appearance:textfield}
     <button class="mode-btn" data-mode="alt">ALT</button>
     <button class="mode-btn" data-mode="conv">CONV</button>
     <button class="mode-btn" data-mode="wb">W&B</button>
+    <button class="mode-btn" data-mode="graph">GRAPH</button>
   </div>
 
   <div class="footer">
@@ -638,7 +676,7 @@ const R2D=r=>r*180/Math.PI;
 
 // ===== MODE SWITCHING =====
 let currentMode='tsd';
-const MODE_NAMES={tsd:'TSD',fuel:'FUEL',wind:'WIND TRIANGLE',alt:'ALTITUDE',conv:'CONVERSIONS',wb:'W&B'};
+const MODE_NAMES={tsd:'TSD',fuel:'FUEL',wind:'WIND TRIANGLE',alt:'ALTITUDE',conv:'CONVERSIONS',wb:'W&B',graph:'GRAPH'};
 document.querySelectorAll('.mode-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
@@ -684,6 +722,7 @@ $('computeBtn').addEventListener('click',()=>{
   else if(currentMode==='wind')calcWind();
   else if(currentMode==='alt')calcAlt();
   else if(currentMode==='wb')calcWB();
+  else if(currentMode==='graph')plotGraph();
 });
 $('clrBtn').addEventListener('click',()=>{
   if(currentMode==='tsd')clrTSD();
@@ -691,6 +730,7 @@ $('clrBtn').addEventListener('click',()=>{
   else if(currentMode==='wind')clrWind();
   else if(currentMode==='alt')clrAlt();
   else if(currentMode==='wb')clrWB();
+  else if(currentMode==='graph')clrGraph();
   else {document.querySelectorAll('.panel.active .di').forEach(i=>i.value='')}
 });
 document.addEventListener('keydown',e=>{
@@ -837,14 +877,171 @@ $('extraBtn').addEventListener('click',()=>addWB());
 // Init WB
 DFLT_STN.forEach(s=>addWB(s.n,s.a));
 
-// Focus first input on mode switch
+// ===== GRAPH =====
+// Safe math parser — supports x, +-*/^, trig, log, sqrt, abs, pi, e
+function mathEval(expr,x){
+  try{
+    const sanitized=expr
+      .replace(/\^/g,'**')
+      .replace(/sin\(/g,'Math.sin(')
+      .replace(/cos\(/g,'Math.cos(')
+      .replace(/tan\(/g,'Math.tan(')
+      .replace(/asin\(/g,'Math.asin(')
+      .replace(/acos\(/g,'Math.acos(')
+      .replace(/atan\(/g,'Math.atan(')
+      .replace(/abs\(/g,'Math.abs(')
+      .replace(/sqrt\(/g,'Math.sqrt(')
+      .replace(/log\(/g,'Math.log(')
+      .replace(/log10\(/g,'Math.log10(')
+      .replace(/exp\(/g,'Math.exp(')
+      .replace(/floor\(/g,'Math.floor(')
+      .replace(/ceil\(/g,'Math.ceil(')
+      .replace(/pi\b/g,'Math.PI')
+      .replace(/π/g,'Math.PI')
+      .replace(/\be\b(?!\s*[\(\.\d])/g,'Math.E');
+    const fn=new Function('x','return ('+sanitized+')');
+    return fn(x);
+  }catch(e){return NaN}
+}
+
+function plotGraph(){
+  const expr=$('graph-func').value.trim()||'x';
+  const xMin=parseFloat($('graph-xmin').value)||-10;
+  const xMax=parseFloat($('graph-xmax').value)||10;
+  if(xMin>=xMax){$('graphStatus').textContent='⛔ xMin must be < xMax';return}
+  const yMinRaw=$('graph-ymin').value;
+  const yMaxRaw=$('graph-ymax').value;
+  const canvas=$('graphCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width=canvas.clientWidth*2||600;
+  const H=canvas.height=160*2||320;
+  ctx.clearRect(0,0,W,H);
+
+  // Sample
+  const pts=[];
+  let validN=0,yMin=Infinity,yMax=-Infinity;
+  for(let i=0;i<=1000;i++){
+    const x=xMin+(xMax-xMin)*i/1000;
+    const y=mathEval(expr,x);
+    if(isFinite(y)){pts.push([x,y]);validN++;yMin=Math.min(yMin,y);yMax=Math.max(yMax,y)}
+    else pts.push([x,null]);
+  }
+  if(validN<2){$('graphStatus').textContent='⛔ Could not plot — check expression';return}
+
+  // Y range
+  const autoY=!yMinRaw&&!yMaxRaw;
+  if(autoY||yMinRaw==='')yMin=Math.floor(yMin/2)*2-1;
+  else yMin=parseFloat(yMinRaw);
+  if(autoY||yMaxRaw==='')yMax=Math.ceil(yMax/2)*2+1;
+  else yMax=parseFloat(yMaxRaw);
+  if(yMin>=yMax){yMin=-10;yMax=10}
+
+  const xScale=W/(xMax-xMin);
+  const yScale=H/(yMax-yMin);
+  const mx=(x,y)=>[(x-xMin)*xScale,H-(y-yMin)*yScale];
+  const pad=4;
+
+  // Grid
+  ctx.strokeStyle='rgba(232,192,74,.06)';
+  ctx.lineWidth=1;
+  const xStep=Math.pow(10,Math.floor(Math.log10(Math.abs(xMax-xMin)/6)));
+  for(let x=Math.ceil(xMin/xStep)*xStep;x<=xMax;x+=xStep){
+    const [px]=mx(x,0);
+    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,H);ctx.stroke();
+  }
+  const yStep=Math.pow(10,Math.floor(Math.log10(Math.abs(yMax-yMin)/6)));
+  for(let y=Math.ceil(yMin/yStep)*yStep;y<=yMax;y+=yStep){
+    const [,py]=mx(0,y);
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(W,py);ctx.stroke();
+  }
+
+  // Axes
+  if(xMin<=0&&xMax>=0){
+    const [px]=mx(0,0);
+    ctx.strokeStyle='rgba(232,192,74,.2)';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,H);ctx.stroke();
+  }
+  if(yMin<=0&&yMax>=0){
+    const [,py]=mx(0,0);
+    ctx.strokeStyle='rgba(232,192,74,.2)';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(W,py);ctx.stroke();
+  }
+
+  // Axis labels
+  ctx.fillStyle='rgba(232,192,74,.25)';
+  ctx.font='18px "Share Tech Mono",monospace';
+  ctx.textAlign='center';
+  for(let x=Math.ceil(xMin/xStep)*xStep;x<=xMax;x+=xStep){
+    if(Math.abs(x)<xStep/100)continue;
+    const [px,py]=mx(x,0);
+    ctx.fillText(x.toFixed(x%1?1:0),px,Math.min(H-2,Math.max(14,py-4)));
+  }
+  ctx.textAlign='right';
+  for(let y=Math.ceil(yMin/yStep)*yStep;y<=yMax;y+=yStep){
+    if(Math.abs(y)<yStep/100)continue;
+    const [px,py]=mx(0,y);
+    ctx.fillText(y.toFixed(y%1?1:0),px-pad,Math.min(H-2,Math.max(12,py+4)));
+  }
+
+  // Plot
+  ctx.strokeStyle='#E8C04A';
+  ctx.lineWidth=2;
+  ctx.shadowColor='rgba(232,192,74,.25)';
+  ctx.shadowBlur=6;
+  ctx.beginPath();
+  let drawing=false;
+  for(let i=0;i<pts.length;i++){
+    const [x,y]=pts[i];
+    if(y==null||!isFinite(y)){drawing=false;continue}
+    const [px,py]=mx(x,y);
+    if(px<-50||px>W+50||py<-50||py>H+50){drawing=false;continue}
+    if(drawing)ctx.lineTo(px,py);
+    else{ctx.moveTo(px,py);drawing=true}
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+
+  // Status
+  const fStr=expr.length>25?expr.slice(0,22)+'...':expr;
+  $('graphStatus').textContent='f(x) = '+fStr+'  |  ['+xMin.toFixed(1)+', '+xMax.toFixed(1)+']  |  '+validN+' pts';
+}
+
+function clrGraph(){
+  $('graph-func').value='sin(x)';
+  $('graph-xmin').value='-10';
+  $('graph-xmax').value='10';
+  $('graph-ymin').value='';
+  $('graph-ymax').value='';
+  $('graphStatus').textContent='f(x) = sin(x)';
+  const canvas=$('graphCanvas');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Re-plot default
+  setTimeout(plotGraph,10);
+}
+
+// Graph event handlers
+$('graph-func').addEventListener('keydown',e=>{if(e.key==='Enter')plotGraph()});
+$('graphPlotBtn').addEventListener('click',plotGraph);
+
+// Auto-plot on mode switch to graph
 document.querySelectorAll('.mode-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     setTimeout(()=>{
       const first=$('p-'+btn.dataset.mode)?.querySelector('.di');
       if(first)first.focus();
     },50);
+    if(btn.dataset.mode==='graph')setTimeout(plotGraph,100);
   });
+});
+
+// Resize-aware: re-plot when canvas resizes
+let graphResizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(graphResizeTimer);
+  graphResizeTimer=setTimeout(()=>{if($('p-graph').classList.contains('active'))plotGraph()},200);
 });
 </script>
 </body>
