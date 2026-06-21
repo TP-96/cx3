@@ -322,6 +322,29 @@ body{
   background:#2d2b1a;
 }
 
+/* Fuel type selector buttons */
+.fuel-type-btn{
+  background:var(--key-bg);
+  border:1px solid var(--key-edge);
+  color:var(--text-dim);
+  font-family:var(--font-display);
+  font-size:.4rem;
+  padding:.2rem .35rem;
+  cursor:pointer;
+  transition:all .06s;
+  touch-action:manipulation;
+  line-height:1;
+}
+.fuel-type-btn.active{
+  border-color:var(--gold-dim);
+  color:var(--gold);
+  background:#1e1d12;
+}
+.fuel-type-btn:active{
+  background:var(--key-active);
+}
+.fuel-type-btn.custom{opacity:.7}
+
 /* Footer */
 .footer{
   display:flex;
@@ -408,17 +431,31 @@ input[type="number"]{-moz-appearance:textfield}
 
       <!-- ===== FUEL ===== -->
       <div class="panel" id="p-fuel">
+        <div class="d-row" style="gap:.2rem;padding-bottom:.15rem">
+          <span class="dl" style="font-size:.38rem;min-width:2.2rem;letter-spacing:.06em">FUEL</span>
+          <button class="fuel-type-btn active" data-dens="6.0" onclick="setFT('100LL',6.0)">100LL</button>
+          <button class="fuel-type-btn" data-dens="6.7" onclick="setFT('Jet-A',6.7)">Jet-A</button>
+          <button class="fuel-type-btn" data-dens="0" onclick="setFT('Custom')">Custom</button>
+          <input class="di" type="number" id="fuel-dens-inp" value="6.0" step="0.1" style="width:1.6rem;font-size:.5rem;flex:none;display:none">
+          <span class="du" style="min-width:1.2rem;font-size:.35rem" id="fuel-dens-lbl">6.0</span>
+        </div>
         <div class="d-row">
           <span class="dl">USED</span>
           <input class="di" type="number" id="fuel-used" placeholder="0" step="any">
           <span class="du">GAL</span>
-          <span class="dr gold" id="fuel-ru">—</span>
+          <div style="display:flex;gap:.15rem;align-items:baseline;min-width:4.8rem">
+            <span class="dr gold" id="fuel-ru" style="min-width:2.2rem;font-size:.75rem">—</span>
+            <span class="dr org" id="fuel-ru-lb" style="min-width:2.2rem;font-size:.65rem">—</span>
+          </div>
         </div>
-        <div class="d-row">
+        <div class="d-row" style="gap:.2rem">
           <span class="dl">FLOW</span>
           <input class="di" type="number" id="fuel-flow" placeholder="0" step="any">
-          <span class="du">GAL/HR</span>
-          <span class="dr gold" id="fuel-rf">—</span>
+          <span class="du" style="min-width:1.2rem">GAL/HR</span>
+          <div style="display:flex;gap:.15rem;align-items:baseline;min-width:4.8rem">
+            <span class="dr gold" id="fuel-rf" style="min-width:2.2rem;font-size:.75rem">—</span>
+            <span class="dr org" id="fuel-rf-lb" style="min-width:2.2rem;font-size:.65rem">—</span>
+          </div>
         </div>
         <div class="d-row">
           <span class="dl">TIME</span>
@@ -430,11 +467,11 @@ input[type="number"]{-moz-appearance:textfield}
           </div>
           <span class="dr org" id="fuel-rt">—</span>
         </div>
-        <div class="d-row" style="border-top:1px solid rgba(232,192,74,.06);padding-top:.25rem;margin-top:.1rem">
-          <span class="dl" style="font-size:.4rem;color:var(--text-deep);min-width:3rem">LITERS</span>
-          <input class="di" type="number" id="fuel-lit" placeholder="0" step="any" style="font-size:.65rem">
+        <div class="d-row" style="border-top:1px solid rgba(232,192,74,.06);padding-top:.2rem;margin-top:.05rem">
+          <span class="dl" style="font-size:.38rem;color:var(--text-deep);min-width:2.2rem">VOLUME</span>
+          <input class="di" type="number" id="fuel-lit" placeholder="GAL→L" step="any" style="font-size:.55rem">
           <span class="du">L</span>
-          <span class="dr" id="fuel-rl" style="font-size:.65rem;color:var(--text-dim);min-width:3rem">—</span>
+          <span class="dr" id="fuel-rl" style="font-size:.6rem;color:var(--text-dim);min-width:2.2rem">—</span>
         </div>
       </div>
 
@@ -677,6 +714,19 @@ function calcTSD(){
 function clrTSD(){['tsd-dist','tsd-spd','tsd-th','tsd-tm'].forEach(i=>$(i).value='');['tsd-rd','tsd-rs','tsd-rt'].forEach(i=>$(i).textContent='—')}
 
 // ===== FUEL =====
+let fuelDensity=6.0;
+function setFT(type,d){
+  if(type==='Custom'){
+    $('fuel-dens-inp').style.display='block';
+    d=v($('fuel-dens-inp'))||6.0;
+  }else{
+    $('fuel-dens-inp').style.display='none';
+  }
+  fuelDensity=d;
+  $('fuel-dens-lbl').textContent=fuelDensity.toFixed(1);
+  document.querySelectorAll('.fuel-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.dens==String(d)||(type==='Custom'&&b.dataset.dens==='0')));
+}
+$('fuel-dens-inp').addEventListener('input',()=>setFT('Custom',v($('fuel-dens-inp'))||6.0));
 function calcFuel(){
   const u=v($('fuel-used')),fl=v($('fuel-flow')),th=v($('fuel-th')),tm=v($('fuel-tm')),lt=v($('fuel-lit'));
   let t=(th||0)+(tm||0)/60;if(t===0)t=null;
@@ -685,14 +735,16 @@ function calcFuel(){
   if(e&&fl&&!t){rt=e/fl;ru=e;rf=fl}
   else if(e&&t&&!fl){rf=e/t;ru=e;rt=t}
   else if(fl&&t&&!e){ru=fl*t;rf=fl;rt=t}
-  else{$('fuel-ru').textContent='—';$('fuel-rf').textContent='—';$('fuel-rt').textContent='—';$('fuel-rl').textContent='Enter 2';return}
+  else{$('fuel-ru').textContent='—';$('fuel-ru-lb').textContent='—';$('fuel-rf').textContent='—';$('fuel-rf-lb').textContent='—';$('fuel-rt').textContent='—';$('fuel-rl').textContent='Enter 2';return}
   $('fuel-ru').textContent=f(ru,1)+' GAL';
+  $('fuel-ru-lb').textContent=f(ru*fuelDensity,1)+' LBS';
   $('fuel-rf').textContent=f(rf,1)+' GAL/HR';
+  $('fuel-rf-lb').textContent=f(rf*fuelDensity,1)+' LBS/HR';
   const h=Math.floor(rt),m=Math.round((rt-h)*60);
   $('fuel-rt').textContent=h+'h '+m+'m';
   $('fuel-rl').textContent=f(ru*3.78541,1)+' L';
 }
-function clrFuel(){['fuel-used','fuel-flow','fuel-th','fuel-tm','fuel-lit'].forEach(i=>$(i).value='');['fuel-ru','fuel-rf','fuel-rt','fuel-rl'].forEach(i=>$(i).textContent='—')}
+function clrFuel(){['fuel-used','fuel-flow','fuel-th','fuel-tm','fuel-lit'].forEach(i=>$(i).value='');['fuel-ru','fuel-ru-lb','fuel-rf','fuel-rf-lb','fuel-rt','fuel-rl'].forEach(i=>$(i).textContent='—')}
 
 // ===== WIND =====
 function calcWind(){
@@ -744,7 +796,7 @@ function cMK(){const k=v($('conv-kg'));$('conv-lbs').value=k!=null?(k*2.20462).t
 // ===== W&B =====
 let wbN=0;
 const DFLT_STN=[
-  {n:'Basic Empty',a:95},{n:'Pilot & Pax',a:85},{n:'Rear Pax',a:117},{n:'Baggage',a:140},{n:'Fuel 6lb/gal',a:95}
+  {n:'Basic Empty',a:95},{n:'Pilot & Pax',a:85},{n:'Rear Pax',a:117},{n:'Baggage',a:140},{n:'Fuel',a:95}
 ];
 function addWB(n,a){
   const d=document.createElement('div');d.className='d-row';d.style.cssText='min-height:1.2rem;font-size:.5rem';
