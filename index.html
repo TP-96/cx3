@@ -15,17 +15,17 @@
   --bezel: #0a0a0a;
   --screen-bg: #050505;
   --screen-border: #1a1a1a;
-  --gold: #D4A843;
-  --gold-dim: #8a6b2a;
-  --orange: #F45D00;
-  --orange-dim: #a03d00;
-  --green: #7fdb8a;
-  --green-dim: #3a7a45;
-  --red: #e34c4c;
-  --text: #f0ede8;
-  --text-dim: #7a756e;
-  --text-deep: #3a3835;
-  --btn-bg: #1e1d1b;
+  --gold: #E0B94A;
+  --gold-dim: #9a7528;
+  --orange: #FF6A1A;
+  --orange-dim: #b84900;
+  --green: #8fe89a;
+  --green-dim: #4d9158;
+  --red: #f05c5c;
+  --text: #f5f2ed;
+  --text-dim: #b8b2a5;
+  --text-deep: #706a5a;
+  --btn-bg: #222120;
   --btn-border: #2a2826;
   --btn-hover: #D4A843;
   --font-display: 'Share Tech Mono', monospace;
@@ -155,16 +155,17 @@ body::before {
 
 .mode-indicator .mi-value {
   font-family: var(--font-display);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--gold);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 10px rgba(224, 185, 74, 0.25);
 }
 
 .mode-indicator .mi-arrows {
   margin-left: auto;
   font-family: var(--font-display);
-  font-size: 0.45rem;
-  color: rgba(212, 168, 67, 0.15);
+  font-size: 0.5rem;
+  color: rgba(224, 185, 74, 0.2);
   letter-spacing: 0.05em;
 }
 
@@ -188,30 +189,31 @@ body::before {
 
 .display-screen .ds-title {
   font-family: var(--font-display);
-  font-size: 0.45rem;
-  color: var(--text-deep);
+  font-size: 0.55rem;
+  color: var(--gold);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  border-bottom: 1px solid rgba(212, 168, 67, 0.06);
-  padding-bottom: 0.25rem;
-  margin-bottom: 0.3rem;
+  letter-spacing: 0.14em;
+  border-bottom: 1px solid rgba(224, 185, 74, 0.1);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.35rem;
+  text-shadow: 0 0 6px rgba(224, 185, 74, 0.1);
 }
 
 /* Display row — each line on the LCD */
 .d-row {
   display: flex;
   align-items: center;
-  padding: 0.15rem 0;
+  padding: 0.2rem 0;
   gap: 0.3rem;
-  min-height: 1.6rem;
+  min-height: 1.8rem;
 }
 
 .d-row .d-label {
   font-family: var(--font-display);
-  font-size: 0.5rem;
-  color: var(--text-dim);
+  font-size: 0.6rem;
+  color: var(--text);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   min-width: 4.5rem;
   flex-shrink: 0;
 }
@@ -223,10 +225,10 @@ body::before {
   outline: none;
   color: var(--text);
   font-family: var(--font-display);
-  font-size: 0.9rem;
-  padding: 0.1rem 0.3rem;
+  font-size: 1rem;
+  padding: 0.15rem 0.3rem;
   text-align: right;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   border-bottom: 1px solid transparent;
   transition: all 0.15s;
 }
@@ -234,41 +236,42 @@ body::before {
 .d-row .d-input:focus {
   border-bottom-color: var(--gold);
   color: var(--gold);
-  text-shadow: 0 0 8px rgba(212, 168, 67, 0.3);
+  text-shadow: 0 0 12px rgba(224, 185, 74, 0.35);
+  font-size: 1.1rem;
 }
 
 .d-row .d-input::placeholder {
   color: var(--text-deep);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
 }
 
 .d-row .d-unit {
   font-family: var(--font-display);
-  font-size: 0.45rem;
-  color: var(--text-deep);
-  min-width: 2rem;
+  font-size: 0.5rem;
+  color: var(--text-dim);
+  min-width: 2.2rem;
   text-align: right;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .d-row .d-result {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--green);
   text-align: right;
-  min-width: 5rem;
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 6px rgba(127, 219, 138, 0.2);
+  min-width: 6rem;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 10px rgba(143, 232, 154, 0.25);
 }
 
 .d-row .d-result.gold {
   color: var(--gold);
-  text-shadow: 0 0 6px rgba(212, 168, 67, 0.2);
+  text-shadow: 0 0 10px rgba(224, 185, 74, 0.25);
 }
 
 .d-row .d-result.orange {
   color: var(--orange);
-  text-shadow: 0 0 6px rgba(244, 93, 0, 0.2);
+  text-shadow: 0 0 10px rgba(255, 106, 26, 0.25);
 }
 
 .d-time-wrap {
@@ -300,22 +303,22 @@ body::before {
 
 .key {
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.55rem 0.4rem;
   background: var(--btn-bg);
   border: 1px solid var(--btn-border);
-  color: var(--text-dim);
-  font-family: var(--font-display);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
   cursor: pointer;
   transition: all 0.1s;
   text-align: center;
 }
 
 .key:hover {
-  border-color: var(--gold-dim);
+  background: #2a2826;
   color: var(--gold);
+  border-color: var(--gold-dim);
 }
 
 .key:active {
@@ -354,13 +357,13 @@ body::before {
 
 .mode-btn {
   flex: 1;
-  padding: 0.5rem 0.2rem;
+  padding: 0.6rem 0.2rem;
   background: #161514;
   border: none;
-  color: var(--text-deep);
+  color: var(--text-dim);
   font-family: var(--font-heading);
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
   cursor: pointer;
   transition: all 0.1s;
   text-align: center;
