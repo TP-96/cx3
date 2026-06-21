@@ -112,7 +112,7 @@ body::before {
   padding: 0.15rem 0.4rem;
 }
 
-/* ===== SCREEN AREA ===== */
+/* ===== SCREEN AREA — LCD DISPLAY ===== */
 .screen-bezel {
   background: var(--bezel);
   padding: 0.75rem;
@@ -125,38 +125,46 @@ body::before {
   min-height: 320px;
   padding: 0.75rem;
   position: relative;
+  /* Subtle LCD grid texture */
+  background-image:
+    linear-gradient(rgba(212, 168, 67, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 168, 67, 0.015) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-/* Mode indicator */
+/* Mode indicator — display header bar */
 .mode-indicator {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(212, 168, 67, 0.08);
+  padding: 0.3rem 0.4rem;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(212, 168, 67, 0.06);
 }
 
 .mode-indicator .mi-label {
   font-family: var(--font-display);
-  font-size: 0.55rem;
-  color: var(--text-dim);
+  font-size: 0.45rem;
+  color: var(--text-deep);
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  border: 1px solid var(--text-deep);
+  padding: 0.05rem 0.3rem;
 }
 
 .mode-indicator .mi-value {
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
   color: var(--gold);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
 }
 
 .mode-indicator .mi-arrows {
   margin-left: auto;
   font-family: var(--font-display);
-  font-size: 0.5rem;
-  color: var(--text-deep);
+  font-size: 0.45rem;
+  color: rgba(212, 168, 67, 0.15);
   letter-spacing: 0.05em;
 }
 
@@ -169,133 +177,121 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.panel-title {
-  font-family: var(--font-print);
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--gold);
-  margin-bottom: 0.4rem;
-  letter-spacing: 0.03em;
+/* ===== LCD DISPLAY AREA (top of each panel) ===== */
+.display-screen {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(212, 168, 67, 0.08);
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
 }
 
-.panel-desc {
-  font-family: var(--font-body);
-  font-size: 0.6rem;
-  color: var(--text-dim);
-  margin-bottom: 0.75rem;
-  line-height: 1.4;
+.display-screen .ds-title {
+  font-family: var(--font-display);
+  font-size: 0.45rem;
+  color: var(--text-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid rgba(212, 168, 67, 0.06);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
 }
 
-/* ===== CALCULATOR INPUT STYLES ===== */
-.calc-row {
+/* Display row — each line on the LCD */
+.d-row {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(42, 40, 38, 0.5);
-  padding: 0.35rem 0;
+  padding: 0.15rem 0;
+  gap: 0.3rem;
+  min-height: 1.6rem;
 }
 
-.calc-row .cr-label {
+.d-row .d-label {
   font-family: var(--font-display);
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  min-width: 5rem;
+  letter-spacing: 0.1em;
+  min-width: 4.5rem;
   flex-shrink: 0;
 }
 
-.calc-row input {
+.d-row .d-input {
   flex: 1;
   background: transparent;
   border: none;
   outline: none;
   color: var(--text);
   font-family: var(--font-display);
-  font-size: 0.85rem;
-  padding: 0.3rem 0.4rem;
+  font-size: 0.9rem;
+  padding: 0.1rem 0.3rem;
   text-align: right;
-  letter-spacing: 0.05em;
-}
-
-.calc-row input::placeholder {
-  color: var(--text-deep);
-}
-
-.calc-row .cr-unit {
-  font-family: var(--font-display);
-  font-size: 0.55rem;
-  color: var(--text-dim);
-  min-width: 2.5rem;
-  text-align: right;
-  letter-spacing: 0.05em;
-}
-
-.calc-row .cr-eq {
-  font-family: var(--font-display);
-  font-size: 0.65rem;
-  color: var(--text-dim);
-  padding: 0 0.25rem;
-}
-
-.calc-row:focus-within {
-  border-bottom-color: var(--gold);
-}
-
-.calc-row:focus-within .cr-label {
-  color: var(--gold);
-}
-
-/* ===== RESULT DISPLAY ===== */
-.result-section {
-  margin-top: 0.75rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(212, 168, 67, 0.1);
-}
-
-.result-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 0.2rem 0;
-}
-
-.result-line .rl-label {
-  font-family: var(--font-display);
-  font-size: 0.55rem;
-  color: var(--text-dim);
-  text-transform: uppercase;
   letter-spacing: 0.08em;
+  border-bottom: 1px solid transparent;
+  transition: all 0.15s;
 }
 
-.result-line .rl-value {
+.d-row .d-input:focus {
+  border-bottom-color: var(--gold);
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(212, 168, 67, 0.3);
+}
+
+.d-row .d-input::placeholder {
+  color: var(--text-deep);
+  font-size: 0.6rem;
+}
+
+.d-row .d-unit {
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  color: var(--green);
+  font-size: 0.45rem;
+  color: var(--text-deep);
+  min-width: 2rem;
+  text-align: right;
   letter-spacing: 0.05em;
 }
 
-.result-line .rl-value.gold {
-  color: var(--gold);
-}
-
-.result-line .rl-value.orange {
-  color: var(--orange);
-}
-
-.result-line .rl-value.red {
-  color: var(--red);
-}
-
-.result-meta {
+.d-row .d-result {
   font-family: var(--font-display);
-  font-size: 0.5rem;
-  color: var(--text-dim);
-  margin-top: 0.3rem;
+  font-size: 1rem;
+  color: var(--green);
   text-align: right;
-  letter-spacing: 0.03em;
+  min-width: 5rem;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 6px rgba(127, 219, 138, 0.2);
 }
 
-/* ===== KEYPAD / BUTTONS ===== */
+.d-row .d-result.gold {
+  color: var(--gold);
+  text-shadow: 0 0 6px rgba(212, 168, 67, 0.2);
+}
+
+.d-row .d-result.orange {
+  color: var(--orange);
+  text-shadow: 0 0 6px rgba(244, 93, 0, 0.2);
+}
+
+.d-time-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.d-time-wrap .d-input {
+  max-width: 2.5rem;
+  text-align: right;
+}
+
+.d-time-wrap .d-tunit {
+  font-family: var(--font-display);
+  font-size: 0.4rem;
+  color: var(--text-deep);
+  min-width: 1.2rem;
+}
+
+/* ===== ACTION BUTTONS (below display) ===== */
 .keypad-row {
   display: flex;
   gap: 0.3rem;
@@ -571,258 +567,204 @@ input[type="number"] { -moz-appearance: textfield; }
 
       <!-- ===== TSD ===== -->
       <div class="panel active" id="panel-tsd">
-        <div class="panel-title">Time · Speed · Distance</div>
-        <div class="panel-desc">Enter any two values.</div>
-
-        <div class="calc-row">
-          <span class="cr-label">DIST</span>
-          <input type="number" id="tsd-dist" placeholder="0" step="any">
-          <span class="cr-unit">NM</span>
+        <div class="display-screen">
+          <div class="ds-title">TIME · SPEED · DISTANCE</div>
+          <div class="d-row">
+            <span class="d-label">DIST</span>
+            <input class="d-input" type="number" id="tsd-dist" placeholder="0" step="any">
+            <span class="d-unit">NM</span>
+            <span class="d-result gold" id="tsd-r-dist">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">SPEED</span>
+            <input class="d-input" type="number" id="tsd-speed" placeholder="0" step="any">
+            <span class="d-unit">KT</span>
+            <span class="d-result gold" id="tsd-r-speed">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">TIME</span>
+            <div class="d-time-wrap">
+              <input class="d-input" type="number" id="tsd-time-h" placeholder="0" step="any">
+              <span class="d-tunit">HR</span>
+              <input class="d-input" type="number" id="tsd-time-m" placeholder="0" step="any">
+              <span class="d-tunit">MIN</span>
+            </div>
+            <span class="d-result" id="tsd-r-time">—</span>
+          </div>
         </div>
-        <div class="calc-row">
-          <span class="cr-label">SPEED</span>
-          <input type="number" id="tsd-speed" placeholder="0" step="any">
-          <span class="cr-unit">KT</span>
-        </div>
-        <div class="calc-row">
-          <span class="cr-label">TIME</span>
-          <input type="number" id="tsd-time-h" placeholder="0" step="any" style="text-align:right;flex:0.6;">
-          <span style="font-family:var(--font-display);font-size:0.5rem;color:var(--text-deep);padding:0 0.1rem;">HR</span>
-          <input type="number" id="tsd-time-m" placeholder="0" step="any" style="text-align:right;flex:0.6;">
-          <span style="font-family:var(--font-display);font-size:0.5rem;color:var(--text-deep);padding:0 0.1rem;">MIN</span>
-        </div>
-
         <div class="keypad-row">
           <button class="key key-primary" onclick="calcTSD()">COMPUTE</button>
           <button class="key" onclick="clearTSD()">CLR</button>
-        </div>
-
-        <div class="result-section">
-          <div class="result-line"><span class="rl-label">Distance</span><span class="rl-value gold" id="tsd-r-dist">—</span></div>
-          <div class="result-line"><span class="rl-label">Ground Speed</span><span class="rl-value gold" id="tsd-r-speed">—</span></div>
-          <div class="result-line"><span class="rl-label">Time</span><span class="rl-value gold" id="tsd-r-time">—</span></div>
         </div>
       </div>
 
       <!-- ===== FUEL ===== -->
       <div class="panel" id="panel-fuel">
-        <div class="panel-title">Fuel Consumption</div>
-        <div class="panel-desc">Enter any two values.</div>
-
-        <div class="calc-row">
-          <span class="cr-label">USED</span>
-          <input type="number" id="fuel-used" placeholder="0" step="any">
-          <span class="cr-unit">GAL</span>
+        <div class="display-screen">
+          <div class="ds-title">FUEL CONSUMPTION</div>
+          <div class="d-row">
+            <span class="d-label">USED</span>
+            <input class="d-input" type="number" id="fuel-used" placeholder="0" step="any">
+            <span class="d-unit">GAL</span>
+            <span class="d-result gold" id="fuel-r-used">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">FLOW</span>
+            <input class="d-input" type="number" id="fuel-flow" placeholder="0" step="any">
+            <span class="d-unit">GAL/HR</span>
+            <span class="d-result gold" id="fuel-r-flow">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">TIME</span>
+            <div class="d-time-wrap">
+              <input class="d-input" type="number" id="fuel-time-h" placeholder="0" step="any">
+              <span class="d-tunit">HR</span>
+              <input class="d-input" type="number" id="fuel-time-m" placeholder="0" step="any">
+              <span class="d-tunit">MIN</span>
+            </div>
+            <span class="d-result orange" id="fuel-r-time">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">LITERS</span>
+            <input class="d-input" type="number" id="fuel-liters" placeholder="0" step="any">
+            <span class="d-unit">L</span>
+            <span class="d-result" id="fuel-r-liters" style="font-size:0.75rem;color:var(--text-dim);">—</span>
+          </div>
         </div>
-        <div class="calc-row">
-          <span class="cr-label">FLOW</span>
-          <input type="number" id="fuel-flow" placeholder="0" step="any">
-          <span class="cr-unit">GAL/HR</span>
-        </div>
-        <div class="calc-row">
-          <span class="cr-label">TIME</span>
-          <input type="number" id="fuel-time-h" placeholder="0" step="any" style="text-align:right;flex:0.6;">
-          <span style="font-family:var(--font-display);font-size:0.5rem;color:var(--text-deep);padding:0 0.1rem;">HR</span>
-          <input type="number" id="fuel-time-m" placeholder="0" step="any" style="text-align:right;flex:0.6;">
-          <span style="font-family:var(--font-display);font-size:0.5rem;color:var(--text-deep);padding:0 0.1rem;">MIN</span>
-        </div>
-        <div class="calc-row">
-          <span class="cr-label">LITERS</span>
-          <input type="number" id="fuel-liters" placeholder="0" step="any">
-          <span class="cr-unit">L</span>
-        </div>
-
         <div class="keypad-row">
           <button class="key key-primary" onclick="calcFuel()">COMPUTE</button>
           <button class="key" onclick="fuelToGal()">L→GAL</button>
           <button class="key" onclick="clearFuel()">CLR</button>
         </div>
-
-        <div class="result-section">
-          <div class="result-line"><span class="rl-label">Fuel Used</span><span class="rl-value" id="fuel-r-used">—</span></div>
-          <div class="result-line"><span class="rl-label">Flow</span><span class="rl-value gold" id="fuel-r-flow">—</span></div>
-          <div class="result-line"><span class="rl-label">Endurance</span><span class="rl-value orange" id="fuel-r-time">—</span></div>
-          <div class="result-meta" id="fuel-r-liters">—</div>
-        </div>
       </div>
 
       <!-- ===== WIND ===== -->
       <div class="panel" id="panel-wind">
-        <div class="panel-title">Wind Triangle</div>
-        <div class="panel-desc">Course, TAS, wind → heading &amp; ground speed.</div>
-
-        <div class="calc-row">
-          <span class="cr-label">COURSE</span>
-          <input type="number" id="wind-course" placeholder="0" step="any">
-          <span class="cr-unit">°</span>
+        <div class="display-screen">
+          <div class="ds-title">WIND TRIANGLE</div>
+          <div class="d-row">
+            <span class="d-label">COURSE</span>
+            <input class="d-input" type="number" id="wind-course" placeholder="0" step="any">
+            <span class="d-unit">°</span>
+            <span class="d-result gold" id="wind-r-heading">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">TAS</span>
+            <input class="d-input" type="number" id="wind-tas" placeholder="0" step="any">
+            <span class="d-unit">KT</span>
+            <span class="d-result" id="wind-r-gs">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">WIND</span>
+            <input class="d-input" type="number" id="wind-wdir" placeholder="Dir" step="any" style="max-width:2rem;">
+            <input class="d-input" type="number" id="wind-wspd" placeholder="Spd" step="any" style="max-width:2rem;">
+            <span class="d-unit">° / KT</span>
+            <span class="d-result orange" id="wind-r-wca">—</span>
+          </div>
+          <div class="d-row" style="border-top:1px solid rgba(212,168,67,0.06);padding-top:0.2rem;margin-top:0.1rem;">
+            <span class="d-label" style="min-width:auto;font-size:0.4rem;color:var(--text-deep);">⚠</span>
+            <span class="d-result" id="wind-r-meta" style="font-size:0.55rem;color:var(--text-dim);min-width:auto;flex:1;text-align:right;">Enter all four</span>
+          </div>
         </div>
-        <div class="calc-row">
-          <span class="cr-label">TAS</span>
-          <input type="number" id="wind-tas" placeholder="0" step="any">
-          <span class="cr-unit">KT</span>
-        </div>
-        <div class="calc-row">
-          <span class="cr-label">WIND FROM</span>
-          <input type="number" id="wind-wdir" placeholder="0" step="any">
-          <span class="cr-unit">°</span>
-        </div>
-        <div class="calc-row">
-          <span class="cr-label">WIND SPD</span>
-          <input type="number" id="wind-wspd" placeholder="0" step="any">
-          <span class="cr-unit">KT</span>
-        </div>
-
         <div class="keypad-row">
           <button class="key key-primary" onclick="calcWind()">COMPUTE</button>
           <button class="key" onclick="clearWind()">CLR</button>
-        </div>
-        <div class="hint">Wind FROM (meteorological)</div>
-
-        <div class="result-section">
-          <div class="result-line"><span class="rl-label">Wind Corr</span><span class="rl-value" id="wind-r-wca">—</span></div>
-          <div class="result-line"><span class="rl-label">True HDG</span><span class="rl-value gold" id="wind-r-heading">—</span></div>
-          <div class="result-line"><span class="rl-label">Ground Speed</span><span class="rl-value orange" id="wind-r-gs">—</span></div>
-          <div class="result-meta" id="wind-r-meta"></div>
         </div>
       </div>
 
       <!-- ===== ALTITUDE ===== -->
       <div class="panel" id="panel-alt">
-        <div class="panel-title">Altitude &amp; Atmosphere</div>
-        <div class="panel-desc">Pressure, density &amp; true altitude.</div>
-
-        <div class="calc-row">
-          <span class="cr-label">IND ALT</span>
-          <input type="number" id="alt-indicated" placeholder="0" step="any">
-          <span class="cr-unit">FT</span>
+        <div class="display-screen">
+          <div class="ds-title">ALTITUDE &amp; ATMOSPHERE</div>
+          <div class="d-row">
+            <span class="d-label">IND ALT</span>
+            <input class="d-input" type="number" id="alt-indicated" placeholder="0" step="any">
+            <span class="d-unit">FT</span>
+            <span class="d-result gold" id="alt-r-pa">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">ALT SET</span>
+            <input class="d-input" type="number" id="alt-setting" placeholder="29.92" step="any" value="29.92">
+            <span class="d-unit">inHg</span>
+            <span class="d-result" id="alt-r-da">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">OAT</span>
+            <input class="d-input" type="number" id="alt-oat" placeholder="0" step="any">
+            <span class="d-unit">°C</span>
+            <span class="d-result orange" id="alt-r-ta">—</span>
+          </div>
+          <div class="d-row">
+            <span class="d-label">ELEV</span>
+            <input class="d-input" type="number" id="alt-elev" placeholder="0" step="any">
+            <span class="d-unit">FT</span>
+            <span class="d-result" style="font-size:0.55rem;color:var(--text-deep);" id="alt-r-std">29.92 / 2°/1000ft</span>
+          </div>
         </div>
-        <div class="calc-row">
-          <span class="cr-label">ALT SET</span>
-          <input type="number" id="alt-setting" placeholder="29.92" step="any" value="29.92">
-          <span class="cr-unit">inHg</span>
-        </div>
-        <div class="calc-row">
-          <span class="cr-label">OAT</span>
-          <input type="number" id="alt-oat" placeholder="0" step="any">
-          <span class="cr-unit">°C</span>
-        </div>
-        <div class="calc-row">
-          <span class="cr-label">ELEV</span>
-          <input type="number" id="alt-elev" placeholder="0" step="any">
-          <span class="cr-unit">FT</span>
-        </div>
-
         <div class="keypad-row">
           <button class="key key-primary" onclick="calcAlt()">COMPUTE</button>
           <button class="key" onclick="clearAlt()">CLR</button>
-        </div>
-        <div class="hint">Std: 29.92 inHg · ISA 2°C/1000ft</div>
-
-        <div class="result-section">
-          <div class="result-line"><span class="rl-label">Press Alt</span><span class="rl-value" id="alt-r-pa">—</span></div>
-          <div class="result-line"><span class="rl-label">Density Alt</span><span class="rl-value gold" id="alt-r-da">—</span></div>
-          <div class="result-line"><span class="rl-label">True Alt</span><span class="rl-value orange" id="alt-r-ta">—</span></div>
         </div>
       </div>
 
       <!-- ===== CONVERSIONS ===== -->
       <div class="panel" id="panel-conv">
-        <div class="panel-title">Unit Conversions</div>
-        <div class="panel-desc">Temp, distance, volume, mass.</div>
-
-        <div class="conv-block">
-          <div class="conv-label">Temperature</div>
-          <div class="conv-row">
-            <input type="number" id="conv-f" placeholder="°F" step="any" oninput="convTempF()">
-            <span class="conv-unit">°F</span>
-            <span class="conv-arr">=</span>
-            <span class="conv-res" id="conv-f-result">— °C</span>
+        <div class="display-screen">
+          <div class="ds-title">UNIT CONVERSIONS</div>
+          <div class="d-row">
+            <span class="d-label">TEMP</span>
+            <input class="d-input" type="number" id="conv-f" placeholder="°F" step="any" oninput="convTempF()" style="max-width:2.5rem;">
+            <span class="d-unit">°F</span>
+            <input class="d-input" type="number" id="conv-c" placeholder="°C" step="any" oninput="convTempC()" style="max-width:2.5rem;">
+            <span class="d-unit">°C</span>
           </div>
-          <div class="conv-row" style="margin-top:0.25rem;">
-            <input type="number" id="conv-c" placeholder="°C" step="any" oninput="convTempC()">
-            <span class="conv-unit">°C</span>
-            <span class="conv-arr">=</span>
-            <span class="conv-res" id="conv-c-result">— °F</span>
+          <div class="d-row">
+            <span class="d-label">DIST</span>
+            <input class="d-input" type="number" id="conv-nm" placeholder="NM" step="any" oninput="convDistNM()" style="max-width:2.5rem;">
+            <input class="d-input" type="number" id="conv-sm" placeholder="SM" step="any" oninput="convDistSM()" style="max-width:2.5rem;">
+            <input class="d-input" type="number" id="conv-km" placeholder="KM" step="any" oninput="convDistKM()" style="max-width:2.5rem;">
           </div>
-        </div>
-
-        <div class="conv-block">
-          <div class="conv-label">Distance</div>
-          <div class="conv-row">
-            <input type="number" id="conv-nm" placeholder="NM" step="any" oninput="convDistNM()">
-            <span class="conv-unit">NM</span>
-            <span class="conv-arr">→</span>
-            <span class="conv-res" id="conv-nm-result">—</span>
+          <div class="d-row">
+            <span class="d-label">VOL</span>
+            <input class="d-input" type="number" id="conv-gal" placeholder="GAL" step="any" oninput="convVolG()" style="max-width:2.5rem;">
+            <span class="d-unit">=</span>
+            <input class="d-input" type="number" id="conv-l" placeholder="L" step="any" oninput="convVolL()" style="max-width:2.5rem;">
+            <span class="d-unit">L</span>
           </div>
-          <div class="conv-row" style="margin-top:0.2rem;">
-            <input type="number" id="conv-sm" placeholder="SM" step="any" oninput="convDistSM()">
-            <span class="conv-unit">SM</span>
-            <span class="conv-arr">→</span>
-            <span class="conv-res" id="conv-sm-result">—</span>
-          </div>
-          <div class="conv-row" style="margin-top:0.2rem;">
-            <input type="number" id="conv-km" placeholder="KM" step="any" oninput="convDistKM()">
-            <span class="conv-unit">KM</span>
-            <span class="conv-arr">→</span>
-            <span class="conv-res" id="conv-km-result">—</span>
-          </div>
-        </div>
-
-        <div class="conv-block">
-          <div class="conv-label">Volume</div>
-          <div class="conv-row">
-            <input type="number" id="conv-gal" placeholder="GAL" step="any" oninput="convVolG()">
-            <span class="conv-unit">GAL</span>
-            <span class="conv-arr">=</span>
-            <span class="conv-res" id="conv-gal-result">—</span>
-          </div>
-          <div class="conv-row" style="margin-top:0.25rem;">
-            <input type="number" id="conv-l" placeholder="L" step="any" oninput="convVolL()">
-            <span class="conv-unit">L</span>
-            <span class="conv-arr">=</span>
-            <span class="conv-res" id="conv-l-result">—</span>
-          </div>
-        </div>
-
-        <div class="conv-block" style="border-bottom:none;">
-          <div class="conv-label">Mass</div>
-          <div class="conv-row">
-            <input type="number" id="conv-lbs" placeholder="LBS" step="any" oninput="convMassLbs()">
-            <span class="conv-unit">LBS</span>
-            <span class="conv-arr">=</span>
-            <span class="conv-res" id="conv-lbs-result">—</span>
-          </div>
-          <div class="conv-row" style="margin-top:0.25rem;">
-            <input type="number" id="conv-kg" placeholder="KG" step="any" oninput="convMassKg()">
-            <span class="conv-unit">KG</span>
-            <span class="conv-arr">=</span>
-            <span class="conv-res" id="conv-kg-result">—</span>
+          <div class="d-row">
+            <span class="d-label">MASS</span>
+            <input class="d-input" type="number" id="conv-lbs" placeholder="LBS" step="any" oninput="convMassLbs()" style="max-width:2.5rem;">
+            <span class="d-unit">=</span>
+            <input class="d-input" type="number" id="conv-kg" placeholder="KG" step="any" oninput="convMassKg()" style="max-width:2.5rem;">
+            <span class="d-unit">KG</span>
           </div>
         </div>
       </div>
 
       <!-- ===== W&B ===== -->
       <div class="panel" id="panel-wb">
-        <div class="panel-title">Weight &amp; Balance</div>
-        <div class="panel-desc">Enter weights &amp; arms. Negative arm = aft of datum.</div>
-
-        <div class="wb-strip">
-          <div class="wb-item wb-header">
-            <span>Station</span><span>Wt (lb)</span><span>Arm (in)</span><span>Moment</span>
+        <div class="display-screen">
+          <div class="ds-title">WEIGHT &amp; BALANCE</div>
+          <div class="d-row" style="font-family:var(--font-display);font-size:0.4rem;color:var(--text-deep);gap:0;">
+            <span style="flex:1;">STATION</span>
+            <span style="width:2.5rem;text-align:right;">WT</span>
+            <span style="width:2.5rem;text-align:right;">ARM</span>
+            <span style="width:3rem;text-align:right;">MOMENT</span>
           </div>
           <div id="wbStations"></div>
+          <div style="border-top:1px solid rgba(212,168,67,0.06);margin-top:0.2rem;padding-top:0.2rem;">
+            <div class="d-row" style="min-height:1.2rem;">
+              <span class="d-label" style="min-width:3rem;">TOTAL</span>
+              <span style="flex:1;"></span>
+              <span class="d-result" id="wb-r-weight" style="font-size:0.7rem;">—</span>
+              <span class="d-result gold" id="wb-r-moment" style="font-size:0.7rem;">—</span>
+              <span class="d-result orange" id="wb-r-cg" style="font-size:0.7rem;">—</span>
+            </div>
+          </div>
         </div>
-
         <div class="keypad-row">
           <button class="key key-amber" onclick="addWBRow()">+ STATION</button>
           <button class="key key-primary" onclick="calcWB()" style="flex:2;">COMPUTE</button>
-        </div>
-
-        <div class="result-section">
-          <div class="result-line"><span class="rl-label">Total Weight</span><span class="rl-value" id="wb-r-weight">—</span></div>
-          <div class="result-line"><span class="rl-label">Total Moment</span><span class="rl-value gold" id="wb-r-moment">—</span></div>
-          <div class="result-line"><span class="rl-label">C.G. Arm</span><span class="rl-value orange" id="wb-r-cg">—</span></div>
-          <div class="result-meta" id="wb-r-status"></div>
         </div>
       </div>
 
@@ -1038,54 +980,47 @@ function clearAlt() {
 // ===== CONVERSIONS =====
 function convTempF() {
   const f = v($('conv-f'));
-  $('conv-f-result').textContent = f != null ? fmt((f - 32) * 5/9, 1) + ' °C' : '— °C';
+  $('conv-c').value = f != null ? ((f - 32) * 5/9).toFixed(1) : '';
 }
 function convTempC() {
   const c = v($('conv-c'));
-  $('conv-c-result').textContent = c != null ? fmt(c * 9/5 + 32, 1) + ' °F' : '— °F';
+  $('conv-f').value = c != null ? (c * 9/5 + 32).toFixed(1) : '';
 }
 function convDistNM() {
   const nm = v($('conv-nm'));
   if (nm != null) {
-    $('conv-nm-result').textContent = fmt(nm * 1.15078, 2) + ' SM · ' + fmt(nm * 1.852, 2) + ' KM';
     $('conv-sm').value = (nm * 1.15078).toFixed(2);
     $('conv-km').value = (nm * 1.852).toFixed(2);
-  } else { $('conv-nm-result').textContent = '—'; $('conv-sm').value = ''; $('conv-km').value = ''; }
+  } else { $('conv-sm').value = ''; $('conv-km').value = ''; }
 }
 function convDistSM() {
   const sm = v($('conv-sm'));
   if (sm != null) {
-    $('conv-sm-result').textContent = fmt(sm / 1.15078, 2) + ' NM · ' + fmt(sm * 1.60934, 2) + ' KM';
     $('conv-nm').value = (sm / 1.15078).toFixed(2);
     $('conv-km').value = (sm * 1.60934).toFixed(2);
-  } else { $('conv-sm-result').textContent = '—'; $('conv-nm').value = ''; $('conv-km').value = ''; }
+  } else { $('conv-nm').value = ''; $('conv-km').value = ''; }
 }
 function convDistKM() {
   const km = v($('conv-km'));
   if (km != null) {
-    $('conv-km-result').textContent = fmt(km / 1.852, 2) + ' NM · ' + fmt(km / 1.60934, 2) + ' SM';
     $('conv-nm').value = (km / 1.852).toFixed(2);
     $('conv-sm').value = (km / 1.60934).toFixed(2);
-  } else { $('conv-nm-result').textContent = '—'; $('conv-nm').value = ''; $('conv-sm').value = ''; }
+  } else { $('conv-nm').value = ''; $('conv-sm').value = ''; }
 }
 function convVolG() {
   const g = v($('conv-gal'));
-  $('conv-gal-result').textContent = g != null ? fmt(g * 3.78541, 2) + ' L' : '—';
   $('conv-l').value = g != null ? (g * 3.78541).toFixed(2) : '';
 }
 function convVolL() {
   const l = v($('conv-l'));
-  $('conv-l-result').textContent = l != null ? fmt(l / 3.78541, 2) + ' GAL' : '—';
   $('conv-gal').value = l != null ? (l / 3.78541).toFixed(2) : '';
 }
 function convMassLbs() {
   const lbs = v($('conv-lbs'));
-  $('conv-lbs-result').textContent = lbs != null ? fmt(lbs / 2.20462, 2) + ' KG' : '—';
   $('conv-kg').value = lbs != null ? (lbs / 2.20462).toFixed(2) : '';
 }
 function convMassKg() {
   const kg = v($('conv-kg'));
-  $('conv-kg-result').textContent = kg != null ? fmt(kg * 2.20462, 2) + ' LBS' : '—';
   $('conv-lbs').value = kg != null ? (kg * 2.20462).toFixed(2) : '';
 }
 
@@ -1141,15 +1076,12 @@ function calcWB() {
   $('wb-r-moment').textContent = totalMoment > 0 ? fmt(totalMoment, 1) + ' lb-in' : '—';
   if (totalWt > 0) {
     const cg = totalMoment / totalWt;
-    $('wb-r-cg').textContent = fmt(cg, 2) + ' in';
-    const status = [];
-    if (totalWt > 3400) status.push('⚠ OVER GROSS (3400)');
-    if (totalWt > 0 && totalWt < 3400) status.push('✓ Within gross limit');
-    if (cg > 0 && (cg < 85 || cg > 130)) status.push('⚠ CG outside typical range (85-130 in)');
-    $('wb-r-status').textContent = status.join(' · ') || '—';
+    let cgLabel = fmt(cg, 2) + ' in';
+    if (totalWt > 3400) cgLabel += ' ⚠ OVWT';
+    else if (cg < 85 || cg > 130) cgLabel += ' ⚠ CG';
+    $('wb-r-cg').textContent = cgLabel;
   } else {
     $('wb-r-cg').textContent = '—';
-    $('wb-r-status').textContent = '';
   }
 }
 
