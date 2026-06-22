@@ -126,14 +126,14 @@ input[type="number"]{-moz-appearance:textfield}
 .graph-tools button:hover{color:var(--gold);border-color:var(--gold-dim)}
 .graph-tools button.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(232,192,74,.06)}
 
-.solver-row{display:flex;align-items:center;gap:.15rem;padding:.08rem 0;min-height:1.2rem}
-.solver-row .dl{font-size:.38rem;min-width:1.2rem;color:var(--text-dim);font-family:var(--font-display)}
-.solver-row .di{font-size:.5rem;padding:.08rem .15rem;min-width:1.8rem;flex:0;width:auto}
-.solver-row .du{font-size:.35rem;min-width:.8rem;color:var(--text-deep)}
-.solver-row .dr{font-family:var(--font-display);font-size:.55rem;min-width:2.5rem;text-align:right;padding:.05rem}
-.solver-row .dr.gold{color:var(--gold)}
-.solver-row .dr.org{color:var(--orange)}
-.solver-row .dr.dim{color:var(--text-dim);font-size:.4rem}
+solver-row{display:flex;align-items:center;gap:.15rem;padding:.08rem 0;min-height:1.2rem}
+solver-row .dl{font-size:.38rem;min-width:1.2rem;color:var(--text-dim);font-family:var(--font-display)}
+solver-row .di{font-size:.5rem;padding:.08rem .15rem;min-width:1.8rem;flex:0;width:auto}
+solver-row .du{font-size:.35rem;min-width:.8rem;color:var(--text-deep)}
+solver-row .dr{font-family:var(--font-display);font-size:.55rem;min-width:2.5rem;text-align:right;padding:.05rem}
+solver-row .dr.gold{color:var(--gold)}
+solver-row .dr.org{color:var(--orange)}
+solver-row .dr.dim{color:var(--text-dim);font-size:.4rem}
 .solver-divider{border-top:1px solid rgba(232,192,74,.06);margin:.08rem 0;padding-top:.08rem}
 .solver-roots{margin-top:.05rem;padding:.1rem .15rem;background:rgba(232,192,74,.03);border:1px solid rgba(232,192,74,.06);min-height:1.5rem}
 .solver-roots .root-line{font-family:var(--font-display);font-size:.45rem;color:var(--gold);letter-spacing:.02em;padding:.03rem 0}
@@ -150,325 +150,342 @@ input[type="number"]{-moz-appearance:textfield}
   .kp-btn{padding:.6rem .15rem;min-height:36px;font-size:.65rem}
   .mode-btn{font-size:.5rem;padding:.4rem .1rem}
   .soft-key{font-size:.6rem;padding:.4rem .15rem}
-  #graphCanvas{height:140px}
-  #graph3dCanvas{height:170px}
-  .brand-bar{padding:.3rem .5rem .25rem}
-  .screen-wrap{padding:.4rem}
-  .d-row .dl{font-size:.42rem;min-width:2.8rem}
-  .d-row .di{font-size:.7rem}
-  .mode-hdr .name{font-size:.6rem}
-  .mode-btn{font-size:.45rem;padding:.35rem .08rem;flex-shrink:0;padding:.35rem .15rem}
-  .fuel-type-btn{font-size:.35rem;padding:.15rem .25rem}
+  .graph-wrap canvas{height:140px}
 }
 </style>
 </head>
 <body>
 <div class="nav-bar">
-  <a href="index.html">← BACK</a>
-  <span class="title">CX-3 Flight Computer</span>
-</div>
-<div class="calc-wrap"><div class="calc">
-  <div class="brand-bar">
-    <div style="display:flex;align-items:center;gap:.35rem">
-      <span class="logo">CX</span>
-      <span class="sub"></span>
-    </div>
-    <div class="calc-type" id="calcTypeTabs">
-      <button class="active" data-calc="cx3">CX-3</button>
-      <button data-calc="graph">GRAPH</button>
-    </div>
+  <a href="https://tp-96.github.io/cx3/" class="title">TP-96 / Projects</a>
+  <div class="calc-type" id="calcTypeTabs">
+    <button class="active" data-calc="cx3">CX-3</button>
+    <button data-calc="graph">GRAPH</button>
   </div>
-  <div class="screen-wrap">
-    <div class="screen" id="screenDisplay">
-      <div class="mode-hdr">
-        <span class="tag">MODE</span>
-        <span class="name" id="modeLabel">TSD</span>
-        <span class="arrows">▲ ▼</span>
+</div>
+
+<div class="calc-wrap">
+  <div class="calc">
+    <div class="brand-bar">
+      <div style="display:flex;align-items:center;gap:.35rem">
+        <span class="logo">CX</span>
+        <span class="sub">EFlight Computer</span>
       </div>
-      <div class="panel active" id="p-tsd">
-        <div class="d-row">
-          <span class="dl">DIST</span>
-          <input class="di" type="number" id="tsd-dist" placeholder="0" step="any">
-          <span class="du">NM</span>
-          <span class="dr gold" id="tsd-rd">—</span>
+      <span class="badge">ASA CX-3</span>
+    </div>
+
+    <div class="screen-wrap">
+      <div class="screen" id="screenDisplay">
+        <div class="mode-hdr">
+          <span class="tag">MODE</span>
+          <span class="name" id="modeLabel">TSD</span>
+          <span class="arrows">▲ ▼</span>
         </div>
-        <div class="d-row">
-          <span class="dl">SPEED</span>
-          <input class="di" type="number" id="tsd-spd" placeholder="0" step="any">
-          <span class="du">KT</span>
-          <span class="dr gold" id="tsd-rs">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">TIME</span>
-          <div class="d-time">
-            <input class="di" type="number" id="tsd-th" placeholder="0" step="any" style="flex:0;width:1.8rem">
-            <span class="tunit">HR</span>
-            <input class="di" type="number" id="tsd-tm" placeholder="0" step="any" style="flex:0;width:1.8rem">
-            <span class="tunit">MIN</span>
-          </div>
-          <span class="dr" id="tsd-rt" style="min-width:3.5rem">—</span>
-        </div>
-      </div>
-      <div class="panel" id="p-fuel">
-        <div class="d-row" style="gap:.2rem;padding-bottom:.15rem">
-          <span class="dl" style="font-size:.38rem;min-width:2.2rem;letter-spacing:.06em">FUEL</span>
-          <button class="fuel-type-btn active" data-dens="6.0" onclick="setFT('100LL',6.0)">100LL</button>
-          <button class="fuel-type-btn" data-dens="6.7" onclick="setFT('Jet-A',6.7)">Jet-A</button>
-          <button class="fuel-type-btn" data-dens="0" onclick="setFT('Custom')">Custom</button>
-          <input class="di" type="number" id="fuel-dens-inp" value="6.0" step="0.1" style="width:1.6rem;font-size:.5rem;flex:none;display:none">
-          <span class="du" style="min-width:1.2rem;font-size:.35rem" id="fuel-dens-lbl">6.0</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">USED</span>
-          <input class="di" type="number" id="fuel-used" placeholder="0" step="any">
-          <span class="du">GAL</span>
-          <div style="display:flex;gap:.15rem;align-items:baseline;min-width:4.8rem">
-            <span class="dr gold" id="fuel-ru" style="min-width:2.2rem;font-size:.75rem">—</span>
-            <span class="dr org" id="fuel-ru-lb" style="min-width:2.2rem;font-size:.65rem">—</span>
-          </div>
-        </div>
-        <div class="d-row" style="gap:.2rem">
-          <span class="dl">FLOW</span>
-          <input class="di" type="number" id="fuel-flow" placeholder="0" step="any">
-          <span class="du" style="min-width:1.2rem">GAL/HR</span>
-          <div style="display:flex;gap:.15rem;align-items:baseline;min-width:4.8rem">
-            <span class="dr gold" id="fuel-rf" style="min-width:2.2rem;font-size:.75rem">—</span>
-            <span class="dr org" id="fuel-rf-lb" style="min-width:2.2rem;font-size:.65rem">—</span>
-          </div>
-        </div>
-        <div class="d-row">
-          <span class="dl">TIME</span>
-          <div class="d-time">
-            <input class="di" type="number" id="fuel-th" placeholder="0" step="any" style="flex:0;width:1.8rem">
-            <span class="tunit">HR</span>
-            <input class="di" type="number" id="fuel-tm" placeholder="0" step="any" style="flex:0;width:1.8rem">
-            <span class="tunit">MIN</span>
-          </div>
-          <span class="dr org" id="fuel-rt">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">REMAIN</span>
-          <input class="di" type="number" id="fuel-rem" placeholder="0" step="any">
-          <span class="du">GAL</span>
-          <span class="dr gold" id="fuel-rl" style="min-width:3rem;font-size:.75rem">—</span>
-        </div>
-      </div>
-      <div class="panel" id="p-wind">
-        <div class="d-row">
-          <span class="dl">CRS</span>
-          <input class="di" type="number" id="win-crs" placeholder="0" step="any">
-          <span class="du">°</span>
-          <span class="dr gold" id="win-rwc" style="min-width:2.2rem">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">TAS</span>
-          <input class="di" type="number" id="win-tas" placeholder="0" step="any">
-          <span class="du">KT</span>
-          <span class="dr gold" id="win-rhd" style="min-width:2.2rem">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">W DIR</span>
-          <input class="di" type="number" id="win-dir" placeholder="0" step="any">
-          <span class="du">°</span>
-          <span class="dr org" id="win-rgs" style="min-width:2.2rem">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">W SPD</span>
-          <input class="di" type="number" id="win-spd" placeholder="0" step="any">
-          <span class="du">KT</span>
-          <span class="dr" id="win-rmt" style="font-size:.5rem;min-width:4rem">—</span>
-        </div>
-      </div>
-      <div class="panel" id="p-alt">
-        <div class="d-row">
-          <span class="dl">IND ALT</span>
-          <input class="di" type="number" id="alt-ind" placeholder="0" step="any">
-          <span class="du">FT</span>
-          <span class="dr gold" id="alt-rpa" style="min-width:3rem">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">BARO</span>
-          <input class="di" type="number" id="alt-bar" placeholder="29.92" step="any">
-          <span class="du">"HG</span>
-          <span class="dr gold" id="alt-rda" style="min-width:3rem">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">OAT</span>
-          <input class="di" type="number" id="alt-oat" placeholder="0" step="any">
-          <span class="du">°C</span>
-          <span class="dr org" id="alt-rta" style="min-width:3rem">—</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">ELEV</span>
-          <input class="di" type="number" id="alt-elev" placeholder="0" step="any">
-          <span class="du">FT</span>
-        </div>
-      </div>
-      <div class="panel" id="p-conv">
-        <div class="d-row">
-          <span class="dl">FROM</span>
-          <input class="di" type="number" id="conv-val" placeholder="0" step="any">
-          <select class="du" id="conv-from" style="background:transparent;border:1px solid var(--card-edge);color:var(--text);font-family:var(--font-display);font-size:.35rem;padding:.1rem">
-            <option>NM</option><option>KM</option><option>SM</option><option>FT</option><option>M</option>
-            <option>KT</option><option>MPH</option><option>KMH</option><option>GAL</option><option>L</option>
-            <option>LB</option><option>KG</option><option>°C</option><option>°F</option>
-          </select>
-        </div>
-        <div class="d-row">
-          <span class="dl">TO</span>
-          <div style="flex:1;display:flex;gap:.15rem;align-items:center">
-            <span class="dr gold" id="conv-r" style="min-width:4rem">—</span>
-            <span class="du" id="conv-to-label" style="min-width:2rem">NM</span>
-          </div>
-        </div>
-        <div class="d-row" style="gap:.15rem">
-          <select class="du" id="conv-to" style="background:transparent;border:1px solid var(--card-edge);color:var(--text);font-family:var(--font-display);font-size:.35rem;padding:.1rem;min-width:4rem">
-            <option>NM</option><option>KM</option><option>SM</option><option>FT</option><option>M</option>
-            <option>KT</option><option>MPH</option><option>KMH</option><option>GAL</option><option>L</option>
-            <option>LB</option><option>KG</option><option>°C</option><option>°F</option>
-          </select>
-        </div>
-      </div>
-      <div class="panel" id="p-wb">
-        <div class="d-row">
-          <span class="dl">STATION</span>
-          <input class="di" type="number" id="wb-stat" placeholder="0" step="any">
-          <span class="du">IN</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">WEIGHT</span>
-          <input class="di" type="number" id="wb-wgt" placeholder="0" step="any">
-          <span class="du">LB</span>
-        </div>
-        <div class="d-row">
-          <span class="dl">ARM</span>
-          <input class="di" type="number" id="wb-arm" placeholder="0" step="any">
-          <span class="du">IN</span>
-          <span style="font-size:.5rem;color:var(--text-deep);font-family:var(--font-display);min-width:2rem;text-align:right" id="wb-moment">—</span>
-        </div>
-        <div style="margin-top:.35rem;padding-top:.35rem;border-top:1px solid rgba(232,192,74,.08)">
+
+        <!-- TSD -->
+        <div class="panel active" id="p-tsd">
           <div class="d-row">
-            <span class="dl">TOTAL</span>
-            <div style="display:flex;gap:.25rem;flex:1">
-              <span class="dr gold" id="wb-tot-wgt" style="min-width:2.2rem;font-size:.7rem">—</span>
-              <span class="dr gold" id="wb-tot-mom" style="min-width:2.8rem;font-size:.7rem">—</span>
-              <span class="dr org" id="wb-tot-cg" style="min-width:1.8rem;font-size:.7rem">—</span>
+            <span class="dl">DIST</span>
+            <input class="di" type="number" id="tsd-dist" placeholder="0" step="any">
+            <span class="du">NM</span>
+            <span class="dr gold" id="tsd-rd">—</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">SPEED</span>
+            <input class="di" type="number" id="tsd-spd" placeholder="0" step="any">
+            <span class="du">KT</span>
+            <span class="dr gold" id="tsd-rs">—</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">TIME</span>
+            <div class="d-time">
+              <input class="di" type="number" id="tsd-th" placeholder="0" step="any" style="flex:0;width:1.8rem">
+              <span class="tunit">HR</span>
+              <input class="di" type="number" id="tsd-tm" placeholder="0" step="any" style="flex:0;width:1.8rem">
+              <span class="tunit">MIN</span>
+            </div>
+            <span class="dr" id="tsd-rt" style="min-width:3.5rem">—</span>
+          </div>
+        </div>
+
+        <!-- FUEL -->
+        <div class="panel" id="p-fuel">
+          <div class="d-row" style="gap:.2rem;padding-bottom:.15rem">
+            <span class="dl" style="font-size:.38rem;min-width:2.2rem;letter-spacing:.06em">FUEL</span>
+            <button class="fuel-type-btn active" data-dens="6.0" onclick="setFT('100LL',6.0)">100LL</button>
+            <button class="fuel-type-btn" data-dens="6.7" onclick="setFT('Jet-A',6.7)">Jet-A</button>
+            <button class="fuel-type-btn" data-dens="0" onclick="setFT('Custom')">Custom</button>
+            <input class="di" type="number" id="fuel-dens-inp" value="6.0" step="0.1" style="width:1.6rem;font-size:.5rem;flex:none;display:none">
+            <span class="du" style="min-width:1.2rem;font-size:.35rem" id="fuel-dens-lbl">6.0</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">USED</span>
+            <input class="di" type="number" id="fuel-used" placeholder="0" step="any">
+            <span class="du">GAL</span>
+            <div style="display:flex;gap:.15rem;align-items:baseline;min-width:4.8rem">
+              <span class="dr gold" id="fuel-ru" style="min-width:2.2rem;font-size:.75rem">—</span>
+              <span class="dr org" id="fuel-ru-lb" style="min-width:2.2rem;font-size:.65rem">—</span>
+            </div>
+          </div>
+          <div class="d-row" style="gap:.2rem">
+            <span class="dl">FLOW</span>
+            <input class="di" type="number" id="fuel-flow" placeholder="0" step="any">
+            <span class="du" style="min-width:1.2rem">GAL/HR</span>
+            <div style="display:flex;gap:.15rem;align-items:baseline;min-width:4.8rem">
+              <span class="dr gold" id="fuel-rf" style="min-width:2.2rem;font-size:.75rem">—</span>
+              <span class="dr org" id="fuel-rf-lb" style="min-width:2.2rem;font-size:.65rem">—</span>
+            </div>
+          </div>
+          <div class="d-row">
+            <span class="dl">TIME</span>
+            <div class="d-time">
+              <input class="di" type="number" id="fuel-th" placeholder="0" step="any" style="flex:0;width:1.8rem">
+              <span class="tunit">HR</span>
+              <input class="di" type="number" id="fuel-tm" placeholder="0" step="any" style="flex:0;width:1.8rem">
+              <span class="tunit">MIN</span>
+            </div>
+            <span class="dr org" id="fuel-rt">—</span>
+          </div>
+          <div class="d-row" style="border-top:1px solid rgba(232,192,74,.06);padding-top:.2rem;margin-top:.05rem">
+            <span class="dl" style="font-size:.38rem;color:var(--text-deep);min-width:2.2rem">VOLUME</span>
+            <input class="di" type="number" id="fuel-lit" placeholder="GAL→L" step="any" style="font-size:.55rem">
+            <span class="du">L</span>
+            <span class="dr" id="fuel-rl" style="font-size:.6rem;color:var(--text-dim);min-width:2.2rem">—</span>
+          </div>
+        </div>
+
+        <!-- WIND -->
+        <div class="panel" id="p-wind">
+          <div class="d-row">
+            <span class="dl">COURSE</span>
+            <input class="di" type="number" id="win-crs" placeholder="0" step="any">
+            <span class="du">°</span>
+            <span class="dr gold" id="win-rhd">—</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">TAS</span>
+            <input class="di" type="number" id="win-tas" placeholder="0" step="any">
+            <span class="du">KT</span>
+            <span class="dr" id="win-rgs">—</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">WIND</span>
+            <div style="display:flex;gap:.15rem;flex:1">
+              <input class="di" type="number" id="win-dir" placeholder="Dir" step="any" style="flex:0.6">
+              <input class="di" type="number" id="win-spd" placeholder="Spd" step="any" style="flex:0.6">
+            </div>
+            <span class="du">° / KT</span>
+            <span class="dr org" id="win-rwc">—</span>
+          </div>
+          <div class="d-row" style="border-top:1px solid rgba(232,192,74,.06);padding-top:.2rem;margin-top:.05rem">
+            <span class="dl" id="win-rmt" style="font-size:.4rem;color:var(--text-deep);min-width:auto;flex:1;text-align:right">Enter all four</span>
+          </div>
+        </div>
+
+        <!-- ALT -->
+        <div class="panel" id="p-alt">
+          <div class="d-row">
+            <span class="dl">IND ALT</span>
+            <input class="di" type="number" id="alt-ind" placeholder="0" step="any">
+            <span class="du">FT</span>
+            <span class="dr gold" id="alt-rpa">—</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">ALT SET</span>
+            <input class="di" type="number" id="alt-bar" placeholder="29.92" step="any" value="29.92">
+            <span class="du">inHg</span>
+            <span class="dr" id="alt-rda">—</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">OAT</span>
+            <input class="di" type="number" id="alt-oat" placeholder="0" step="any">
+            <span class="du">°C</span>
+            <span class="dr org" id="alt-rta">—</span>
+          </div>
+          <div class="d-row" style="border-top:1px solid rgba(232,192,74,.06);padding-top:.2rem;margin-top:.05rem">
+            <span class="dl" style="font-size:.4rem;color:var(--text-deep);min-width:2.5rem">ELEV</span>
+            <input class="di" type="number" id="alt-elev" placeholder="0" step="any" style="font-size:.65rem">
+            <span class="du">FT</span>
+            <span style="font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);min-width:4rem;text-align:right">29.92 / 2° / 1000'</span>
+          </div>
+        </div>
+
+        <!-- CONV -->
+        <div class="panel" id="p-conv">
+          <div class="d-row">
+            <span class="dl">TEMP</span>
+            <input class="di" type="number" id="conv-f" placeholder="°F" step="any" oninput="cTF()" style="flex:0.8">
+            <span class="du">°F</span>
+            <input class="di" type="number" id="conv-c" placeholder="°C" step="any" oninput="cTC()" style="flex:0.8">
+            <span class="du">°C</span>
+          </div>
+          <div class="d-row">
+            <span class="dl">DIST</span>
+            <input class="di" type="number" id="conv-nm" placeholder="NM" step="any" oninput="cDN()" style="flex:0.7">
+            <input class="di" type="number" id="conv-sm" placeholder="SM" step="any" oninput="cDS()" style="flex:0.7">
+            <input class="di" type="number" id="conv-km" placeholder="KM" step="any" oninput="cDK()" style="flex:0.7">
+          </div>
+          <div class="d-row">
+            <span class="dl">VOL</span>
+            <input class="di" type="number" id="conv-gal" placeholder="GAL" step="any" oninput="cVG()" style="flex:0.8">
+            <span class="du">=</span>
+            <input class="di" type="number" id="conv-l" placeholder="L" step="any" oninput="cVL()" style="flex:0.8">
+            <span class="du">L</span>
+          </div>
+          <div class="d-row" style="border:none">
+            <span class="dl">MASS</span>
+            <input class="di" type="number" id="conv-lbs" placeholder="LBS" step="any" oninput="cML()" style="flex:0.8">
+            <span class="du">=</span>
+            <input class="di" type="number" id="conv-kg" placeholder="KG" step="any" oninput="cMK()" style="flex:0.8">
+            <span class="du">KG</span>
+          </div>
+        </div>
+
+        <!-- W&B -->
+        <div class="panel" id="p-wb">
+          <div class="d-row" style="font-size:.35rem;color:var(--text-deep);font-family:var(--font-display);letter-spacing:.08em">
+            <span style="flex:1">STATION</span>
+            <span style="width:2rem;text-align:right">WT</span>
+            <span style="width:2.2rem;text-align:right">ARM</span>
+            <span style="width:2.5rem;text-align:right">MOM</span>
+          </div>
+          <div id="wbRows" style="max-height:100px;overflow-y:auto"></div>
+          <div style="border-top:1px solid rgba(232,192,74,.06);margin-top:.15rem;padding-top:.15rem">
+            <div class="d-row" style="min-height:1rem">
+              <span class="dl" style="font-size:.45rem;min-width:2.5rem">TOTAL</span>
+              <span style="flex:1"></span>
+              <span id="wb-wt" style="font-family:var(--font-display);font-size:.6rem;color:var(--text);min-width:2rem;text-align:right">—</span>
+              <span id="wb-mom" style="font-family:var(--font-display);font-size:.6rem;color:var(--gold);min-width:2.2rem;text-align:right">—</span>
+              <span id="wb-cg" style="font-family:var(--font-display);font-size:.6rem;color:var(--orange);min-width:2.5rem;text-align:right">—</span>
             </div>
           </div>
         </div>
-      </div>
-      <div class="panel" id="p-graph">
-        <div class="d-row graph-func-row">
-          <span class="dl">f(x)</span>
-          <input class="di" type="text" id="graph-func" value="sin(x)" placeholder="sin(x)">
-          <button class="fuel-type-btn" id="graphPlotBtn" style="font-size:.4rem;padding:.12rem .35rem">PLOT</button>
-        </div>
-        <div class="graph-wrap">
-          <canvas id="graphCanvas" width="600" height="320"></canvas>
-          <div class="graph-inputs">
-            <span class="dl">X</span>
-            <input class="di" type="number" id="graph-xmin" value="-10" step="any" style="width:1.5rem">
-            <span class="du">to</span>
-            <input class="di" type="number" id="graph-xmax" value="10" step="any" style="width:1.5rem">
-            <span class="dl">Y</span>
-            <input class="di" type="number" id="graph-ymin" placeholder="auto" step="any" style="width:1.5rem">
-            <span class="du">to</span>
-            <input class="di" type="number" id="graph-ymax" placeholder="auto" step="any" style="width:1.5rem">
+
+        <!-- GRAPH -->
+        <div class="panel" id="p-graph">
+          <div class="graph-wrap">
+            <canvas id="graphCanvas" height="160"></canvas>
           </div>
-          <div class="graph-status" id="graphStatus">f(x) = sin(x) | [-10, 10]</div>
-        </div>
-      </div>
-      <div class="panel" id="p-graph3d">
-        <div class="d-row graph-func-row">
-          <span class="dl">z(x,y)</span>
-          <input class="di" type="text" id="graph3d-func" value="sin(x)*cos(y)" placeholder="sin(x)*cos(y)">
-          <button class="fuel-type-btn" id="graph3dPlotBtn" style="font-size:.4rem;padding:.12rem .35rem">PLOT</button>
-        </div>
-        <div class="graph-wrap">
-          <canvas id="graph3dCanvas" width="600" height="400"></canvas>
+          <div class="graph-func-row">
+            <span class="dl">f(x)</span>
+            <input class="di" type="text" id="graph-func" value="sin(x)" spellcheck="false" placeholder="e.g. x^2, sin(x), x^3-2*x">
+            <button class="soft-key gold" id="graphPlotBtn" style="flex:none;padding:.15rem .3rem;font-size:.4rem;min-width:auto">PLOT</button>
+          </div>
           <div class="graph-inputs">
-            <span class="dl">X</span>
-            <input class="di" type="number" id="graph3d-xmin" value="-5" step="any" style="width:1.2rem">
+            <span class="dl">x:</span>
+            <input class="di" type="number" id="graph-xmin" value="-10" step="any">
             <span class="du">to</span>
-            <input class="di" type="number" id="graph3d-xmax" value="5" step="any" style="width:1.2rem">
-            <span class="dl">Y</span>
-            <input class="di" type="number" id="graph3d-ymin" value="-5" step="any" style="width:1.2rem">
+            <input class="di" type="number" id="graph-xmax" value="10" step="any">
+            <span class="dl" style="margin-left:.3rem">y:</span>
+            <input class="di" type="number" id="graph-ymin" value="" placeholder="auto" step="any">
             <span class="du">to</span>
-            <input class="di" type="number" id="graph3d-ymax" value="5" step="any" style="width:1.2rem">
-            <span class="dl">Z</span>
-            <input class="di" type="number" id="graph3d-zmin" placeholder="auto" step="any" style="width:1.2rem">
+            <input class="di" type="number" id="graph-ymax" value="" placeholder="auto" step="any">
+          </div>
+          <div class="graph-status" id="graphStatus">f(x) = sin(x)</div>
+        </div>
+
+        <!-- GRAPH3D -->
+        <div class="panel" id="p-graph3d">
+          <div class="graph-wrap">
+            <canvas id="graph3dCanvas" height="200"></canvas>
+          </div>
+          <div class="graph-inputs">
+            <span class="dl">x range:</span>
+            <input class="di" type="number" id="graph3d-xmin" value="-5" step="any" style="width:2rem">
             <span class="du">to</span>
-            <input class="di" type="number" id="graph3d-zmax" placeholder="auto" step="any" style="width:1.2rem">
+            <input class="di" type="number" id="graph3d-xmax" value="5" step="any" style="width:2rem">
+            <span class="dl">y range:</span>
+            <input class="di" type="number" id="graph3d-ymin" value="-5" step="any" style="width:2rem">
+            <span class="du">to</span>
+            <input class="di" type="number" id="graph3d-ymax" value="5" step="any" style="width:2rem">
+            <span class="dl">z range:</span>
+            <input class="di" type="number" id="graph3d-zmin" value="-1" step="any" style="width:2rem">
+            <span class="du">to</span>
+            <input class="di" type="number" id="graph3d-zmax" value="1" step="any" style="width:2rem">
+          </div>
+          <div class="graph-func-row">
+            <span class="dl">f(x,y)</span>
+            <input class="di" type="text" id="graph3d-func" value="x*y" spellcheck="false" placeholder="e.g. sin(x)*cos(y), x^2+y^2">
+            <button class="soft-key gold" id="graph3dPlotBtn" style="flex:none;padding:.15rem .3rem;font-size:.4rem;min-width:auto">PLOT</button>
           </div>
           <div class="graph-status" id="graph3dStatus">z = sin(x) cos(y) — drag to rotate</div>
           <div class="graph-tools">
             <button id="graph3dAxesBtn" class="active">XYZ AXES</button>
           </div>
         </div>
+
+        <!-- QUAD -->
+        <div class="panel" id="p-quad">
+          <div class="solver-row"><span class="dl">a</span><input class="di" type="number" id="quad-a" value="1" step="any"><span class="du">x²</span></div>
+          <div class="solver-row"><span class="dl">b</span><input class="di" type="number" id="quad-b" value="-3" step="any"><span class="du">x</span></div>
+          <div class="solver-row"><span class="dl">c</span><input class="di" type="number" id="quad-c" value="2" step="any"><span class="du">=0</span></div>
+          <div class="solver-divider"></div>
+          <div class="solver-row"><span class="dl">Δ</span><span class="dr gold" id="quad-disc" style="min-width:3rem">—</span></div>
+          <div class="solver-roots" id="quad-roots"><span class="root-label">ROOTS</span></div>
+        </div>
+
+        <!-- CUBIC -->
+        <div class="panel" id="p-cubic">
+          <div class="solver-row"><span class="dl">a</span><input class="di" type="number" id="cub-a" value="1" step="any"><span class="du">x³</span></div>
+          <div class="solver-row"><span class="dl">b</span><input class="di" type="number" id="cub-b" value="-6" step="any"><span class="du">x²</span></div>
+          <div class="solver-row"><span class="dl">c</span><input class="di" type="number" id="cub-c" value="11" step="any"><span class="du">x</span></div>
+          <div class="solver-row"><span class="dl">d</span><input class="di" type="number" id="cub-d" value="-6" step="any"><span class="du">=0</span></div>
+          <div class="solver-divider"></div>
+          <div class="solver-roots" id="cub-roots"><span class="root-label">ROOTS</span></div>
+        </div>
       </div>
-      <div class="panel" id="p-quad">
-        <div class="solver-row"><span class="dl">a</span><input class="di" type="number" id="quad-a" value="1" step="any"><span class="du">x²</span></div>
-        <div class="solver-row"><span class="dl">b</span><input class="di" type="number" id="quad-b" value="-3" step="any"><span class="du">x</span></div>
-        <div class="solver-row"><span class="dl">c</span><input class="di" type="number" id="quad-c" value="2" step="any"><span class="du">=0</span></div>
-        <div class="solver-divider"></div>
-        <div class="solver-row"><span class="dl">Δ</span><span class="dr gold" id="quad-disc" style="min-width:3rem">—</span></div>
-        <div class="solver-roots" id="quad-roots"><span class="root-label">ROOTS</span></div>
-      </div>
-      <div class="panel" id="p-cubic">
-        <div class="solver-row"><span class="dl">a</span><input class="di" type="number" id="cub-a" value="1" step="any"><span class="du">x³</span></div>
-        <div class="solver-row"><span class="dl">b</span><input class="di" type="number" id="cub-b" value="-6" step="any"><span class="du">x²</span></div>
-        <div class="solver-row"><span class="dl">c</span><input class="di" type="number" id="cub-c" value="11" step="any"><span class="du">x</span></div>
-        <div class="solver-row"><span class="dl">d</span><input class="di" type="number" id="cub-d" value="-6" step="any"><span class="du">=0</span></div>
-        <div class="solver-divider"></div>
-        <div class="solver-roots" id="cub-roots"><span class="root-label">ROOTS</span></div>
-      </div>
+
+    <div class="soft-row">
+      <button class="soft-key gold" id="computeBtn">COMPUTE</button>
+      <button class="soft-key" id="clrBtn">CLR</button>
+    </div>
+
+    <div class="func-row" id="funcRow">
+      <button class="kp-btn fn" data-fn="(">(</button>
+      <button class="kp-btn fn" data-fn=")">)</button>
+      <button class="kp-btn fn" data-fn="+">+</button>
+      <button class="kp-btn fn" data-fn="-">−</button>
+      <button class="kp-btn fn" data-fn="*">×</button>
+      <button class="kp-btn fn" data-fn="/">÷</button>
+      <button class="kp-btn fn" data-fn="^">^</button>
+      <button class="kp-btn fn" data-fn="sqrt(">√</button>
+      <button class="kp-btn fn" data-fn="sin(">sin</button>
+      <button class="kp-btn fn" data-fn="cos(">cos</button>
+      <button class="kp-btn fn" data-fn="tan(">tan</button>
+      <button class="kp-btn fn" data-fn="exp(">eˣ</button>
+      <button class="kp-btn fn" data-fn="log(">ln</button>
+      <button class="kp-btn fn" data-fn="pi">π</button>
+      <button class="kp-btn fn" data-fn="Math.E">e</button>
+    </div>
+
+    <div class="kp" id="keypad">
+      <button class="kp-btn" data-key="7">7</button>
+      <button class="kp-btn" data-key="8">8</button>
+      <button class="kp-btn" data-key="9">9</button>
+      <button class="kp-btn fn" data-key="DEL">⌫</button>
+      <button class="kp-btn" data-key="4">4</button>
+      <button class="kp-btn" data-key="5">5</button>
+      <button class="kp-btn" data-key="6">6</button>
+      <button class="kp-btn fn" data-key="SIGN">±</button>
+      <button class="kp-btn" data-key="1">1</button>
+      <button class="kp-btn" data-key="2">2</button>
+      <button class="kp-btn" data-key="3">3</button>
+      <button class="kp-btn gold" data-key="ENTER">ENT</button>
+      <button class="kp-btn" data-key="0">0</button>
+      <button class="kp-btn" data-key=".">.</button>
+      <button class="kp-btn fn-gold" onclick="document.getElementById('computeBtn').click()">▶</button>
+      <button class="kp-btn fn" data-key="CLR">CLR</button>
+    </div>
+
+    <div class="mode-strip" id="modeStrip"></div>
+
+    <div class="footer">
+      <span>ASA CX-3</span>
+      <span id="activeModeDisp">TSD</span>
     </div>
   </div>
-  <div class="soft-row">
-    <button class="soft-key gold" id="computeBtn">COMPUTE</button>
-    <button class="soft-key" id="clrBtn">CLR</button>
-  </div>
-  <div class="func-row" id="funcRow">
-    <button class="kp-btn fn" data-fn="(">(</button>
-    <button class="kp-btn fn" data-fn=")">)</button>
-    <button class="kp-btn fn" data-fn="+">+</button>
-    <button class="kp-btn fn" data-fn="-">−</button>
-    <button class="kp-btn fn" data-fn="*">×</button>
-    <button class="kp-btn fn" data-fn="/">÷</button>
-    <button class="kp-btn fn" data-fn="^">^</button>
-    <button class="kp-btn fn" data-fn="sqrt(">√</button>
-    <button class="kp-btn fn" data-fn="sin(">sin</button>
-    <button class="kp-btn fn" data-fn="cos(">cos</button>
-    <button class="kp-btn fn" data-fn="tan(">tan</button>
-    <button class="kp-btn fn" data-fn="exp(">eˣ</button>
-    <button class="kp-btn fn" data-fn="log(">ln</button>
-    <button class="kp-btn fn" data-fn="pi">π</button>
-    <button class="kp-btn fn" data-fn="Math.E">e</button>
-  </div>
-  <div class="kp" id="keypad">
-    <button class="kp-btn" data-key="7">7</button>
-    <button class="kp-btn" data-key="8">8</button>
-    <button class="kp-btn" data-key="9">9</button>
-    <button class="kp-btn fn" data-key="DEL">⌫</button>
-    <button class="kp-btn" data-key="4">4</button>
-    <button class="kp-btn" data-key="5">5</button>
-    <button class="kp-btn" data-key="6">6</button>
-    <button class="kp-btn fn" data-key="SIGN">±</button>
-    <button class="kp-btn" data-key="1">1</button>
-    <button class="kp-btn" data-key="2">2</button>
-    <button class="kp-btn" data-key="3">3</button>
-    <button class="kp-btn gold" data-key="ENTER">ENT</button>
-    <button class="kp-btn" data-key="0">0</button>
-    <button class="kp-btn" data-key=".">.</button>
-    <button class="kp-btn fn-gold" onclick="document.getElementById('computeBtn').click()">▶</button>
-    <button class="kp-btn fn" data-key="CLR">CLR</button>
-  </div>
-  <div class="mode-strip" id="modeStrip"></div>
-  <div class="footer">
-    <span>ASA CX-3</span>
-    <span id="activeModeDisp">TSD</span>
-  </div>
-</div></div>
+</div>
+</div>
+
 <script>
 function $(id){return document.getElementById(id)}
 
@@ -567,30 +584,24 @@ function setupKeypad(){
       const el=document.activeElement;
       let target=el&&el.classList.contains('di')?el:lastActiveInput;
       if(!target)return;
-      if(key==='DEL'){target.value=target.value.slice(0,-1)}
-      else if(key==='CLR'){target.value=''}
-      else if(key==='SIGN'){if(target.value.startsWith('-'))target.value=target.value.slice(1);else target.value='-'+target.value}
-      else if(key==='ENTER'){document.getElementById('computeBtn').click()}
-      else{target.value+=key}
+      if(key==='DEL'){
+        target.value=target.value.slice(0,-1);
+      }else if(key==='CLR'){
+        target.value='';
+      }else if(key==='SIGN'){
+        if(target.value.startsWith('-'))target.value=target.value.slice(1);
+        else target.value='-'+target.value;
+      }else if(key==='ENTER'){
+        document.getElementById('computeBtn').click();
+      }else{
+        target.value+=key;
+      }
       target.dispatchEvent(new Event('input',{bubbles:true}));
       target.focus();
-    });
-  });
-  document.querySelectorAll('.func-row .kp-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const fn=btn.dataset.fn||btn.textContent;
-      let target=lastActiveInput;
-      if(!target||!target.classList.contains('di')){target=document.getElementById('graph-func');if(currentMode==='graph3d')target=document.getElementById('graph3d-func')}
-      if(!target)return;
-      const start=target.selectionStart||target.value.length;
-      const end=target.selectionEnd||start;
-      target.value=target.value.slice(0,start)+fn+target.value.slice(end);
-      target.dispatchEvent(new Event('input',{bubbles:true}));
-      target.focus();
-      target.selectionStart=target.selectionEnd=start+fn.length;
     });
   });
 }
+
 function calcTSD(){
   const d=v($('tsd-dist')),s=v($('tsd-spd')),th=v($('tsd-th')),tm=v($('tsd-tm'));
   let t=(th||0)+(tm||0)/60;if(t===0)t=null;
@@ -606,8 +617,12 @@ function calcTSD(){
 }
 function clrTSD(){['tsd-dist','tsd-spd','tsd-th','tsd-tm'].forEach(i=>{const e=$(i);if(e)e.value=''});['tsd-rd','tsd-rs','tsd-rt'].forEach(i=>{const e=$(i);if(e)e.textContent='—'})}
 function setFT(type,d){
-  if(type==='Custom'){$('fuel-dens-inp').style.display='block';d=v($('fuel-dens-inp'))||6.0}
-  else{$('fuel-dens-inp').style.display='none'}
+  if(type==='Custom'){
+    $('fuel-dens-inp').style.display='block';
+    d=v($('fuel-dens-inp'))||6.0;
+  }else{
+    $('fuel-dens-inp').style.display='none';
+  }
   fuelDensity=d;
   $('fuel-dens-lbl').textContent=fuelDensity.toFixed(1);
   document.querySelectorAll('.fuel-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.dens==String(d)||(type==='Custom'&&b.dataset.dens==='0')));
@@ -691,7 +706,6 @@ function calcWB(){
   if(stat!=null&&wgt!=null&&arm!=null){$('wb-moment').textContent=f(stat*wgt*arm,1)}
   else if(wgt!=null&&arm!=null){$('wb-moment').textContent=f(wgt*arm,1)}
   $('wb-tot-wgt').textContent='—';$('wb-tot-mom').textContent='—';$('wb-tot-cg').textContent='—';
-  // Add up all stations
   let tw=0,tm=0,count=0;
   for(let id of['wb-stat','wb-wgt','wb-arm']){
     const s=v($('wb-stat')),w=v($('wb-wgt')),a=v($('wb-arm'));
@@ -742,7 +756,6 @@ function plotGraph(){
   ctx.strokeStyle='rgba(232,192,74,.04)';ctx.lineWidth=0.5;
   for(let x=Math.ceil(xMin);x<=xMax;x++){const [px]=mx(x,0);ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,H+pad*2);ctx.stroke()}
   for(let y=Math.ceil(yMin);y<=yMax;y++){const [px,py]=mx(0,y);ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(W+pad*2,py);ctx.stroke()}
-  // Axis labels
   ctx.fillStyle='rgba(232,192,74,.15)';ctx.font='10px Share Tech Mono';
   for(let x=Math.ceil(xMin);x<=xMax;x++){if(Math.abs(x)<0.01)continue;const [px,py]=mx(x,0);ctx.fillText(x,px,Math.min(H+pad-2,py-2))}
   for(let y=Math.ceil(yMin);y<=yMax;y++){if(Math.abs(y)<0.01)continue;const [px,py]=mx(0,y);ctx.fillText(y.toFixed(y%1?1:0),Math.max(2,px-12),Math.min(H+pad-2,Math.max(12,py+4)))}
@@ -807,7 +820,7 @@ const g3dPlotBtn=document.getElementById('graph3dPlotBtn');if(g3dPlotBtn)g3dPlot
 const g3dAxesBtn=document.getElementById('graph3dAxesBtn');if(g3dAxesBtn)g3dAxesBtn.addEventListener('click',()=>{graph3DShowAxes=!graph3DShowAxes;g3dAxesBtn.classList.toggle('active');plotGraph3D()});
 function setup3DRotate(){const canvas=document.getElementById('graph3dCanvas');if(!canvas)return;let dragging=false,lx=0,ly=0;canvas.style.cursor='grab';
   canvas.addEventListener('mousedown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;canvas.style.cursor='grabbing';e.preventDefault()});
-  canvas.addEventListener('mousemove',e=>{if(!dragging)return;graph3DTheta=(graph3DTheta+e.clientX-lx)%360;graph3DPhi=Math.max(-90,Math.min(90,graph3DPhi+e.clientY-ly));lx=e.clientX;ly=e.clientY;plotGraph3D();e.preventDefault()});
+  canvas.addEventListener('mousemove',e=>{if(!dragging)return;graph3DTheta=(graph3DTheta+e.clientX-lx)%360;graph3dPhi=Math.max(-90,Math.min(90,graph3DPhi+e.clientY-ly));lx=e.clientX;ly=e.clientY;plotGraph3D();e.preventDefault()});
   canvas.addEventListener('mouseup',()=>{dragging=false;canvas.style.cursor='grab'});
   canvas.addEventListener('mouseleave',()=>{dragging=false;canvas.style.cursor='grab'});
   canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){dragging=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;e.preventDefault()}});
