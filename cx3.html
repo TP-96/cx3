@@ -702,7 +702,7 @@ function calcWB(){
 function clrWB(){['wb-stat','wb-wgt','wb-arm'].forEach(i=>{const e=$(i);if(e)e.value=''});['wb-moment','wb-tot-wgt','wb-tot-mom','wb-tot-cg'].forEach(i=>{const e=$(i);if(e)e.textContent='—'})}
 function mathEval(expr,x){
   try{
-    let s=expr.replace(/\\^/g,'**').replace(/sin\(/g,'Math.sin(').replace(/cos\(/g,'Math.cos(').replace(/tan\(/g,'Math.tan(').replace(/asin\(/g,'Math.asin(').replace(/acos\(/g,'Math.acos(').replace(/atan\(/g,'Math.atan(').replace(/abs\(/g,'Math.abs(').replace(/sqrt\(/g,'Math.sqrt(').replace(/log\(/g,'Math.log(').replace(/exp\(/g,'Math.exp(').replace(/floor\(/g,'Math.floor(').replace(/ceil\(/g,'Math.ceil(').replace(/\\bpi\\b(?!\\s*\\()/g,'Math.PI').replace(/π/g,'Math.PI');
+    let s=expr.replace(/\^/g,'**').replace(/sin\(/g,'Math.sin(').replace(/cos\(/g,'Math.cos(').replace(/tan\(/g,'Math.tan(').replace(/asin\(/g,'Math.asin(').replace(/acos\(/g,'Math.acos(').replace(/atan\(/g,'Math.atan(').replace(/abs\(/g,'Math.abs(').replace(/sqrt\(/g,'Math.sqrt(').replace(/log\(/g,'Math.log(').replace(/exp\(/g,'Math.exp(').replace(/floor\(/g,'Math.floor(').replace(/ceil\(/g,'Math.ceil(').replace(/\bpi\b(?!\s*\()/g,'Math.PI').replace(/π/g,'Math.PI');
     const fn=new Function('x','return ('+s+')');
     const v=fn(x);
     return isFinite(v)?v:null;
