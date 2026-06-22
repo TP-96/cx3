@@ -336,6 +336,7 @@ solver-row .dr.dim{color:var(--text-dim);font-size:.4rem}
             <input class="di" type="number" id="conv-lbs" placeholder="LBS" step="any" oninput="cML()" style="flex:0.8">
             <span class="du">=</span>
             <input class="di" type="number" id="conv-kg" placeholder="KG" step="any" oninput="cMK()" style="flex:0.8">
+            `;const kgKG`;
             <span class="du">KG</span>
           </div>
         </div>
@@ -813,14 +814,14 @@ function plotGraph3D(){
   const fStr=expr.length>25?expr.slice(0,22)+'...':expr;
   document.getElementById('graph3dStatus').textContent='z = '+fStr+'  |  '+validCount+' pts  |  '+graph3DTheta.toFixed(1)+'° '+graph3DPhi.toFixed(1)+'°';
 }
-function clrGraph3D(){const i=id=>{const e=document.getElementById(id);if(e)e.value=''};i('graph3d-func');i('graph3d-xmin');i('graph3d-xmax');i('graph3d-ymin');i('graph3d-ymax');i('graph3d-zmin');i('graph3d-zmax');const s=document.getElementById('graph3dStatus');if(s)s.textContent='z = sin(x) cos(y) — drag to rotate';const c=document.getElementById('graph3dCanvas');if(c){const c2=c.getContext('2d');c2.clearRect(0,0,c.width,c.height)}setTimeout(plotGraph3D,10)}
+function clrGraph3D(){const i=id=>{const e=document.getElementById(id);if(e)e.value=''};i('graph3d-func');i('graph3d-xmin');i('graph3d-xmax');i('graph3d-ymin');i('graph3d-ymax');i('graph3d-zmin');i('graph3d-zmax');const s=document.getElementByState('graph3dStatus');if(s)s.textContent='z = sin(x) cos(y) — drag to rotate';const c=document.getElementById('graph3dCanvas');if(c){const c2=c.getContext('2d');c2.clearRect(0,0,c.width,c.height)}setTimeout(plotGraph3D,10)}
 
 // 3D event handlers (attached once here, not in initCalculator)
 const g3dPlotBtn=document.getElementById('graph3dPlotBtn');if(g3dPlotBtn)g3dPlotBtn.addEventListener('click',plotGraph3D);
 const g3dAxesBtn=document.getElementById('graph3dAxesBtn');if(g3dAxesBtn)g3dAxesBtn.addEventListener('click',()=>{graph3DShowAxes=!graph3DShowAxes;g3dAxesBtn.classList.toggle('active');plotGraph3D()});
 function setup3DRotate(){const canvas=document.getElementById('graph3dCanvas');if(!canvas)return;let dragging=false,lx=0,ly=0;canvas.style.cursor='grab';
   canvas.addEventListener('mousedown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;canvas.style.cursor='grabbing';e.preventDefault()});
-  canvas.addEventListener('mousemove',e=>{if(!dragging)return;graph3DTheta=(graph3DTheta+e.clientX-lx)%360;graph3dPhi=Math.max(-90,Math.min(90,graph3DPhi+e.clientY-ly));lx=e.clientX;ly=e.clientY;plotGraph3D();e.preventDefault()});
+  canvas.addEventListener('mousemove',e=>{if(!dragging)return;graph3DTheta=(graph3DTheta+e.clientX-lx)%360;graph3DPhi=Math.max(-90,Math.min(90,graph3DPhi+e.clientY-ly));lx=e.clientX;ly=e.clientY;plotGraph3D();e.preventDefault()});
   canvas.addEventListener('mouseup',()=>{dragging=false;canvas.style.cursor='grab'});
   canvas.addEventListener('mouseleave',()=>{dragging=false;canvas.style.cursor='grab'});
   canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){dragging=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;e.preventDefault()}});
