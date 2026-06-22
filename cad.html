@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>CAD File Viewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--card:#141312;--card-edge:#22201c;--gold:#E8C04A;--gold-dim:#9a7528;--orange:#FF6A1A;--text:#f0ede8;--text-dim:#b8b2a5;--text-deep:#6b6555;--font-head:'Bebas Neue',sans-serif;--font-display:'Share Tech Mono',monospace;--font-body:'Inter',sans-serif}
+html{height:100%}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100%;-webkit-tap-highlight-color:transparent}
+a{color:var(--gold);text-decoration:none}
+a:hover{color:var(--orange)}
+.nav-bar{display:flex;align-items:center;gap:.5rem;max-width:720px;margin:0 auto;padding:.75rem .5rem 0}
+.nav-bar a{font-family:var(--font-display);font-size:.45rem;color:var(--text-deep);border:1px solid var(--card-edge);padding:.2rem .5rem;transition:all .1s}
+.nav-bar a:hover{color:var(--gold);border-color:var(--gold-dim)}
+.nav-bar .title{margin-left:auto;font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);letter-spacing:.05em}
+.page{max-width:720px;margin:0 auto;padding:1rem .5rem 3rem}
+.page h2{font-family:var(--font-head);font-size:1.2rem;color:var(--text);letter-spacing:.1em;margin-bottom:.25rem}
+.page .desc{font-size:.6rem;color:var(--text-dim);margin-bottom:1rem}
+.dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px dashed var(--card-edge);padding:3rem 1rem;cursor:pointer;transition:all .12s;text-align:center;min-height:300px}
+.dropzone:hover{border-color:var(--gold-dim);background:rgba(232,192,74,.02)}
+.dropzone.dragover{border-color:var(--gold);background:rgba(232,192,74,.05)}
+.dropzone-icon{font-size:2rem;margin-bottom:.5rem;color:var(--text-deep)}
+.dropzone-text{font-family:var(--font-display);font-size:.6rem;color:var(--text-deep);letter-spacing:.06em}
+.dropzone-sub{font-size:.45rem;color:var(--text-dim);margin-top:.25rem}
+.viewer-wrap{display:none;position:relative}
+.viewer-wrap canvas{display:block;width:100%;height:360px;background:#060504}
+.toolbar{display:flex;gap:.25rem;margin-top:.4rem;flex-wrap:wrap;align-items:center}
+.toolbar button{font-family:var(--font-display);font-size:.4rem;padding:.2rem .4rem;background:var(--card);border:1px solid var(--card-edge);color:var(--text-dim);cursor:pointer;transition:all .06s}
+.toolbar button:hover{color:var(--gold);border-color:var(--gold-dim)}
+.toolbar button.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(232,192,74,.06)}
+.toolbar .info{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);margin-left:auto}
+.file-input{display:none}
+.status{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);margin-top:.3rem;letter-spacing:.04em;min-height:1rem}
+@media(max-width:500px){.page{padding:.75rem .25rem 2rem}.dropzone{padding:2rem .5rem;min-height:200px}}
+</style>
+</head>
+<body>
+<div class="nav-bar">
+  <a href="index.html">← BACK</a>
+  <span class="title">CAD File Viewer</span>
+</div>
+<div class="page">
+  <h2>CAD File Viewer</h2>
+  <p class="desc">Upload STL or STEP files to view in 3D. Supports wireframe and solid rendering.</p>
+  <label class="dropzone" id="dropzone" for="fileInput">
+    <div class="dropzone-icon">📐</div>
+    <div class="dropzone-text">Drop a .STL or .STEP file here</div>
+    <div class="dropzone-sub">or click to browse</div>
+  </label>
+  <div class="viewer-wrap" id="viewerWrap">
+    <canvas id="cadCanvas"></canvas>
+    <div class="toolbar">
+      <button class="active" id="cadSolidBtn">SOLID</button>
+      <button id="cadWireBtn">WIRE</button>
+      <button id="cadResetBtn">RESET VIEW</button>
+      <span class="info" id="cadInfo">No file loaded</span>
+    </div>
+    <div class="status" id="cadStatus">Drop a file to start</div>
+  </div>
+  <input class="file-input" type="file" id="fileInput" accept=".stl,.step,.stp">
+</div>
+<script>
+(function(){
+  const dropzone=document.getElementById('dropzone');
+  const wrap=document.getElementById('viewerWrap');
+  const fileInput=document.getElementById('fileInput');
+  const cadInfo=document.getElementById('cadInfo');
+  const cadStatus=document.getElementById('cadStatus');
+  dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('dragover')});
+  dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('dragover');if(e.dataTransfer.files.length)loadFile(e.dataTransfer.files[0])});
+  fileInput.addEventListener('change',()=>{if(fileInput.files.length)loadFile(fileInput.files[0])});
+
+  function loadFile(file){
+    const name=file.name.toLowerCase();
+    if(!name.match(/\.(stl|step|stp)$/i)){cadStatus.textContent='⚠️ Please select an STL or STEP file';return}
+    cadStatus.textContent='Loading '+file.name+'…';
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const buf=e.target.result;
+      cadStatus.textContent='Rendering…';
+      initScene(buf,file.name);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // ===== STEP PARSER =====
+  function parseSTEP(buffer){
+    const text=new TextDecoder('utf-8').decode(buffer);
+    
+    // Parse all entities: #id=TYPE(...);
+    const entities={};
+    const entityRegex=/#(\d+)\s*=\s*(\w+)\s*\(([\s\S]*?)\)\s*;/g;
+    let m;
+    while((m=entityRegex.exec(text))!==null){
+      const id=parseInt(m[1]),type=m[2].trim(),args=m[3].trim();
+      entities[id]={type,args};
+    }
+
+    // Extract references from a string like (#10,#20,#30)
+    function extractRefs(str){
+      const refs=[];
+      const rx=/#(\d+)/g;
+      let m;
+      while((m=rx.exec(str))!==null)refs.push(parseInt(m[1]));
+      return refs;
+    }
+
+    // Parse: CARTESIAN_POINT
+    const points={};
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='CARTESIAN_POINT'){
+        const inner=ent.args.match(/\(([^)]+)\)/);
+        if(inner){
+          const parts=inner[1].split(',').map(s=>parseFloat(s.trim()));
+          points[id]=[parts[0]||0,parts[1]||0,parts[2]||0];
+        }
+      }
+    }
+
+    // Parse: VERTEX_POINT → point ref
+    const vertexRefs={};
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='VERTEX_POINT'){
+        const refs=extractRefs(ent.args);
+        if(refs.length)vertexRefs[id]=refs[0];
+      }
+    }
+
+    // Parse: EDGE_CURVE → start_v, end_v
+    const edgeVerts={};
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='EDGE_CURVE'){
+        const refs=extractRefs(ent.args);
+        // Typically: name, #v1, #v2, #curve
+        if(refs.length>=2)edgeVerts[id]=[refs[0],refs[1]];
+      }
+    }
+
+    // Parse: POLY_LOOP → direct vertex refs
+    const polyLoops={};
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='POLY_LOOP'){
+        polyLoops[id]=extractRefs(ent.args);
+      }
+    }
+
+    // Parse: FACE_BOUND, FACE_OUTER_BOUND → edge/loop refs
+    const faceBounds={};
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='FACE_BOUND'||ent.type==='FACE_OUTER_BOUND'){
+        faceBounds[id]=extractRefs(ent.args);
+      }
+    }
+
+    // Parse: ADVANCED_FACE → refs to bounds
+    const advancedFaces=[];
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='ADVANCED_FACE'){
+        const refs=extractRefs(ent.args);
+        advancedFaces.push(refs);
+      }
+    }
+
+    // Build vertex arrays for each face
+    const allTriVertices=[];
+    
+    // Method 1: via ADVANCED_FACE → FACE_BOUND → EDGE_CURVE → VERTEX_POINT
+    for(const face of advancedFaces){
+      const boundIds=face.slice(1); // first ref might be name/face, skip it
+      for(const bid of boundIds){
+        if(!faceBounds[bid])continue;
+        const edgeIds=faceBounds[bid];
+        const chain=[];
+        for(const eid of edgeIds){
+          const orient=(entities[eid]&&entities[eid].type==='ORIENTED_EDGE');
+          if(orient){
+            const refs=extractRefs(entities[eid].args);
+            const ev=edgeVerts[refs[0]];
+            if(!ev)continue;
+            // Determine orientation
+            const sense=true; // simplified
+            if(chain.length===0||chain[chain.length-1]!==ev[0]){
+              chain.push(ev[0]);
+              chain.push(ev[1]);
+            }else{
+              chain.push(ev[1]);
+            }
+          }else if(edgeVerts[eid]){
+            if(chain.length===0||chain[chain.length-1]!==edgeVerts[eid][0]){
+              chain.push(edgeVerts[eid][0]);
+              chain.push(edgeVerts[eid][1]);
+            }else{
+              chain.push(edgeVerts[eid][1]);
+            }
+          }
+        }
+        if(chain.length>=3)triangulateChain(chain,allTriVertices,points,vertexRefs);
+      }
+    }
+
+    // Method 2: via POLY_LOOP (direct vertex chains)
+    for(const [id,chain] of Object.entries(polyLoops)){
+      if(chain.length>=3){
+        const pts=[];
+        for(const vref of chain){
+          if(vertexRefs[vref]&&points[vertexRefs[vref]])pts.push(vertexRefs[vref]);
+          else if(points[vref])pts.push(vref);
+        }
+        if(pts.length>=3)triangulateChain(pts,allTriVertices,points,{});
+      }
+    }
+
+    // Method 3: TRIANGULATED_FACE (direct triangle vertex refs)
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='TRIANGULATED_FACE'){
+        const refs=extractRefs(ent.args);
+        // Each group of 3 refs = 1 triangle
+        for(let i=0;i+2<refs.length;i+=3){
+          const v0=getPoint(refs[i],points,vertexRefs);
+          const v1=getPoint(refs[i+1],points,vertexRefs);
+          const v2=getPoint(refs[i+2],points,vertexRefs);
+          if(v0&&v1&&v2)allTriVertices.push(v0[0],v0[1],v0[2],v1[0],v1[1],v1[2],v2[0],v2[1],v2[2]);
+        }
+      }
+    }
+
+    // Method 4: TRIANGULATED_SURFACE (AP242) / TRIANGULATED_FACE_SET
+    for(const [id,ent] of Object.entries(entities)){
+      if(ent.type==='TRIANGULATED_SURFACE'||ent.type==='TRIANGULATED_FACE_SET'){
+        // These have coordinates and triangle indices in a structured format
+        const refs=extractRefs(ent.args);
+        for(const r of refs){
+          const sub=entities[r];
+          if(!sub)continue;
+          if(sub.type==='CARTESIAN_POINT'){
+            const inner=sub.args.match(/\(([^)]+)\)/);
+            if(!inner)continue;
+            const parts=inner[1].split(',').map(s=>parseFloat(s.trim()));
+            // Point stored - needs index mapping
+          }else if(sub.type==='TRIANGULATED_FACE'){
+            // Already handled above
+          }
+        }
+      }
+    }
+
+    if(allTriVertices.length<9)return null;
+
+    const triCount=allTriVertices.length/3;
+    // Compute normals
+    const normals=[];
+    for(let i=0;i<allTriVertices.length;i+=9){
+      const ax=allTriVertices[i],ay=allTriVertices[i+1],az=allTriVertices[i+2];
+      const bx=allTriVertices[i+3],by=allTriVertices[i+4],bz=allTriVertices[i+5];
+      const cx=allTriVertices[i+6],cy=allTriVertices[i+7],cz=allTriVertices[i+8];
+      const ux=bx-ax,uy=by-ay,uz=bz-az;
+      const vx=cx-ax,vy=cy-ay,vz=cz-az;
+      const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
+      const len=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;
+      for(let j=0;j<3;j++){normals.push(nx/len,ny/len,nz/len)}
+    }
+
+    return{vertices:allTriVertices,normals,triCount};
+  }
+
+  function triangulateChain(chain,outVertices,points,vertexRefs){
+    // Deduplicate contiguous repeats
+    const unique=[chain[0]];
+    for(let i=1;i<chain.length;i++){
+      if(chain[i]!==chain[i-1])unique.push(chain[i]);
+    }
+    if(unique.length<3)return;
+    // Fan triangulation
+    for(let i=1;i<unique.length-1;i++){
+      v0=getPoint(unique[0],points,vertexRefs);
+      v1=getPoint(unique[i],points,vertexRefs);
+      v2=getPoint(unique[i+1],points,vertexRefs);
+      if(!v0||!v1||!v2)continue;
+      outVertices.push(v0[0],v0[1],v0[2],v1[0],v1[1],v1[2],v2[0],v2[1],v2[2]);
+    }
+  }
+
+  function getPoint(ref,points,vertexRefs){
+    const pt=(vertexRefs[ref]&&points[vertexRefs[ref]])||points[ref];
+    return pt||null;
+  }
+
+  function initScene(data,filename){
+    const canvas=document.getElementById('cadCanvas');
+    const wrap=document.getElementById('viewerWrap');
+
+    // Show viewer first so canvas has valid dimensions
+    dropzone.style.display='none';
+    wrap.style.display='block';
+
+    // Size canvas
+    const W=canvas.clientWidth||Math.min(600,window.innerWidth-32);
+    const H=360;
+    canvas.width=W;canvas.height=H;
+    canvas.style.width=W+'px';canvas.style.height=H+'px';
+
+    // Init Three.js
+    const scene=new THREE.Scene();
+    scene.background=new THREE.Color(0x060504);
+    const camera=new THREE.PerspectiveCamera(45,W/H,0.1,1000);
+    camera.position.set(5,5,5);
+    const renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true});
+    renderer.setSize(W,H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    const controls=new THREE.OrbitControls(camera,renderer.domElement);
+    controls.target.set(0,0,0);
+    controls.update();
+
+    // Lights
+    const amb=new THREE.AmbientLight(0x404040);
+    scene.add(amb);
+    const dir=new THREE.DirectionalLight(0xffffff,0.8);
+    dir.position.set(10,20,10);
+    scene.add(dir);
+    const dir2=new THREE.DirectionalLight(0xff8844,0.3);
+    dir2.position.set(-10,-5,-10);
+    scene.add(dir2);
+
+    // Load mesh
+    const ext=filename.toLowerCase().match(/\.(\w+)$/)[1];
+    let isWire=false;
+    let mesh;
+
+    try {
+    if(ext==='stl'){
+      const loader=new THREE.STLLoader();
+      const geo=loader.parse(data);
+      geo.computeVertexNormals();
+      const mat=new THREE.MeshPhongMaterial({color:0xe8c04a,specular:0x333333,shininess:30});
+      mesh=new THREE.Mesh(geo,mat);
+      // Center and scale
+      geo.computeBoundingBox();
+      const bb=geo.boundingBox;
+      const cx=(bb.max.x+bb.min.x)/2,cy=(bb.max.y+bb.min.y)/2,cz=(bb.max.z+bb.min.z)/2;
+      const size=Math.max(bb.max.x-bb.min.x,bb.max.y-bb.min.y,bb.max.z-bb.min.z);
+      const scale=5/size;
+      mesh.position.set(-cx*scale,-cy*scale,-cz*scale);
+      mesh.scale.set(scale,scale,scale);
+      scene.add(mesh);
+      const verts=geo.attributes.position.count;
+      const faces=verts/3;
+      cadInfo.textContent='Vertices: '+verts+'  |  Triangles: '+faces+'  |  '+filename.slice(0,20);
+    }else if(ext==='step'||ext==='stp'){
+      cadStatus.textContent='Parsing STEP file…';
+      try{
+        const result=parseSTEP(data);
+        if(!result||result.vertices.length<3){
+          cadStatus.textContent='⚠️ Could not extract geometry from this STEP file';
+          return;
+        }
+        const geo=new THREE.BufferGeometry();
+        geo.setAttribute('position',new THREE.Float32BufferAttribute(result.vertices,3));
+        geo.setAttribute('normal',new THREE.Float32BufferAttribute(result.normals,3));
+        geo.setIndex(Array.from({length:result.vertices.length/3},(_,i)=>i));
+        geo.computeVertexNormals();
+        const mat=new THREE.MeshPhongMaterial({color:0xe8c04a,specular:0x333333,shininess:30});
+        mesh=new THREE.Mesh(geo,mat);
+        geo.computeBoundingBox();
+        const bb=geo.boundingBox;
+        const cx=(bb.max.x+bb.min.x)/2,cy=(bb.max.y+bb.min.y)/2,cz=(bb.max.z+bb.min.z)/2;
+        const size=Math.max(bb.max.x-bb.min.x,bb.max.y-bb.min.y,bb.max.z-bb.min.z);
+        const scale=5/size;
+        mesh.position.set(-cx*scale,-cy*scale,-cz*scale);
+        mesh.scale.set(scale,scale,scale);
+        scene.add(mesh);
+        const verts=result.vertices.length/3;
+        cadInfo.textContent='Vertices: '+verts+'  |  Triangles: '+result.triCount+'  |  '+filename.slice(0,20);
+        cadStatus.textContent='Drag to rotate | Scroll to zoom | Right-click to pan';
+      }catch(e){
+        cadStatus.textContent='⚠️ STEP parse error: '+e.message;
+        console.error(e);
+        return;
+      }
+    }
+
+    controls.update();
+    dropzone.style.display='none';
+    wrap.style.display='block';
+    cadStatus.textContent='Drag to rotate | Scroll to zoom | Right-click to pan';
+    }catch(err){
+      cadStatus.textContent='⚠️ Error rendering: '+err.message;
+      console.error(err);
+    }
+
+    // Toolbar handlers
+    document.getElementById('cadSolidBtn').addEventListener('click',()=>{
+      isWire=false;if(mesh)mesh.material.wireframe=false;
+      document.getElementById('cadSolidBtn').classList.add('active');
+      document.getElementById('cadWireBtn').classList.remove('active');
+    });
+    document.getElementById('cadWireBtn').addEventListener('click',()=>{
+      isWire=true;if(mesh)mesh.material.wireframe=true;
+      document.getElementById('cadWireBtn').classList.add('active');
+      document.getElementById('cadSolidBtn').classList.remove('active');
+    });
+    document.getElementById('cadResetBtn').addEventListener('click',()=>{
+      camera.position.set(5,5,5);controls.target.set(0,0,0);controls.update();
+    });
+
+    // Animate
+    function animate(){
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene,camera);
+    }
+    animate();
+  }
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+</body>
+</html>
