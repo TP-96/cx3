@@ -512,6 +512,8 @@ const graphLabels={graph:'GRAPH',graph3d:'3D',quad:'QUAD',cubic:'CUBIC'};
 
 function initCalculator(){
   if(!document.getElementById('modeStrip'))return;
+  // Fix input types so decimal key works (number inputs reject "1." intermediate state)
+  document.querySelectorAll('.di[type="number"]').forEach(el => { el.type = 'text'; el.setAttribute('inputmode','decimal'); el.autocomplete='off' });
   document.querySelectorAll('#calcTypeTabs button').forEach(b=>{
     b.addEventListener('click',()=>{
       document.querySelectorAll('#calcTypeTabs button').forEach(x=>x.classList.remove('active'));
@@ -552,6 +554,8 @@ function initCalculator(){
 function updateCalcMode(){
   const modes=currentCalc==='cx3'?cx3Modes:graphModes;
   const labels=currentCalc==='cx3'?cx3Labels:graphLabels;
+  // Reset currentMode if previous mode doesn't belong to this calc type
+  if(!modes.includes(currentMode))currentMode=modes[0];
   const brandSub=document.querySelector('.brand-bar .sub');
   if(brandSub)brandSub.textContent=currentCalc==='cx3'?'EFlight Computer':'Advanced Graphing';
   const strip=document.getElementById('modeStrip');
