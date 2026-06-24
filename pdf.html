@@ -15,7 +15,7 @@ a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
 .nav-bar a{font-family:var(--font-display);font-size:.45rem;color:var(--text-deep);border:1px solid var(--card-edge);padding:.2rem .5rem;transition:all .1s}
 .nav-bar a:hover{color:var(--gold);border-color:var(--gold-dim)}
 .nav-bar .title{margin-left:auto;font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);letter-spacing:.05em}
-.wrap{max-width:1000px;margin:0 auto;padding:1rem .5rem 2rem}
+.wrap{max-width:1200px;margin:0 auto;padding:1rem .5rem 2rem}
 
 /* Drop zone */
 .dropzone{margin:0 auto;max-width:500px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px dashed var(--card-edge);padding:3rem 1rem;cursor:pointer;transition:all .12s;text-align:center;min-height:260px;border-radius:4px}
@@ -27,7 +27,7 @@ a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
 .dropzone .hint{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);margin-top:.5rem;letter-spacing:.04em}
 
 /* Toolbar */
-.toolbar{display:flex;gap:.25rem;padding:.4rem .5rem;background:var(--card);border:1px solid var(--card-edge);align-items:center;flex-wrap:wrap;display:none;border-radius:4px 4px 0 0}
+.toolbar{display:none;gap:.25rem;padding:.35rem .5rem;background:var(--card);border:1px solid var(--card-edge);align-items:center;flex-wrap:wrap;border-radius:4px 4px 0 0}
 .toolbar.show{display:flex}
 .tool-group{display:flex;gap:.15rem;align-items:center;padding:0 .25rem;border-right:1px solid var(--card-edge)}
 .tool-group:last-child{border-right:none}
@@ -35,27 +35,42 @@ a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
 .toolbar button:hover{color:var(--gold);border-color:var(--gold-dim)}
 .toolbar button.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(232,192,74,.06)}
 .toolbar .sep{width:1px;height:1.2rem;background:var(--card-edge);margin:0 .15rem;display:inline-block;flex-shrink:0}
-.toolbar .pg-label{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);padding:0 .2rem}
-.toolbar .pg-input{width:2.5rem;background:transparent;border:1px solid var(--card-edge);color:var(--text);font-family:var(--font-display);font-size:.35rem;padding:.15rem .25rem;text-align:center;border-radius:2px}
+.toolbar .pg-label{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);padding:0 .15rem}
+.toolbar .pg-input{width:2.2rem;background:transparent;border:1px solid var(--card-edge);color:var(--text);font-family:var(--font-display);font-size:.35rem;padding:.15rem .25rem;text-align:center;border-radius:2px}
 .toolbar .pg-input:focus{border-color:var(--gold-dim);outline:none}
 .toolbar .pg-total{font-family:var(--font-display);font-size:.32rem;color:var(--text-deep)}
-.toolbar .color-swatch{width:1.1rem;height:1.1rem;border-radius:50%;border:2px solid var(--card-edge);cursor:pointer;transition:all .08s;display:inline-block;vertical-align:middle}
+
+/* Zoom control */
+.zoom-group{display:flex;align-items:center;gap:.1rem}
+.zoom-group .zoom-pct{font-family:var(--font-display);font-size:.35rem;color:var(--text);min-width:2.8rem;text-align:center;cursor:pointer;padding:.15rem .3rem;border:1px solid var(--card-edge);border-radius:2px;user-select:none}
+.zoom-group .zoom-pct:hover{border-color:var(--gold-dim)}
+.zoom-dropdown{position:relative;display:inline-block}
+.zoom-menu{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--card-edge);z-index:100;min-width:6rem;border-radius:3px;padding:.15rem 0;box-shadow:0 4px 20px rgba(0,0,0,.6)}
+.zoom-menu.show{display:block}
+.zoom-menu button{display:block;width:100%;text-align:right;font-family:var(--font-display);font-size:.35rem;color:var(--text-dim);background:transparent;border:none;padding:.25rem .6rem;cursor:pointer;transition:all .06s}
+.zoom-menu button:hover{color:var(--gold);background:rgba(232,192,74,.06)}
+.zoom-menu button.fit-type{color:var(--gold);font-size:.32rem;letter-spacing:.04em;text-align:center;border-top:1px solid var(--card-edge);margin-top:.1rem;padding-top:.3rem}
+
+/* Color swatches */
+.toolbar .color-swatch{width:1rem;height:1rem;border-radius:50%;border:2px solid var(--card-edge);cursor:pointer;transition:all .08s;display:inline-block;vertical-align:middle;flex-shrink:0}
 .toolbar .color-swatch:hover{border-color:var(--gold-dim)}
 .toolbar .color-swatch.active{border-color:var(--gold)}
 .toolbar select{background:transparent;border:1px solid var(--card-edge);color:var(--text);font-family:var(--font-display);font-size:.35rem;padding:.2rem .3rem;border-radius:2px;cursor:pointer}
 .toolbar select:focus{outline:none;border-color:var(--gold-dim)}
 .toolbar .size-slider{width:50px;accent-color:var(--gold);cursor:pointer}
 
-/* Viewer */
-.viewer{position:relative;background:var(--bg);border:1px solid var(--card-edge);min-height:400px;overflow:hidden;display:none;border-radius:0 0 4px 4px}
+/* Viewer — now scrollable like Acrobat */
+.viewer{position:relative;background:#1a1a1a;border:1px solid var(--card-edge);min-height:450px;overflow:auto;display:none;border-radius:0 0 4px 4px}
 .viewer.show{display:block}
-.viewer .page-container{position:relative;margin:0 auto;overflow:hidden}
-.viewer canvas{display:block;margin:0 auto;box-shadow:0 2px 20px rgba(0,0,0,.5)}
-.viewer .annot-canvas{position:absolute;top:0;left:0;cursor:crosshair;touch-action:none}
-.viewer .annot-canvas.mode-drag{cursor:grab}
+.viewer .page-container{position:relative;margin:1.5rem auto;overflow:hidden;box-shadow:0 2px 30px rgba(0,0,0,.6);background:#fff}
+.viewer canvas{display:block}
+.viewer .annot-canvas{position:absolute;top:0;left:0;cursor:grab;touch-action:none}
+.viewer .annot-canvas.mode-pen{cursor:crosshair}
 .viewer .annot-canvas.mode-text{cursor:text}
 .viewer .annot-canvas.mode-highlight{cursor:copy}
 .viewer .annot-canvas.mode-erase{cursor:not-allowed}
+.viewer .annot-canvas.mode-pan{cursor:grab}
+.viewer .annot-canvas.mode-pan:active{cursor:grabbing}
 
 /* Loading */
 .loading{display:none;text-align:center;padding:2rem;font-family:var(--font-display);font-size:.5rem;color:var(--text-deep);letter-spacing:.1em}
@@ -75,11 +90,14 @@ a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
 .empty-state .txt{font-family:var(--font-display);font-size:.45rem;color:var(--text-deep)}
 
 @media(max-width:600px){
-  .toolbar{font-size:.3rem;padding:.3rem}
+  .toolbar{font-size:.3rem;padding:.25rem}
   .toolbar button{font-size:.3rem;padding:.2rem .35rem}
-  .toolbar .pg-input{width:2rem;font-size:.3rem}
+  .toolbar .pg-input{width:1.8rem;font-size:.3rem}
   .toolbar select{font-size:.3rem}
   .wrap{padding:.5rem .25rem}
+  .viewer{min-height:300px}
+  .zoom-group .zoom-pct{min-width:2.2rem;font-size:.3rem}
+  .zoom-menu{min-width:5rem}
 }
 </style>
 </head>
@@ -120,9 +138,22 @@ a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
       <button id="btnNext" title="Next page">▶</button>
     </div>
     <span class="sep"></span>
-    <div class="tool-group">
+    <div class="tool-group zoom-group">
       <button id="btnZoomOut" title="Zoom out">🔍−</button>
-      <button id="btnZoomReset" title="Reset zoom">100%</button>
+      <div class="zoom-dropdown">
+        <span class="zoom-pct" id="zoomPctDisplay" title="Click for zoom presets">100%</span>
+        <div class="zoom-menu" id="zoomMenu">
+          <button data-zoom="400">400%</button>
+          <button data-zoom="200">200%</button>
+          <button data-zoom="150">150%</button>
+          <button data-zoom="125">125%</button>
+          <button data-zoom="100">100%</button>
+          <button data-zoom="75">75%</button>
+          <button data-zoom="50">50%</button>
+          <button data-zoom="fitw" class="fit-type">▬ Fit Width</button>
+          <button data-zoom="fitp" class="fit-type">▭ Fit Page</button>
+        </div>
+      </div>
       <button id="btnZoomIn" title="Zoom in">🔍+</button>
     </div>
     <span class="sep"></span>
@@ -141,7 +172,7 @@ a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
       <span class="color-swatch" data-color="#60a5fa" style="background:#60a5fa"></span>
       <span class="color-swatch" data-color="#f472b6" style="background:#f472b6"></span>
       <span class="color-swatch" data-color="#ffffff" style="background:#ffffff"></span>
-      <input type="color" id="colorPicker" value="#E8C04A" style="width:1.1rem;height:1.1rem;padding:0;border:1px solid var(--card-edge);cursor:pointer;background:none;border-radius:50%">
+      <input type="color" id="colorPicker" value="#E8C04A" style="width:1rem;height:1rem;padding:0;border:1px solid var(--card-edge);cursor:pointer;background:none;border-radius:50%">
     </div>
     <span class="sep"></span>
     <div class="tool-group">
@@ -175,6 +206,8 @@ let pdfData = null;
 let currentPage = 1;
 let totalPages = 1;
 let scale = 1.5;
+let baseViewportWidth = 0;   // native page width at scale=1
+let baseViewportHeight = 0;  // native page height at scale=1
 let fileName = '';
 let annotations = [];
 let currentTool = 'pan';
@@ -184,8 +217,10 @@ let isDrawing = false;
 let lastX = 0, lastY = 0;
 let textInput = null;
 let dragStart = null;
-let panOffset = { x: 0, y: 0 };
 let isPanning = false;
+let panOffsetX = 0, panOffsetY = 0;
+let zoomMenuOpen = false;
+let renderPending = false;
 
 const $ = id => document.getElementById(id);
 
@@ -208,13 +243,16 @@ fileInput.addEventListener('change', e => {
 // ===== Load PDF =====
 function loadPDF(file) {
   fileName = file.name;
+  console.log('loadPDF:', file.name, file.size);
   $('loading').classList.add('show');
   dz.style.display = 'none';
   const reader = new FileReader();
   reader.onload = function(e) {
+    console.log('FileReader complete:', e.target.result.byteLength, 'bytes');
     const data = new Uint8Array(e.target.result);
     pdfData = data;
     pdfjsLib.getDocument({ data }).promise.then(doc => {
+      console.log('pdfDoc loaded:', doc.numPages, 'pages');
       pdfDoc = doc;
       totalPages = doc.numPages;
       currentPage = 1;
@@ -227,19 +265,34 @@ function loadPDF(file) {
       $('fileName').textContent = fileName;
       $('pageInfo').textContent = 'Page 1 of ' + totalPages;
       $('loading').classList.remove('show');
-      renderPage(currentPage);
+
+      // Get base viewport at scale=1 for fit calculations
+      pdfDoc.getPage(1).then(page => {
+        const vp = page.getViewport({ scale: 1 });
+        baseViewportWidth = vp.width;
+        baseViewportHeight = vp.height;
+        console.log('Base viewport:', baseViewportWidth, 'x', baseViewportHeight);
+        // Do initial fit-to-width
+        fitToWidth();
+      }).catch(err => {
+        console.error('getPage error:', err);
+      });
     }).catch(err => {
       $('loading').classList.remove('show');
       dz.style.display = 'flex';
-      alert('Failed to load PDF: ' + err.message);
+      console.error('Failed to load PDF:', err.message);
     });
+  };
+  reader.onerror = function(e) {
+    console.error('FileReader error:', e);
   };
   reader.readAsArrayBuffer(file);
 }
 
 // ===== Render Page =====
 function renderPage(pageNum) {
-  if (!pdfDoc) return;
+  if (!pdfDoc || renderPending) return;
+  renderPending = true;
   pdfDoc.getPage(pageNum).then(page => {
     const vp = page.getViewport({ scale });
     const canvas = $('pdfCanvas');
@@ -251,7 +304,6 @@ function renderPage(pageNum) {
     annotCanvas.height = vp.height;
     container.style.width = vp.width + 'px';
     container.style.height = vp.height + 'px';
-    container.style.margin = '0 auto';
 
     const ctx = canvas.getContext('2d');
     const renderCtx = { canvasContext: ctx, viewport: vp };
@@ -261,29 +313,108 @@ function renderPage(pageNum) {
     $('pageInput').value = pageNum;
     $('pageInfo').textContent = 'Page ' + pageNum + ' of ' + totalPages;
     currentPage = pageNum;
+    renderPending = false;
+  }).catch(() => {
+    renderPending = false;
   });
 }
 
+// ===== Zoom =====
+function updateZoomDisplay() {
+  const pct = Math.round(scale * 100);
+  $('zoomPctDisplay').textContent = pct + '%';
+}
+
+function zoomIn() { scale = Math.min(5, +(scale * 1.25).toFixed(2)); updateZoomDisplay(); renderPage(currentPage); }
+function zoomOut() { scale = Math.max(0.25, +(scale / 1.25).toFixed(2)); updateZoomDisplay(); renderPage(currentPage); }
+function zoomTo(s) {
+  scale = Math.max(0.25, Math.min(5, s));
+  updateZoomDisplay();
+  renderPage(currentPage);
+}
+
+// Fit to width: scale so page width fills the viewer container width
+function fitToWidth() {
+  const viewer = $('viewer');
+  const availW = viewer.clientWidth - 32; // 2 × 1rem margin
+  if (baseViewportWidth <= 0) return;
+  const newScale = +(availW / baseViewportWidth).toFixed(2);
+  zoomTo(Math.max(0.25, Math.min(5, newScale)));
+}
+
+// Fit to page: scale so entire page fits in the viewer
+function fitToPage() {
+  const viewer = $('viewer');
+  const availW = viewer.clientWidth - 32;
+  const availH = viewer.clientHeight - 32;
+  if (baseViewportWidth <= 0 || baseViewportHeight <= 0) return;
+  const sW = availW / baseViewportWidth;
+  const sH = availH / baseViewportHeight;
+  zoomTo(Math.max(0.25, Math.min(5, +(Math.min(sW, sH)).toFixed(2))));
+}
+
+$('btnZoomIn').addEventListener('click', zoomIn);
+$('btnZoomOut').addEventListener('click', zoomOut);
+
+// Zoom dropdown
+const zoomPctDisplay = $('zoomPctDisplay');
+const zoomMenu = $('zoomMenu');
+zoomPctDisplay.addEventListener('click', e => {
+  e.stopPropagation();
+  zoomMenuOpen = !zoomMenuOpen;
+  zoomMenu.classList.toggle('show', zoomMenuOpen);
+});
+document.addEventListener('click', () => {
+  zoomMenu.classList.remove('show');
+  zoomMenuOpen = false;
+});
+zoomMenu.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const val = btn.dataset.zoom;
+    if (val === 'fitw') { fitToWidth(); }
+    else if (val === 'fitp') { fitToPage(); }
+    else { zoomTo(parseInt(val) / 100); }
+    zoomMenu.classList.remove('show');
+    zoomMenuOpen = false;
+  });
+});
+
+// Ctrl+Scroll zoom — like Acrobat
+$('viewer').addEventListener('wheel', e => {
+  if (!pdfDoc) return;
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.08 : 0.08;
+    const newScale = +(scale * (1 + delta)).toFixed(2);
+    zoomTo(newScale);
+  }
+}, { passive: false });
+
+// ===== Fit on window resize =====
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (pdfDoc) fitToWidth();
+  }, 200);
+});
+
 // ===== Page Navigation =====
-$('btnPrev').addEventListener('click', () => { if (currentPage > 1) renderPage(currentPage - 1) });
-$('btnNext').addEventListener('click', () => { if (currentPage < totalPages) renderPage(currentPage + 1) });
+$('btnPrev').addEventListener('click', () => { if (currentPage > 1) { panOffsetX = 0; panOffsetY = 0; renderPage(currentPage - 1); } });
+$('btnNext').addEventListener('click', () => { if (currentPage < totalPages) { panOffsetX = 0; panOffsetY = 0; renderPage(currentPage + 1); } });
 $('pageInput').addEventListener('change', function() {
   let p = parseInt(this.value);
   if (p < 1) p = 1;
   if (p > totalPages) p = totalPages;
-  if (p !== currentPage) renderPage(p);
+  if (p !== currentPage) { panOffsetX = 0; panOffsetY = 0; renderPage(p); }
   else this.value = currentPage;
 });
 document.addEventListener('keydown', e => {
   if (!pdfDoc) return;
-  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); if (currentPage > 1) renderPage(currentPage - 1) }
-  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); if (currentPage < totalPages) renderPage(currentPage + 1) }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); panOffsetX = 0; panOffsetY = 0; if (currentPage > 1) renderPage(currentPage - 1); }
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); panOffsetX = 0; panOffsetY = 0; if (currentPage < totalPages) renderPage(currentPage + 1); }
 });
-
-// ===== Zoom =====
-$('btnZoomIn').addEventListener('click', () => { scale = Math.min(5, scale + 0.25); renderPage(currentPage) });
-$('btnZoomOut').addEventListener('click', () => { scale = Math.max(0.5, scale - 0.25); renderPage(currentPage) });
-$('btnZoomReset').addEventListener('click', () => { scale = 1.5; renderPage(currentPage) });
 
 // ===== Tools =====
 document.querySelectorAll('#toolsGroup button[data-tool]').forEach(btn => {
@@ -365,7 +496,7 @@ ac.addEventListener('mousedown', e => {
 
   if (currentTool === 'pan') {
     isPanning = true;
-    dragStart = pos;
+    dragStart = { x: e.clientX, y: e.clientY };
     ac.style.cursor = 'grabbing';
     return;
   }
@@ -432,12 +563,12 @@ ac.addEventListener('mousemove', e => {
   const pos = getCanvasPos(e);
 
   if (currentTool === 'pan' && isPanning && dragStart) {
-    const dx = pos.x - dragStart.x;
-    const dy = pos.y - dragStart.y;
-    const container = $('pageContainer');
-    container.style.marginLeft = (container.offsetLeft || 0) + dx + 'px';
-    container.style.marginTop = (container.offsetTop || 0) + dy + 'px';
-    dragStart = pos;
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    const viewer = $('viewer');
+    viewer.scrollLeft -= dx;
+    viewer.scrollTop -= dy;
+    dragStart = { x: e.clientX, y: e.clientY };
     return;
   }
 
@@ -546,7 +677,6 @@ $('btnSave').addEventListener('click', () => {
 function savePDF() {
   const { PDFDocument, rgb, StandardFonts } = PDFLib;
   $('loading').classList.add('show');
-  $('loading').querySelector('.spinner').after(' SAVING...');
 
   const reader = new FileReader();
   reader.onload = async function(e) {
@@ -555,7 +685,6 @@ function savePDF() {
       const pages = pdfDoc2.getPages();
       const font = await pdfDoc2.embedFont(StandardFonts.Helvetica);
 
-      // For each page, draw annotations
       const annotByPage = {};
       annotations.forEach(a => {
         if (!annotByPage[a.page]) annotByPage[a.page] = [];
@@ -574,7 +703,6 @@ function savePDF() {
           const y = height - ((a.y || 0) / scale);
 
           if (a.type === 'path' && a.points && a.points.length > 1) {
-            // Draw path using simple line segments
             const color = hexToRgb(a.color || '#E8C04A');
             for (let i = 1; i < a.points.length; i++) {
               const p1 = a.points[i - 1];
@@ -663,7 +791,7 @@ $('btnPrint').addEventListener('click', () => {
 // ===== Open new =====
 $('btnOpen').addEventListener('click', () => fileInput.click());
 
-console.log('PDF Viewer & Editor ready');
+console.log('PDF Viewer & Editor ready — scrollable, Ctrl+wheel zoom, Fit to Width');
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 </body>
