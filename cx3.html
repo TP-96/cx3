@@ -359,6 +359,9 @@ solver-row .dr.dim{color:var(--text-dim);font-size:.4rem}
               <span id="wb-cg" style="font-family:var(--font-display);font-size:.6rem;color:var(--orange);min-width:2.5rem;text-align:right">—</span>
             </div>
           </div>
+          <div style="margin-top:.15rem;display:flex;gap:.2rem;justify-content:center">
+            <button class="soft-key gold" onclick="addWBRow()" style="flex:none;padding:.2rem .4rem;font-size:.4rem;min-width:auto">+ STATION</button>
+          </div>
         </div>
 
         <!-- GRAPH -->
@@ -701,20 +704,43 @@ function calcConv(){
   $('conv-r').textContent=r!=null?f(r,2):'—';
   $('conv-to-label').textContent=to;
 }
-function clrConv(){const e=$('conv-val');if(e)e.value='';$('conv-r').textContent='—'}
+function clrConv(){document.querySelectorAll('#p-conv .di').forEach(e=>e.value='')}
+
+// Inline converter helpers (called via oninput in CONV panel)
+function cTF(){const val=v($('conv-f'));$('conv-c').value=val!=null?f((val-32)*5/9,1):''}
+function cTC(){const val=v($('conv-c'));$('conv-f').value=val!=null?f(val*9/5+32,1):''}
+function cDN(){const val=v($('conv-nm'));if(val==null)return;$('conv-sm').value=f(val*1.15078,2);$('conv-km').value=f(val*1.852,2)}
+function cDS(){const val=v($('conv-sm'));if(val==null)return;$('conv-nm').value=f(val/1.15078,2);$('conv-km').value=f(val*1.60934,2)}
+function cDK(){const val=v($('conv-km'));if(val==null)return;$('conv-nm').value=f(val/1.852,2);$('conv-sm').value=f(val/1.60934,2)}
+function cVG(){const val=v($('conv-gal'));if(val!=null)$('conv-l').value=f(val*3.78541,2)}
+function cVL(){const val=v($('conv-l'));if(val!=null)$('conv-gal').value=f(val/3.78541,2)}
+function cML(){const val=v($('conv-lbs'));if(val!=null)$('conv-kg').value=f(val*0.453592,2)}
+function cMK(){const val=v($('conv-kg'));if(val!=null)$('conv-lbs').value=f(val/0.453592,2)}
 function calcWB(){
-  const stat=v($('wb-stat')),wgt=v($('wb-wgt')),arm=v($('wb-arm'));
-  if(stat!=null&&wgt!=null&&arm!=null){$('wb-moment').textContent=f(stat*wgt*arm,1)}
-  else if(wgt!=null&&arm!=null){$('wb-moment').textContent=f(wgt*arm,1)}
-  $('wb-tot-wgt').textContent='—';$('wb-tot-mom').textContent='—';$('wb-tot-cg').textContent='—';
+  const container=$('wbRows');
+  if(!container)return;
+  const rows=container.querySelectorAll('.wb-row');
   let tw=0,tm=0,count=0;
-  for(let id of['wb-stat','wb-wgt','wb-arm']){
-    const s=v($('wb-stat')),w=v($('wb-wgt')),a=v($('wb-arm'));
-    if(s!=null&&w!=null&&a!=null){tw+=w;tm+=w*a;count++}
-  }
-  if(count>0){$('wb-tot-wgt').textContent=f(tw,1)+' LB';$('wb-tot-mom').textContent=f(tm,1);$('wb-tot-cg').textContent=tw>0?f(tm/tw,2)+' IN':'—'}
+  rows.forEach(row=>{
+    const wgt=parseFloat(row.querySelector('.wb-wgt').value);
+    const arm=parseFloat(row.querySelector('.wb-arm').value);
+    if(!isNaN(wgt)&&!isNaN(arm)&&wgt>0){const mom=wgt*arm;tw+=wgt;tm+=mom;count++;
+      row.querySelector('.wb-mom').textContent=f(mom,1)}
+  });
+  $('wb-wt').textContent=count>0?f(tw,1)+' LB':'—';
+  $('wb-mom').textContent=count>0?f(tm,1):'—';
+  $('wb-cg').textContent=count>0&&tw>0?f(tm/tw,2)+' IN':'—';
 }
-function clrWB(){['wb-stat','wb-wgt','wb-arm'].forEach(i=>{const e=$(i);if(e)e.value=''});['wb-moment','wb-tot-wgt','wb-tot-mom','wb-tot-cg'].forEach(i=>{const e=$(i);if(e)e.textContent='—'})}
+function addWBRow(){
+  const container=$('wbRows');if(!container)return;
+  const row=document.createElement('div');row.className='wb-row';
+  row.style.cssText='display:flex;align-items:center;gap:.15rem;padding:.08rem 0;min-height:1.2rem';
+  const n=container.children.length+1;
+  row.innerHTML='<input class=\"di wb-stat\" type=\"number\" placeholder=\"S'+n+'\" step=\"any\" style=\"flex:1;font-size:.4rem\" oninput=\"calcWB()\"><input class=\"di wb-wgt\" type=\"number\" placeholder=\"WT\" step=\"any\" style=\"width:1.8rem;flex:none;font-size:.4rem\" oninput=\"calcWB()\"><input class=\"di wb-arm\" type=\"number\" placeholder=\"ARM\" step=\"any\" style=\"width:2rem;flex:none;font-size:.4rem\" oninput=\"calcWB()\"><span class=\"wb-mom\" style=\"font-family:var(--font-display);font-size:.45rem;color:var(--gold-dim);min-width:2.2rem;text-align:right\">—</span><button style=\"background:none;border:none;color:var(--text-deep);cursor:pointer;font-size:.45rem;padding:.05rem\" onclick=\"this.parentElement.remove();calcWB()\">✕</button>';
+  container.appendChild(row);
+  row.querySelector('.wb-stat').focus();
+}
+function clrWB(){const c=$('wbRows');if(c)c.innerHTML='';$('wb-wt').textContent='—';$('wb-mom').textContent='—';$('wb-cg').textContent='—'}
 function mathEval(expr,x){
   try{
     let s=expr.replace(/\^/g,'**').replace(/sin\(/g,'Math.sin(').replace(/cos\(/g,'Math.cos(').replace(/tan\(/g,'Math.tan(').replace(/asin\(/g,'Math.asin(').replace(/acos\(/g,'Math.acos(').replace(/atan\(/g,'Math.atan(').replace(/abs\(/g,'Math.abs(').replace(/sqrt\(/g,'Math.sqrt(').replace(/log\(/g,'Math.log(').replace(/exp\(/g,'Math.exp(').replace(/floor\(/g,'Math.floor(').replace(/ceil\(/g,'Math.ceil(').replace(/\bpi\b(?!\s*\()/g,'Math.PI').replace(/π/g,'Math.PI');
