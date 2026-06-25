@@ -3,312 +3,510 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Commands & Reference</title>
+<title>Hermes Agent — Commands & Reference</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0a0a;--card:#141312;--card-edge:#22201c;--gold:#E8C04A;--gold-dim:#9a7528;--orange:#FF6A1A;--text:#f0ede8;--text-dim:#b8b2a5;--text-deep:#6b6555;--font-head:'Bebas Neue',sans-serif;--font-display:'Share Tech Mono',monospace;--font-body:'Inter',sans-serif}
+:root{--bg:#0a0a0a;--card:#141312;--card-edge:#22201c;--gold:#E8C04A;--gold-dim:#9a7528;--orange:#FF6A1A;--green:#8fe89a;--blue:#60a5fa;--text:#f0ede8;--text-dim:#b8b2a5;--text-deep:#6b6555;--font-head:'Bebas Neue',sans-serif;--font-display:'Share Tech Mono',monospace;--font-body:'Inter',sans-serif}
 html{height:100%}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100%}
 a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
-.nav-bar{display:flex;align-items:center;gap:.5rem;max-width:900px;margin:0 auto;padding:.75rem .5rem 0}
+.nav-bar{display:flex;align-items:center;gap:.5rem;max-width:960px;margin:0 auto;padding:.75rem .5rem 0}
 .nav-bar a{font-family:var(--font-display);font-size:.45rem;color:var(--text-deep);border:1px solid var(--card-edge);padding:.2rem .5rem;transition:all .1s}
 .nav-bar a:hover{color:var(--gold);border-color:var(--gold-dim)}
 .nav-bar .title{margin-left:auto;font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);letter-spacing:.05em}
-.page{max-width:900px;margin:0 auto;padding:1rem .75rem 4rem}
+.page{max-width:960px;margin:0 auto;padding:1rem .75rem 4rem}
 h1{font-family:var(--font-head);font-size:1.5rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.1rem}
-h1 span{color:var(--text-deep);font-family:var(--font-display);font-size:.5rem;letter-spacing:.08em;display:block}
+h1 span{color:var(--text-deep);font-family:var(--font-display);font-size:.5rem;letter-spacing:.08em;display:block;margin-top:.05rem}
 .sub{font-size:.55rem;color:var(--text-dim);margin-bottom:1.5rem}
 
 /* Section */
-.section{background:var(--card);border:1px solid var(--card-edge);margin-bottom:.75rem;overflow:hidden}
-.section h2{font-family:var(--font-head);font-size:.95rem;padding:.5rem .7rem;background:rgba(232,192,74,.03);border-bottom:1px solid var(--card-edge);color:var(--gold);letter-spacing:.08em;display:flex;align-items:center;gap:.4rem}
+.section{background:var(--card);border:1px solid var(--card-edge);margin-bottom:.7rem;overflow:hidden}
+.section h2{font-family:var(--font-head);font-size:.95rem;padding:.45rem .65rem;background:rgba(232,192,74,.03);border-bottom:1px solid var(--card-edge);color:var(--gold);letter-spacing:.08em;display:flex;align-items:center;gap:.4rem}
 .section h2 .icon{font-size:.8rem}
-.section h3{font-family:var(--font-display);font-size:.45rem;color:var(--text);padding:.4rem .7rem .15rem;letter-spacing:.04em;margin-top:.25rem;border-top:1px solid var(--card-edge)}
+.section h3{font-family:var(--font-display);font-size:.45rem;color:var(--text);padding:.35rem .65rem .1rem;letter-spacing:.04em;margin-top:.2rem;border-top:1px solid var(--card-edge)}
 .section h3:first-of-type{margin-top:0;border-top:none}
-.section .body{padding:0 .7rem .5rem}
+.section .body{padding:0 .65rem .45rem}
 
 /* Tables */
-table{width:100%;border-collapse:collapse;font-size:.52rem;margin:.3rem 0}
-th{font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);text-align:left;padding:.25rem .3rem;border-bottom:1px solid var(--card-edge);letter-spacing:.05em;text-transform:uppercase}
-td{padding:.22rem .3rem;border-bottom:1px solid rgba(34,32,28,.5);color:var(--text-dim);vertical-align:top}
+table{width:100%;border-collapse:collapse;font-size:.5rem;margin:.25rem 0}
+th{font-family:var(--font-display);font-size:.38rem;color:var(--text-deep);text-align:left;padding:.2rem .25rem;border-bottom:1px solid var(--card-edge);letter-spacing:.05em;text-transform:uppercase}
+td{padding:.2rem .25rem;border-bottom:1px solid rgba(34,32,28,.5);color:var(--text-dim);vertical-align:top}
 tr:last-child td{border-bottom:none}
 td:first-child{font-family:var(--font-display);color:var(--gold);white-space:nowrap}
 td:nth-child(2){color:var(--text)}
-td em{color:var(--text-deep);font-style:normal;font-size:.45rem}
+td em{color:var(--text-deep);font-style:normal;font-size:.43rem}
 
-/* Inline code */
-code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.05rem .2rem;border-radius:2px;font-size:.45rem;color:var(--gold)}
-.tag{font-family:var(--font-display);font-size:.35rem;padding:.06rem .2rem;border:1px solid var(--card-edge);color:var(--text-deep);letter-spacing:.04em;display:inline-block;margin-right:.15rem;margin-bottom:.15rem}
-.tag-live{color:var(--gold);border-color:var(--gold-dim)}
-.tag-wip{color:var(--orange);border-color:var(--orange)}
+code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.04rem .18rem;border-radius:2px;font-size:.44rem;color:var(--gold)}
+.tag{font-family:var(--font-display);font-size:.34rem;padding:.05rem .18rem;border:1px solid var(--card-edge);color:var(--text-deep);letter-spacing:.04em;display:inline-block;margin-right:.12rem;margin-bottom:.12rem}
+
 .bullet-list{list-style:none;padding:0}
-.bullet-list li{padding:.15rem 0;font-size:.52rem;color:var(--text-dim)}
+.bullet-list li{padding:.12rem 0;font-size:.5rem;color:var(--text-dim)}
 .bullet-list li::before{content:'▸ ';color:var(--text-deep)}
+
+.cmd-group{margin:.15rem 0}
+.cmd-group .cmd{font-family:var(--font-display);font-size:.5rem;color:var(--gold);display:inline-block;min-width:3.5rem}
+.cmd-group .desc{color:var(--text-dim);font-size:.48rem}
+.cmd-group .subcmds{display:block;padding-left:3.8rem;font-size:.45rem;color:var(--text-deep);margin-top:.05rem}
 
 @media(max-width:500px){
   .page{padding:.5rem .25rem 3rem}
   h1{font-size:1.1rem}
-  .section h2{font-size:.8rem;padding:.4rem .5rem}
-  table{font-size:.46rem}
+  .section h2{font-size:.8rem;padding:.35rem .45rem}
+  table{font-size:.44rem}
   td:first-child{white-space:normal}
+  .cmd-group .subcmds{padding-left:0}
 }
 </style>
 </head>
 <body>
 <div class="nav-bar">
   <a href="index.html">← BACK</a>
-  <span class="title">COMMANDS & REFERENCE</span>
+  <span class="title">HERMES AGENT · COMMANDS</span>
 </div>
 <div class="page">
-  <h1>Commands & Reference<span>CX-3 Flight Computer · PDF Viewer · CAD Viewer</span></h1>
-  <p class="sub">Complete command reference for all tools in the CX-3 project suite. Click any page to jump to its section.</p>
+  <h1>Hermes Agent Command Reference<span>CLI · Slash Commands · Gateway · Tools · Profiles · Cron · MCP</span></h1>
+  <p class="sub">Complete reference for all Hermes Agent commands. Run <code>hermes --help</code> in the terminal or <code>/help</code> in-session. Based on <a href="https://hermes-agent.nousresearch.com/docs">official docs</a>.</p>
 
   <!-- ================================================================ -->
-  <!-- CX-3 FLIGHT COMPUTER -->
+  <!-- CLI -->
   <!-- ================================================================ -->
   <div class="section">
-    <h2><span class="icon">🛩️</span> CX-3 Flight Computer <code>cx3.html</code></h2>
+    <h2><span class="icon">⌨️</span> CLI Commands <code>hermes [flags] [command]</code></h2>
 
-    <h3>🔢 Calculator Modes</h3>
+    <h3>🚩 Global Flags</h3>
     <div class="body">
       <table>
-        <tr><th>Mode</th><th>Inputs</th><th>Outputs</th></tr>
-        <tr><td>TSD</td><td>Distance, Speed, Time (enter any 2)</td><td>Distance, Speed, Time (computed)</td></tr>
-        <tr><td>FUEL</td><td>Used, Flow, Time (enter any 2), Fuel Type (100LL/Jet A)</td><td>Used, Flow, Time, Remaining (gal &amp; lbs)</td></tr>
-        <tr><td>WIND</td><td>Course, TAS, Wind Dir, Wind Speed</td><td>WCA, Heading, GS, X-wind, H-wind</td></tr>
-        <tr><td>ALT</td><td>Altitude, Temp (enter 1), Pressure Alt, OAT</td><td>Density Altitude, True Altitude</td></tr>
-        <tr><td>CONV</td><td>Value, From unit, To unit</td><td>Converted value (distance, speed, temp, volume, mass, fuel)</td></tr>
-        <tr><td>W&amp;B</td><td>Station, Weight, Arm (add rows)</td><td>Total Weight, Moment, CG Location</td></tr>
+        <tr><th>Flag</th><th>Description</th></tr>
+        <tr><td><code>--version, -V</code></td><td>Show version</td></tr>
+        <tr><td><code>-r, --resume &lt;id&gt;</code></td><td>Resume session by ID or title</td></tr>
+        <tr><td><code>-c, --continue [name]</code></td><td>Resume by name, or most recent session</td></tr>
+        <tr><td><code>-w, --worktree</code></td><td>Isolated git worktree mode (parallel agents)</td></tr>
+        <tr><td><code>-s, --skills &lt;list&gt;</code></td><td>Preload skills (comma-separate or repeat)</td></tr>
+        <tr><td><code>-p, --profile &lt;name&gt;</code></td><td>Use a named profile</td></tr>
+        <tr><td><code>--yolo</code></td><td>Skip dangerous command approval</td></tr>
+        <tr><td><code>--pass-session-id</code></td><td>Include session ID in system prompt</td></tr>
+      </table>
+      <p style="font-size:.46rem;color:var(--text-deep);margin-top:.15rem">No subcommand defaults to <code>chat</code>. Pass <code>-q "query"</code> for one-shot mode.</p>
+    </div>
+
+    <h3>💬 Chat</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>hermes</code></td><td>Interactive chat (default)</td></tr>
+        <tr><td><code>hermes chat -q "query"</code></td><td>Single query, non-interactive</td></tr>
+        <tr><td><code>hermes chat -m &lt;model&gt;</code></td><td>Override model (e.g. <code>anthropic/claude-sonnet-4</code>)</td></tr>
+        <tr><td><code>hermes chat -t &lt;toolsets&gt;</code></td><td>Comma-separated toolset override</td></tr>
+        <tr><td><code>hermes chat --provider &lt;name&gt;</code></td><td>Force provider (openrouter, anthropic, nous, etc.)</td></tr>
+        <tr><td><code>--verbose, -v</code></td><td>Verbose output</td></tr>
+        <tr><td><code>--quiet, -Q</code></td><td>Suppress banner, spinner, tool previews</td></tr>
+        <tr><td><code>--checkpoints</code></td><td>Enable filesystem checkpoints (/rollback)</td></tr>
+        <tr><td><code>--source &lt;tag&gt;</code></td><td>Session source tag (default: cli)</td></tr>
       </table>
     </div>
 
-    <h3>⌨️ Keypad Commands</h3>
+    <h3>⚙️ Configuration &amp; Setup</h3>
     <div class="body">
-      <table>
-        <tr><th>Key</th><th>Action</th></tr>
-        <tr><td>0–9</td><td>Enter digit into active input field</td></tr>
-        <tr><td>.</td><td>Decimal point</td></tr>
-        <tr><td>±</td><td>Toggle negative/positive</td></tr>
-        <tr><td>⌫</td><td>Delete last character</td></tr>
-        <tr><td>CLR</td><td>Clear current input</td></tr>
-        <tr><td>ENT / ▶</td><td>Trigger COMPUTE</td></tr>
-        <tr><td>COMPUTE</td><td>Calculate result based on active mode</td></tr>
-        <tr><td>CLR (soft)</td><td>Clear all inputs in active panel</td></tr>
-      </table>
-      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Tip:</strong> Inputs are auto-focused. The keypad always targets the active input field. Press <code>TAB</code> to cycle through inputs.</p>
+      <div class="cmd-group">
+        <span class="cmd">hermes setup</span>
+        <span class="desc">Interactive wizard (model | terminal | gateway | tools | agent)</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">hermes model</span>
+        <span class="desc">Interactive model/provider picker</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">hermes config</span>
+        <span class="desc">
+          View current config |
+          <code>edit</code> Open in $EDITOR |
+          <code>set key val</code> Set value |
+          <code>path</code> Print config.yaml path |
+          <code>env-path</code> Print .env path |
+          <code>check</code> Check for missing/outdated config |
+          <code>migrate</code> Update with new options
+        </span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">hermes auth</span>
+        <span class="desc">
+          Interactive credential manager |
+          <code>add</code> Add OAuth or API-key |
+          <code>list</code> List stored credentials |
+          <code>remove</code> Remove stored credential
+        </span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">hermes doctor</span>
+        <span class="desc">Check dependencies and config</span>
+        <span class="subcmds">[--fix] Auto-fix issues found</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">hermes status</span>
+        <span class="desc">Show component status</span>
+        <span class="subcmds">[--all] Show all components</span>
+      </div>
     </div>
 
-    <h3>📐 Function Row (GRAPH mode)</h3>
+    <h3>🛠️ Tools &amp; Skills</h3>
     <div class="body">
-      <p style="font-size:.5rem;color:var(--text-dim);margin-bottom:.2rem;">Available in any graphing panel (GRAPH, 3D, QUAD, CUBIC). Click to insert into the expression input.</p>
+      <div class="cmd-group">
+        <span class="cmd">hermes tools</span>
+        <span class="desc">Interactive tool enable/disable (curses UI)</span>
+        <span class="subcmds"><code>list</code> Show all tools and status | <code>enable</code> Enable a toolset | <code>disable</code> Disable a toolset</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">hermes skills</span>
+        <span class="desc">
+          <code>list</code> Installed skills |
+          <code>search</code> Hub search |
+          <code>install</code> Install a skill |
+          <code>inspect</code> Preview without installing |
+          <code>config</code> Enable/disable per platform |
+          <code>check</code> Check for updates |
+          <code>update</code> Update outdated |
+          <code>uninstall</code> Remove hub skill |
+          <code>publish</code> Publish to registry |
+          <code>browse</code> Browse all skills |
+          <code>tap add</code> Add GitHub repo as source
+        </span>
+      </div>
+    </div>
+
+    <h3>🔌 MCP Servers</h3>
+    <div class="body">
       <table>
-        <tr><th>Button</th><th>Inserts</th><th>Description</th></tr>
-        <tr><td>( &nbsp; )</td><td>Parentheses</td><td>Group expressions</td></tr>
-        <tr><td>+ &nbsp; − &nbsp; × &nbsp; ÷</td><td>Arithmetic</td><td>Add, subtract, multiply, divide</td></tr>
-        <tr><td>^</td><td><code>^</code></td><td>Power (e.g. <code>x^2</code>)</td></tr>
-        <tr><td>√</td><td><code>sqrt(</code></td><td>Square root</td></tr>
-        <tr><td>sin</td><td><code>sin(</code></td><td>Sine (radians)</td></tr>
-        <tr><td>cos</td><td><code>cos(</code></td><td>Cosine (radians)</td></tr>
-        <tr><td>tan</td><td><code>tan(</code></td><td>Tangent (radians)</td></tr>
-        <tr><td>eˣ</td><td><code>exp(</code></td><td>Exponential (e^x)</td></tr>
-        <tr><td>ln</td><td><code>ln(</code></td><td>Natural logarithm (base e)</td></tr>
-        <tr><td>∫</td><td><code>int(</code></td><td>Integration (numeric)</td></tr>
-        <tr><td>d/dx</td><td><code>der(</code></td><td>Derivative (numeric)</td></tr>
-        <tr><td>π</td><td><code>π</code></td><td>Pi constant</td></tr>
-        <tr><td>e</td><td><code>Math.E</code></td><td>Euler's number</td></tr>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>hermes mcp serve</code></td><td>Run Hermes as an MCP server</td></tr>
+        <tr><td><code>hermes mcp add &lt;name&gt;</code></td><td>Add an MCP server (--url or --command)</td></tr>
+        <tr><td><code>hermes mcp remove &lt;name&gt;</code></td><td>Remove an MCP server</td></tr>
+        <tr><td><code>hermes mcp list</code></td><td>List configured servers</td></tr>
+        <tr><td><code>hermes mcp test &lt;name&gt;</code></td><td>Test connection</td></tr>
+        <tr><td><code>hermes mcp configure</code></td><td>Toggle tool selection</td></tr>
       </table>
     </div>
 
-    <h3>📊 Graphing Commands</h3>
+    <h3>🌐 Gateway (Messaging)</h3>
     <div class="body">
-      <table>
-        <tr><th>Mode</th><th>Description</th><th>Example Expression</th></tr>
-        <tr><td>GRAPH</td><td>2D function plot (<code>f(x)</code>)</td><td><code>sin(x)</code>, <code>x^2</code>, <code>ln(x)</code>, <code>exp(-x)*sin(x)</code></td></tr>
-        <tr><td>3D</td><td>3D surface plot (<code>f(x,y)</code>)</td><td><code>sin(x)*cos(y)</code>, <code>x^2-y^2</code></td></tr>
-        <tr><td>QUAD</td><td>Quadratic solver (<code>ax² + bx + c = 0</code>)</td><td>Enter a, b, c coefficients</td></tr>
-        <tr><td>CUBIC</td><td>Cubic solver (<code>ax³ + bx² + cx + d = 0</code>)</td><td>Enter a, b, c, d coefficients</td></tr>
-      </table>
-      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Functions:</strong> <code>sin(</code> <code>cos(</code> <code>tan(</code> <code>asin(</code> <code>acos(</code> <code>atan(</code> <code>sqrt(</code> <code>ln(</code> <code>log(</code> <code>exp(</code> <code>abs(</code> <code>floor(</code> <code>ceil(</code> <code>π</code> <code>int(</code> <code>der(</code></p>
-      <p style="font-size:.48rem;color:var(--text-deep);"><strong>Variables:</strong> <code>x</code> (f(x)), <code>x</code> &amp; <code>y</code> (f(x,y))</p>
-      <p style="font-size:.48rem;color:var(--text-deep);"><strong>Auto-range:</strong> Leave Y-range blank for auto-scale. Use <code>auto</code> to fit visible data.</p>
+      <div class="cmd-group">
+        <span class="cmd">hermes gateway</span>
+        <span class="desc">
+          <code>run</code> Start foreground |
+          <code>install</code> Install as service |
+          <code>start</code> | <code>stop</code> | <code>restart</code> |
+          <code>status</code> Check status |
+          <code>setup</code> Configure platforms
+        </span>
+      </div>
+      <p style="font-size:.45rem;color:var(--text-deep);margin-top:.1rem">Supports: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix, Mattermost, Home Assistant, DingTalk, Feishu, WeCom, BlueBubbles, Weixin, API Server, Webhooks, Open WebUI</p>
     </div>
 
-    <h3>💡 Fuel Density Shortcuts</h3>
+    <h3>💾 Sessions</h3>
     <div class="body">
       <table>
-        <tr><th>Key</th><th>Density</th></tr>
-        <tr><td>100LL</td><td>6.0 lbs/gal</td></tr>
-        <tr><td>Jet A</td><td>6.7 lbs/gal</td></tr>
-        <tr><td>Custom</td><td>User-defined density</td></tr>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>hermes sessions list</code></td><td>List recent sessions</td></tr>
+        <tr><td><code>hermes sessions browse</code></td><td>Interactive picker</td></tr>
+        <tr><td><code>hermes sessions export &lt;file&gt;</code></td><td>Export to JSONL</td></tr>
+        <tr><td><code>hermes sessions rename &lt;id&gt; &lt;name&gt;</code></td><td>Rename a session</td></tr>
+        <tr><td><code>hermes sessions delete &lt;id&gt;</code></td><td>Delete a session</td></tr>
+        <tr><td><code>hermes sessions prune</code></td><td>Clean up old sessions (--older-than N days)</td></tr>
+        <tr><td><code>hermes sessions stats</code></td><td>Session store statistics</td></tr>
       </table>
     </div>
 
-    <h3>⌨️ Keyboard Shortcuts (CX-3)</h3>
+    <h3>⏰ Cron Jobs</h3>
     <div class="body">
       <table>
-        <tr><th>Key</th><th>Action</th></tr>
-        <tr><td>Enter</td><td>Trigger COMPUTE (when input is focused)</td></tr>
-        <tr><td>Backspace</td><td>Delete last character</td></tr>
-        <tr><td>Tab</td><td>Cycle through input fields</td></tr>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>hermes cron list</code></td><td>List jobs (--all for disabled)</td></tr>
+        <tr><td><code>hermes cron create &lt;schedule&gt;</code></td><td>Create job: '30m', 'every 2h', '0 9 * * *'</td></tr>
+        <tr><td><code>hermes cron edit &lt;id&gt;</code></td><td>Edit schedule, prompt, delivery</td></tr>
+        <tr><td><code>hermes cron pause/resume &lt;id&gt;</code></td><td>Control job state</td></tr>
+        <tr><td><code>hermes cron run &lt;id&gt;</code></td><td>Trigger on next tick</td></tr>
+        <tr><td><code>hermes cron remove &lt;id&gt;</code></td><td>Delete a job</td></tr>
+        <tr><td><code>hermes cron status</code></td><td>Scheduler status</td></tr>
+      </table>
+    </div>
+
+    <h3>🔗 Webhooks</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>hermes webhook subscribe &lt;name&gt;</code></td><td>Create route at /webhooks/&lt;name&gt;</td></tr>
+        <tr><td><code>hermes webhook list</code></td><td>List subscriptions</td></tr>
+        <tr><td><code>hermes webhook remove &lt;name&gt;</code></td><td>Remove a subscription</td></tr>
+        <tr><td><code>hermes webhook test &lt;name&gt;</code></td><td>Send a test POST</td></tr>
+      </table>
+    </div>
+
+    <h3>👤 Profiles</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>hermes profile list</code></td><td>List all profiles</td></tr>
+        <tr><td><code>hermes profile create &lt;name&gt;</code></td><td>Create (--clone, --clone-all, --clone-from)</td></tr>
+        <tr><td><code>hermes profile use &lt;name&gt;</code></td><td>Set sticky default</td></tr>
+        <tr><td><code>hermes profile delete &lt;name&gt;</code></td><td>Delete a profile</td></tr>
+        <tr><td><code>hermes profile show &lt;name&gt;</code></td><td>Show details</td></tr>
+        <tr><td><code>hermes profile alias &lt;name&gt;</code></td><td>Manage wrapper scripts</td></tr>
+        <tr><td><code>hermes profile rename &lt;a&gt; &lt;b&gt;</code></td><td>Rename a profile</td></tr>
+        <tr><td><code>hermes profile export &lt;name&gt;</code></td><td>Export to tar.gz</td></tr>
+        <tr><td><code>hermes profile import &lt;file&gt;</code></td><td>Import from archive</td></tr>
+      </table>
+    </div>
+
+    <h3>📊 Other CLI Commands</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>hermes insights [--days N]</code></td><td>Usage analytics</td></tr>
+        <tr><td><code>hermes update</code></td><td>Update to latest version</td></tr>
+        <tr><td><code>hermes pairing list/approve/revoke</code></td><td>DM authorization</td></tr>
+        <tr><td><code>hermes plugins list/install/remove</code></td><td>Plugin management</td></tr>
+        <tr><td><code>hermes honcho setup/status</code></td><td>Honcho memory integration</td></tr>
+        <tr><td><code>hermes memory setup/status/off</code></td><td>Memory provider config</td></tr>
+        <tr><td><code>hermes completion bash|zsh</code></td><td>Shell completions</td></tr>
+        <tr><td><code>hermes acp</code></td><td>ACP server (IDE integration)</td></tr>
+        <tr><td><code>hermes claw migrate</code></td><td>Migrate from OpenClaw</td></tr>
+        <tr><td><code>hermes uninstall</code></td><td>Uninstall Hermes</td></tr>
       </table>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- PDF VIEWER -->
+  <!-- SLASH COMMANDS -->
   <!-- ================================================================ -->
   <div class="section">
-    <h2><span class="icon">📄</span> PDF Viewer &amp; Editor <code>pdf.html</code></h2>
+    <h2><span class="icon">/</span> Slash Commands (In-Session)</h2>
+    <div class="body">
+      <p style="font-size:.48rem;color:var(--text-dim);margin-bottom:.3rem">Type these during an interactive chat session (CLI, Telegram, Discord, etc.) Run <code>/help</code> in-session for the authoritative live list.</p>
+    </div>
 
-    <h3>📂 File Operations</h3>
+    <h3>🔄 Session Control</h3>
     <div class="body">
       <table>
-        <tr><th>Action</th><th>How</th></tr>
-        <tr><td>Open PDF</td><td>Click the drop zone or drag-and-drop a <code>.pdf</code> file onto it</td></tr>
-        <tr><td>Save (download)</td><td>Click 💾 — annotations are embedded and downloaded as <code>_edited.pdf</code></td></tr>
-        <tr><td>Print</td><td>Click 🖨️ — opens a print dialog (falls back to download if popup blocked)</td></tr>
+        <tr><th>Command</th><th>Aliases</th><th>Description</th></tr>
+        <tr><td><code>/new</code></td><td>/reset</td><td>Fresh session</td></tr>
+        <tr><td><code>/clear</code></td><td></td><td>Clear screen + new session (CLI)</td></tr>
+        <tr><td><code>/retry</code></td><td></td><td>Resend last message</td></tr>
+        <tr><td><code>/undo</code></td><td></td><td>Remove last exchange</td></tr>
+        <tr><td><code>/title [name]</code></td><td></td><td>Name the session</td></tr>
+        <tr><td><code>/compress</code></td><td></td><td>Manually compress context</td></tr>
+        <tr><td><code>/stop</code></td><td></td><td>Kill background processes</td></tr>
+        <tr><td><code>/rollback [N]</code></td><td></td><td>Restore filesystem checkpoint</td></tr>
+        <tr><td><code>/snapshot [sub]</code></td><td></td><td>Create/restore state snapshots (CLI)</td></tr>
+        <tr><td><code>/background &lt;prompt&gt;</code></td><td></td><td>Run prompt in background</td></tr>
+        <tr><td><code>/queue &lt;prompt&gt;</code></td><td></td><td>Queue for next turn</td></tr>
+        <tr><td><code>/steer &lt;prompt&gt;</code></td><td></td><td>Inject message after next tool call</td></tr>
+        <tr><td><code>/agents</code></td><td>/tasks</td><td>Show active agents and running tasks</td></tr>
+        <tr><td><code>/resume [name]</code></td><td></td><td>Resume a named session</td></tr>
+        <tr><td><code>/goal [text|sub]</code></td><td></td><td>Set standing goal across turns. Sub: status, pause, resume, clear</td></tr>
+        <tr><td><code>/redraw</code></td><td></td><td>Force full UI repaint (CLI)</td></tr>
       </table>
     </div>
 
-    <h3>🔍 Zoom Controls</h3>
+    <h3>⚙️ Configuration</h3>
     <div class="body">
       <table>
-        <tr><th>Command</th><th>Action</th></tr>
-        <tr><td>🔍+ / 🔍−</td><td>Zoom in / zoom out by 25% steps</td></tr>
-        <tr><td>Ctrl + Scroll</td><td>Smooth zoom (like Adobe Acrobat)</td></tr>
-        <tr><td>⬇️ Zoom %</td><td>Click the percentage to open preset dropdown</td></tr>
-        <tr><td>400% → 50%</td><td>Preset zoom levels</td></tr>
-        <tr><td>▬ Fit Width</td><td>Scale page to fill viewer width</td></tr>
-        <tr><td>▭ Fit Page</td><td>Scale page to fit entirely in viewer</td></tr>
-      </table>
-      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Auto Fit:</strong> Fit to Width is applied automatically on load and on window resize.</p>
-    </div>
-
-    <h3>📖 Page Navigation</h3>
-    <div class="body">
-      <table>
-        <tr><th>Command</th><th>Action</th></tr>
-        <tr><td>◀ / ▶</td><td>Previous / Next page</td></tr>
-        <tr><td>PG [N]</td><td>Type a page number and press Enter</td></tr>
-        <tr><td>← / → (Arrow)</td><td>Previous / Next page (keyboard)</td></tr>
-        <tr><td>PgUp / PgDn</td><td>Previous / Next page</td></tr>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/config</code></td><td>Show current config (CLI)</td></tr>
+        <tr><td><code>/model [name]</code></td><td>Show or change model</td></tr>
+        <tr><td><code>/personality [name]</code></td><td>Set personality</td></tr>
+        <tr><td><code>/reasoning [level]</code></td><td>Set reasoning (none|minimal|low|medium|high|xhigh|show|hide)</td></tr>
+        <tr><td><code>/verbose</code></td><td>Cycle: off → new → all → verbose</td></tr>
+        <tr><td><code>/voice [on|off|tts]</code></td><td>Voice mode control</td></tr>
+        <tr><td><code>/yolo</code></td><td>Toggle approval bypass</td></tr>
+        <tr><td><code>/busy [sub]</code></td><td>Control Enter behavior while Hermes works (CLI). Sub: queue, steer, interrupt, status</td></tr>
+        <tr><td><code>/indicator [style]</code></td><td>Pick TUI busy-indicator (kaomoji, emoji, unicode, ascii)</td></tr>
+        <tr><td><code>/footer [on|off]</code></td><td>Toggle gateway runtime-metadata footer</td></tr>
+        <tr><td><code>/skin [name]</code></td><td>Change theme (CLI)</td></tr>
+        <tr><td><code>/statusbar</code></td><td>Toggle status bar (CLI)</td></tr>
       </table>
     </div>
 
-    <h3>✏️ Annotation Tools</h3>
+    <h3>🛠️ Tools &amp; Skills</h3>
     <div class="body">
       <table>
-        <tr><th>Tool</th><th>Button</th><th>How to Use</th></tr>
-        <tr><td>Pan</td><td>✋</td><td>Click and drag to scroll the page (default tool)</td></tr>
-        <tr><td>Pen</td><td>✏️</td><td>Click and drag to draw freehand lines</td></tr>
-        <tr><td>Highlight</td><td>🖍️</td><td>Click and drag to create rectangular highlight regions</td></tr>
-        <tr><td>Text</td><td>🔤</td><td>Click to place a text overlay, type, press Enter to confirm</td></tr>
-        <tr><td>Eraser</td><td>🧹</td><td>Click on any annotation to delete it</td></tr>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/tools</code></td><td>Manage tools (CLI)</td></tr>
+        <tr><td><code>/toolsets</code></td><td>List toolsets (CLI)</td></tr>
+        <tr><td><code>/skills</code></td><td>Search/install skills (CLI)</td></tr>
+        <tr><td><code>/skill &lt;name&gt;</code></td><td>Load a skill into session</td></tr>
+        <tr><td><code>/reload-skills</code></td><td>Re-scan skills directory</td></tr>
+        <tr><td><code>/reload</code></td><td>Reload .env variables (CLI)</td></tr>
+        <tr><td><code>/reload-mcp</code></td><td>Reload MCP servers</td></tr>
+        <tr><td><code>/cron</code></td><td>Manage cron jobs (CLI)</td></tr>
+        <tr><td><code>/curator [sub]</code></td><td>Skill maintenance (status, run, pin, archive…)</td></tr>
+        <tr><td><code>/kanban [sub]</code></td><td>Multi-profile collaboration board</td></tr>
+        <tr><td><code>/plugins</code></td><td>List plugins (CLI)</td></tr>
       </table>
     </div>
 
-    <h3>🎨 Annotation Controls</h3>
+    <h3>🌐 Gateway (Platforms)</h3>
     <div class="body">
       <table>
-        <tr><th>Control</th><th>Description</th></tr>
-        <tr><td>Color swatches</td><td>6 preset colors: gold, orange, green, blue, pink, white</td></tr>
-        <tr><td>🎨 Color picker</td><td>Click the circle for custom color selection</td></tr>
-        <tr><td>Size slider</td><td>1–20px brush thickness for pen and text</td></tr>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/approve</code></td><td>Approve a pending command (gateway)</td></tr>
+        <tr><td><code>/deny</code></td><td>Deny a pending command (gateway)</td></tr>
+        <tr><td><code>/restart</code></td><td>Restart gateway (gateway)</td></tr>
+        <tr><td><code>/sethome</code></td><td>Set current chat as home channel (gateway)</td></tr>
+        <tr><td><code>/update</code></td><td>Update Hermes to latest (gateway)</td></tr>
+        <tr><td><code>/topic [sub]</code></td><td>Enable/inspect Telegram DM topics (gateway)</td></tr>
+        <tr><td><code>/platforms</code></td><td>/gateway</td><td>Show platform connection status (gateway)</td></tr>
+      </table>
+    </div>
+
+    <h3>🔧 Utility</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Aliases</th><th>Description</th></tr>
+        <tr><td><code>/branch</code></td><td>/fork</td><td>Branch the current session</td></tr>
+        <tr><td><code>/fast</code></td><td></td><td>Toggle priority/fast processing</td></tr>
+        <tr><td><code>/browser</code></td><td></td><td>Open CDP browser connection</td></tr>
+        <tr><td><code>/history</code></td><td></td><td>Show conversation history (CLI)</td></tr>
+        <tr><td><code>/save</code></td><td></td><td>Save conversation to file (CLI)</td></tr>
+        <tr><td><code>/copy [N]</code></td><td></td><td>Copy last assistant response (CLI)</td></tr>
+        <tr><td><code>/paste</code></td><td></td><td>Attach clipboard image (CLI)</td></tr>
+        <tr><td><code>/image</code></td><td></td><td>Attach local image file (CLI)</td></tr>
+      </table>
+    </div>
+
+    <h3>ℹ️ Information</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/help</code></td><td>Show all commands</td></tr>
+        <tr><td><code>/commands [page]</code></td><td>Browse all commands (gateway)</td></tr>
+        <tr><td><code>/usage</code></td><td>Token usage</td></tr>
+        <tr><td><code>/insights [days]</code></td><td>Usage analytics</td></tr>
+        <tr><td><code>/gquota</code></td><td>Show Gemini Code Assist quota (CLI)</td></tr>
+        <tr><td><code>/status</code></td><td>Session info (gateway)</td></tr>
+        <tr><td><code>/profile</code></td><td>Active profile info</td></tr>
+        <tr><td><code>/debug</code></td><td>Upload debug report (system info + logs)</td></tr>
+        <tr><td><code>/quit</code></td><td>/exit, /q</td><td>Exit CLI</td></tr>
       </table>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- CAD VIEWER -->
+  <!-- TOOLSETS -->
   <!-- ================================================================ -->
   <div class="section">
-    <h2><span class="icon">📐</span> CAD File Viewer <code>cad.html</code></h2>
-
-    <h3>📂 File Operations</h3>
+    <h2><span class="icon">🧰</span> Toolsets Overview</h2>
     <div class="body">
+      <p style="font-size:.48rem;color:var(--text-dim);margin-bottom:.3rem">Enable/disable via <code>hermes tools</code> (interactive) or <code>hermes tools enable/disable &lt;name&gt;</code>. Takes effect on next session (<code>/reset</code>).</p>
       <table>
-        <tr><th>Action</th><th>How</th></tr>
-        <tr><td>Open file</td><td>Click the drop zone or drag-and-drop a <code>.stl</code>, <code>.step</code>, or <code>.stp</code> file</td></tr>
-        <tr><td>Reset view</td><td>Click <code>RESET VIEW</code> to center the model</td></tr>
-      </table>
-    </div>
-
-    <h3>🖱️ Navigation</h3>
-    <div class="body">
-      <table>
-        <tr><th>Action</th><th>Mouse / Touch</th></tr>
-        <tr><td>Rotate</td><td>Click and drag (left mouse)</td></tr>
-        <tr><td>Zoom</td><td>Scroll wheel</td></tr>
-        <tr><td>Pan</td><td>Right-click and drag</td></tr>
-      </table>
-    </div>
-
-    <h3>🎨 Rendering</h3>
-    <div class="body">
-      <table>
-        <tr><th>Mode</th><th>Button</th><th>Description</th></tr>
-        <tr><td>Solid</td><td>SOLID</td><td>Rendered mesh with lighting and shading (default)</td></tr>
-        <tr><td>Wireframe</td><td>WIRE</td><td>Triangular mesh wireframe overlays</td></tr>
-      </table>
-    </div>
-
-    <h3>📏 Supported Formats</h3>
-    <div class="body">
-      <table>
-        <tr><th>Format</th><th>Extension</th><th>Notes</th></tr>
-        <tr><td>STL</td><td><code>.stl</code></td><td>Binary STL via Three.js STLLoader — auto-centered and scaled</td></tr>
-        <tr><td>STEP</td><td><code>.step</code>, <code>.stp</code></td><td>In-browser STEP parser — supports AP203/AP242 entities: CARTESIAN_POINT, POLY_LOOP, ADVANCED_FACE, TRIANGULATED_FACE</td></tr>
-      </table>
-      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Size limit:</strong> Files up to ~50MB. Larger files may cause browser slowdown.</p>
-    </div>
-  </div>
-
-  <!-- ================================================================ -->
-  <!-- KEYBOARD / GLOBAL -->
-  <!-- ================================================================ -->
-  <div class="section">
-    <h2><span class="icon">⌨️</span> Global Keyboard Shortcuts</h2>
-    <div class="body">
-      <table>
-        <tr><th>Shortcut</th><th>Works In</th><th>Action</th></tr>
-        <tr><td>Enter</td><td>All tools</td><td>Submit current input / trigger compute</td></tr>
-        <tr><td>Esc</td><td>PDF Viewer</td><td>Cancel text annotation</td></tr>
-        <tr><td>← / →</td><td>PDF Viewer</td><td>Previous / Next page</td></tr>
-        <tr><td>Ctrl+Scroll</td><td>PDF Viewer</td><td>Smooth zoom in/out</td></tr>
-        <tr><td>Tab</td><td>CX-3 Calculator</td><td>Cycle through input fields</td></tr>
+        <tr><th>Toolset</th><th>What it provides</th></tr>
+        <tr><td><code>web</code></td><td>Web search and content extraction</td></tr>
+        <tr><td><code>search</code></td><td>Web search only (subset of web)</td></tr>
+        <tr><td><code>browser</code></td><td>Browser automation (Browserbase, Camofox, local Chromium)</td></tr>
+        <tr><td><code>terminal</code></td><td>Shell commands and process management</td></tr>
+        <tr><td><code>file</code></td><td>File read/write/search/patch</td></tr>
+        <tr><td><code>code_execution</code></td><td>Sandboxed Python execution</td></tr>
+        <tr><td><code>vision</code></td><td>Image analysis</td></tr>
+        <tr><td><code>image_gen</code></td><td>AI image generation</td></tr>
+        <tr><td><code>video</code></td><td>Video analysis and generation</td></tr>
+        <tr><td><code>tts</code></td><td>Text-to-speech</td></tr>
+        <tr><td><code>skills</code></td><td>Skill browsing and management</td></tr>
+        <tr><td><code>memory</code></td><td>Persistent cross-session memory</td></tr>
+        <tr><td><code>session_search</code></td><td>Search past conversations</td></tr>
+        <tr><td><code>delegation</code></td><td>Subagent task delegation</td></tr>
+        <tr><td><code>cronjob</code></td><td>Scheduled task management</td></tr>
+        <tr><td><code>clarify</code></td><td>Ask user clarifying questions</td></tr>
+        <tr><td><code>messaging</code></td><td>Cross-platform message sending</td></tr>
+        <tr><td><code>todo</code></td><td>In-session task planning and tracking</td></tr>
+        <tr><td><code>kanban</code></td><td>Multi-agent work-queue tools</td></tr>
+        <tr><td><code>debugging</code></td><td>Extra introspection/debug tools (off by default)</td></tr>
+        <tr><td><code>safe</code></td><td>Minimal, low-risk toolset for locked-down sessions</td></tr>
+        <tr><td><code>spotify</code></td><td>Spotify playback and playlist control</td></tr>
+        <tr><td><code>homeassistant</code></td><td>Smart home control (off by default)</td></tr>
+        <tr><td><code>discord</code></td><td>Discord integration tools</td></tr>
+        <tr><td><code>discord_admin</code></td><td>Discord admin/moderation tools</td></tr>
+        <tr><td><code>feishu_doc</code></td><td>Feishu (Lark) document tools</td></tr>
+        <tr><td><code>feishu_drive</code></td><td>Feishu (Lark) drive tools</td></tr>
+        <tr><td><code>yuanbao</code></td><td>Yuanbao integration tools</td></tr>
+        <tr><td><code>rl</code></td><td>Reinforcement learning tools (off by default)</td></tr>
+        <tr><td><code>moa</code></td><td>Mixture of Agents (off by default)</td></tr>
       </table>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- MATH REFERENCE -->
+  <!-- PROVIDERS -->
   <!-- ================================================================ -->
   <div class="section">
-    <h2><span class="icon">∑</span> Math Function Reference</h2>
+    <h2><span class="icon">🔑</span> Supported Providers</h2>
     <div class="body">
-      <p style="font-size:.52rem;color:var(--text-dim);margin-bottom:.3rem;">All functions available in GRAPH and 3D graph expression inputs. Type or use func-row buttons.</p>
+      <p style="font-size:.48rem;color:var(--text-dim);margin-bottom:.2rem">Set via <code>hermes model</code> or <code>hermes setup</code>. 20+ providers supported.</p>
       <table>
-        <tr><th>Function</th><th>Example</th><th>Result</th></tr>
-        <tr><td><code>sin(x)</code></td><td><code>sin(0)</code></td><td>0</td></tr>
-        <tr><td><code>cos(x)</code></td><td><code>cos(π)</code></td><td>−1</td></tr>
-        <tr><td><code>tan(x)</code></td><td><code>tan(π/4)</code></td><td>1</td></tr>
-        <tr><td><code>asin(x)</code></td><td><code>asin(1)</code></td><td>π/2</td></tr>
-        <tr><td><code>acos(x)</code></td><td><code>acos(0)</code></td><td>π/2</td></tr>
-        <tr><td><code>atan(x)</code></td><td><code>atan(1)</code></td><td>π/4</td></tr>
-        <tr><td><code>ln(x)</code></td><td><code>ln(e)</code></td><td>1</td></tr>
-        <tr><td><code>log(x)</code></td><td><code>log(e)</code></td><td>1 (alias for ln)</td></tr>
-        <tr><td><code>exp(x)</code></td><td><code>exp(1)</code></td><td>e ≈ 2.718</td></tr>
-        <tr><td><code>sqrt(x)</code></td><td><code>sqrt(9)</code></td><td>3</td></tr>
-        <tr><td><code>abs(x)</code></td><td><code>abs(−5)</code></td><td>5</td></tr>
-        <tr><td><code>floor(x)</code></td><td><code>floor(3.7)</code></td><td>3</td></tr>
-        <tr><td><code>ceil(x)</code></td><td><code>ceil(3.2)</code></td><td>4</td></tr>
-        <tr><td><code>x^y</code></td><td><code>2^3</code></td><td>8</td></tr>
-        <tr><td><code>π</code></td><td><code>π</code></td><td>3.14159…</td></tr>
-        <tr><td><code>e</code></td><td><code>e</code></td><td>2.71828…</td></tr>
-        <tr><td><code>int(expr, a, b)</code></td><td><code>int(x^2, 0, 1)</code></td><td>∫x² dx ≈ 0.333</td></tr>
-        <tr><td><code>der(expr, x)</code></td><td><code>der(x^2, 2)</code></td><td>d/dx x² at x=2 ≈ 4</td></tr>
+        <tr><th>Provider</th><th>Auth Method</th><th>Env Variable</th></tr>
+        <tr><td>OpenRouter</td><td>API key</td><td><code>OPENROUTER_API_KEY</code></td></tr>
+        <tr><td>Anthropic</td><td>API key</td><td><code>ANTHROPIC_API_KEY</code></td></tr>
+        <tr><td>Nous Portal</td><td>OAuth</td><td><code>hermes auth</code></td></tr>
+        <tr><td>OpenAI Codex</td><td>OAuth</td><td><code>hermes auth</code></td></tr>
+        <tr><td>GitHub Copilot</td><td>Token</td><td><code>COPILOT_GITHUB_TOKEN</code></td></tr>
+        <tr><td>Google Gemini</td><td>API key</td><td><code>GOOGLE_API_KEY</code> / <code>GEMINI_API_KEY</code></td></tr>
+        <tr><td>DeepSeek</td><td>API key</td><td><code>DEEPSEEK_API_KEY</code></td></tr>
+        <tr><td>xAI / Grok</td><td>API key</td><td><code>XAI_API_KEY</code></td></tr>
+        <tr><td>Hugging Face</td><td>Token</td><td><code>HF_TOKEN</code></td></tr>
+        <tr><td>Z.AI / GLM</td><td>API key</td><td><code>GLM_API_KEY</code></td></tr>
+        <tr><td>MiniMax</td><td>API key</td><td><code>MINIMAX_API_KEY</code></td></tr>
+        <tr><td>Kimi / Moonshot</td><td>API key</td><td><code>KIMI_API_KEY</code></td></tr>
+        <tr><td>Alibaba / DashScope</td><td>API key</td><td><code>DASHSCOPE_API_KEY</code></td></tr>
+        <tr><td>Xiaomi MiMo</td><td>API key</td><td><code>XIAOMI_API_KEY</code></td></tr>
+        <tr><td>Kilo Code</td><td>API key</td><td><code>KILOCODE_API_KEY</code></td></tr>
+        <tr><td>OpenCode Zen</td><td>API key</td><td><code>OPENCODE_ZEN_API_KEY</code></td></tr>
+        <tr><td>OpenCode Go</td><td>API key</td><td><code>OPENCODE_GO_API_KEY</code></td></tr>
+        <tr><td>Qwen OAuth</td><td>OAuth</td><td><code>hermes auth add qwen-oauth</code></td></tr>
+        <tr><td>Custom endpoint</td><td>Config</td><td><code>model.base_url</code> + <code>model.api_key</code> in config.yaml</td></tr>
+        <tr><td>GitHub Copilot ACP</td><td>External</td><td><code>COPILOT_CLI_PATH</code> or Copilot CLI</td></tr>
       </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- CONFIG -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">⚙️</span> Config Sections</h2>
+    <div class="body">
+      <table>
+        <tr><th>Section</th><th>Key Options</th></tr>
+        <tr><td><code>model</code></td><td><code>default</code>, <code>provider</code>, <code>base_url</code>, <code>api_key</code>, <code>context_length</code></td></tr>
+        <tr><td><code>agent</code></td><td><code>max_turns</code> (90), <code>tool_use_enforcement</code></td></tr>
+        <tr><td><code>terminal</code></td><td><code>backend</code> (local/docker/ssh/modal), <code>cwd</code>, <code>timeout</code> (180)</td></tr>
+        <tr><td><code>compression</code></td><td><code>enabled</code>, <code>threshold</code> (0.50), <code>target_ratio</code> (0.20)</td></tr>
+        <tr><td><code>display</code></td><td><code>skin</code>, <code>tool_progress</code>, <code>show_reasoning</code>, <code>show_cost</code></td></tr>
+        <tr><td><code>stt</code></td><td><code>enabled</code>, <code>provider</code> (local/groq/openai/mistral)</td></tr>
+        <tr><td><code>tts</code></td><td><code>provider</code> (edge/elevenlabs/openai/minimax/mistral/neutts)</td></tr>
+        <tr><td><code>memory</code></td><td><code>memory_enabled</code>, <code>user_profile_enabled</code>, <code>provider</code></td></tr>
+        <tr><td><code>security</code></td><td><code>tirith_enabled</code>, <code>website_blocklist</code></td></tr>
+        <tr><td><code>delegation</code></td><td><code>model</code>, <code>provider</code>, <code>max_iterations</code> (50), <code>reasoning_effort</code></td></tr>
+        <tr><td><code>checkpoints</code></td><td><code>enabled</code>, <code>max_snapshots</code> (50)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- KEY PATHS -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">📁</span> Key Paths</h2>
+    <div class="body">
+      <table>
+        <tr><th>Path</th><th>Contents</th></tr>
+        <tr><td><code>~/.hermes/config.yaml</code></td><td>Main configuration</td></tr>
+        <tr><td><code>~/.hermes/.env</code></td><td>API keys and secrets</td></tr>
+        <tr><td><code>$HERMES_HOME/skills/</code></td><td>Installed skills</td></tr>
+        <tr><td><code>~/.hermes/sessions/</code></td><td>Gateway routing, request dumps, transcripts</td></tr>
+        <tr><td><code>~/.hermes/state.db</code></td><td>Canonical session store (SQLite + FTS5)</td></tr>
+        <tr><td><code>~/.hermes/logs/</code></td><td>Gateway and error logs</td></tr>
+        <tr><td><code>~/.hermes/auth.json</code></td><td>OAuth tokens and credential pools</td></tr>
+        <tr><td><code>~/.hermes/hermes-agent/</code></td><td>Source code (if git-installed)</td></tr>
+      </table>
+      <p style="font-size:.46rem;color:var(--text-deep);margin-top:.15rem">Profiles use <code>~/.hermes/profiles/&lt;name&gt;/</code> with the same layout.</p>
     </div>
   </div>
 
@@ -316,19 +514,21 @@ code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.05
   <!-- TIPS -->
   <!-- ================================================================ -->
   <div class="section">
-    <h2><span class="icon">💡</span> Tips &amp; Tricks</h2>
+    <h2><span class="icon">💡</span> Quick Tips</h2>
     <div class="body">
       <ul class="bullet-list">
-        <li><strong>CX-3 input fields</strong> — Enter any 2 values, leave the rest blank; the missing value is computed.</li>
-        <li><strong>Fuel type</strong> — Tap 100LL or Jet A to switch density; tap Custom to enter an exact value.</li>
-        <li><strong>W&amp;B station rows</strong> — Click +STATION to add more rows, ✕ to remove.</li>
-        <li><strong>Graph auto-scale</strong> — Leave Y-range blank for auto Y-axis; the plot fills the viewable area.</li>
-        <li><strong>3D graphing</strong> — Use <code>x</code> and <code>y</code> variables in the expression. Drag to rotate the 3D surface.</li>
-        <li><strong>PDF annotations</strong> — Survival across saves: annotations are embedded into the downloaded PDF file.</li>
-        <li><strong>PDF zoom</strong> — Ctrl+Scroll on a trackpad gives smooth Acrobat-style zoom.</li>
-        <li><strong>CAD files</strong> — STEP files use an in-browser parser; complex assemblies may take a few seconds.</li>
-        <li><strong>Mobile</strong> — Pages are responsive. Use numeric keypad on touch devices for quick input.</li>
-        <li><strong>Dark mode</strong> — All tools feature a dark, low-glare theme optimized for flight deck and late-night use.</li>
+        <li><strong>First time?</strong> Run <code>hermes setup</code> for the interactive wizard</li>
+        <li><strong>Change model mid-stream:</strong> <code>/model anthropic/claude-sonnet-4</code> (or any provider/model)</li>
+        <li><strong>Resume work:</strong> <code>hermes --continue</code> picks up your last session</li>
+        <li><strong>One-shot queries:</strong> <code>hermes chat -q "Find all TODO comments in my project"</code></li>
+        <li><strong>Safe mode:</strong> <code>hermes --yolo</code> skips command approval prompts</li>
+        <li><strong>Background jobs:</strong> <code>/background "Write a unit test for api/auth.py"</code></li>
+        <li><strong>Context compression:</strong> Run <code>/compress</code> manually when the session feels sluggish</li>
+        <li><strong>Session history:</strong> <code>hermes sessions list</code> or <code>hermes sessions browse</code></li>
+        <li><strong>Save skills:</strong> After solving a complex problem, say "save this as a skill"</li>
+        <li><strong>Profiles:</strong> Use <code>hermes profile create work</code> for isolated configs</li>
+        <li><strong>Voice:</strong> <code>/voice on</code> enables voice-to-voice; <code>/voice tts</code> for text-to-speech only</li>
+        <li><strong>Plugins:</strong> <code>hermes plugins list</code> to see what's available</li>
       </ul>
     </div>
   </div>
