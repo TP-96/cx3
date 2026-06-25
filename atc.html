@@ -307,7 +307,7 @@ class Aircraft{
       }
     }
 
-    const spdPx=this.speed*0.012*60*dt;
+    const spdPx=this.speed*0.0045*60*dt;
     this.x+=Math.cos(this.heading*Math.PI/180)*spdPx;
     this.y+=Math.sin(this.heading*Math.PI/180)*spdPx;
     this.trail.push({x:this.x,y:this.y});
