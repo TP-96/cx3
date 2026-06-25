@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>PDF → PNG Converter</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--card:#141312;--card-edge:#22201c;--gold:#E8C04A;--gold-dim:#9a7528;--orange:#FF6A1A;--green:#8fe89a;--cyan:#4dd0e1;--text:#f0ede8;--text-dim:#b8b2a5;--text-deep:#6b6555;--font-head:'Bebas Neue',sans-serif;--font-display:'Share Tech Mono',monospace;--font-body:'Inter',sans-serif}
+html{height:100%}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100%}
+a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
+
+.nav-bar{display:flex;align-items:center;gap:.5rem;max-width:1000px;margin:0 auto;padding:.75rem .5rem 0}
+.nav-bar a{font-family:var(--font-display);font-size:.45rem;color:var(--text-deep);border:1px solid var(--card-edge);padding:.2rem .5rem;transition:all .1s;text-decoration:none}
+.nav-bar a:hover{color:var(--gold);border-color:var(--gold-dim)}
+.nav-bar .title{margin-left:auto;font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);letter-spacing:.05em}
+
+.page{max-width:1000px;margin:0 auto;padding:1rem .75rem 4rem}
+h1{font-family:var(--font-head);font-size:1.5rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.05rem}
+h1 span{color:var(--text-deep);font-family:var(--font-display);font-size:.5rem;letter-spacing:.08em;display:block;margin-top:.05rem}
+.sub{font-size:.55rem;color:var(--text-dim);margin-bottom:1rem}
+
+.section{background:var(--card);border:1px solid var(--card-edge);margin-bottom:.7rem;padding:.65rem}
+
+/* Upload zone */
+.upload-zone{border:2px dashed var(--card-edge);border-radius:4px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .15s;position:relative}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--gold-dim);background:rgba(232,192,74,.03)}
+.upload-zone .icon{font-size:2rem;margin-bottom:.5rem}
+.upload-zone .main-text{font-family:var(--font-display);font-size:.6rem;color:var(--text-dim)}
+.upload-zone .sub-text{font-size:.45rem;color:var(--text-deep);margin-top:.2rem}
+.upload-zone input[type=file]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer}
+
+/* Controls */
+.controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.ctrl-group{display:flex;align-items:center;gap:.3rem}
+.ctrl-group label{font-family:var(--font-display);font-size:.38rem;color:var(--text-deep);letter-spacing:.04em;text-transform:uppercase}
+.ctrl-group select,.ctrl-group input{background:var(--bg);border:1px solid var(--card-edge);color:var(--text);font-family:var(--font-display);font-size:.4rem;padding:.2rem .35rem;outline:none;width:auto;min-width:3rem}
+.ctrl-group select:focus,.ctrl-group input:focus{border-color:var(--gold-dim)}
+.ctrl-group input[type=number]{width:3.5rem}
+
+.btn{font-family:var(--font-display);font-size:.45rem;border:1px solid var(--card-edge);padding:.35rem .65rem;cursor:pointer;transition:all .1s;background:transparent;color:var(--text-dim);letter-spacing:.04em}
+.btn:hover{color:var(--gold);border-color:var(--gold-dim)}
+.btn-primary{color:var(--gold);border-color:var(--gold-dim)}
+.btn-primary:hover{background:rgba(232,192,74,.08)}
+.btn-danger{color:var(--orange);border-color:var(--orange)}
+.btn-danger:hover{background:rgba(255,106,26,.08)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+
+/* Progress */
+.progress-wrap{margin-top:.6rem;display:none}
+.progress-bar{height:4px;background:var(--card-edge);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--gold);transition:width .3s}
+.progress-text{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);margin-top:.2rem;text-align:center}
+
+/* Preview grid */
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin-top:.6rem}
+.preview-card{background:var(--bg);border:1px solid var(--card-edge);overflow:hidden;position:relative}
+.preview-card img{width:100%;display:block;image-rendering:pixelated}
+.preview-info{display:flex;align-items:center;justify-content:space-between;padding:.25rem .3rem;border-top:1px solid var(--card-edge)}
+.preview-info .page-num{font-family:var(--font-display);font-size:.38rem;color:var(--text-deep);letter-spacing:.04em}
+.preview-info .dl-btn{font-family:var(--font-display);font-size:.35rem;color:var(--gold-dim);cursor:pointer;border:none;background:none;padding:.1rem .2rem;transition:color .1s}
+.preview-info .dl-btn:hover{color:var(--gold)}
+
+/* File info */
+.file-info{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--card-edge);margin-bottom:.4rem}
+.file-info .name{font-family:var(--font-display);font-size:.45rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-info .pages{font-family:var(--font-display);font-size:.38rem;color:var(--text-deep)}
+.file-info .size{font-family:var(--font-display);font-size:.38rem;color:var(--text-deep)}
+
+/* Status badge */
+.badge{display:inline-block;font-family:var(--font-display);font-size:.35rem;padding:.12rem .35rem;letter-spacing:.06em;text-transform:uppercase}
+.badge-ready{color:var(--green);border:1px solid var(--green)}
+.badge-processing{color:var(--gold);border:1px solid var(--gold-dim)}
+.badge-error{color:var(--red);border:1px solid var(--red)}
+
+@media(max-width:500px){
+  .page{padding:.5rem .25rem 3rem}
+  h1{font-size:1.1rem}
+  .preview-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .controls{flex-direction:column;align-items:stretch}
+}
+</style>
+</head>
+<body>
+<div class="nav-bar">
+  <a href="index.html">← BACK</a>
+  <span class="title">PDF → PNG CONVERTER</span>
+</div>
+<div class="page">
+  <h1>PDF → PNG Converter<span>Render PDF pages to high-quality PNG images in your browser</span></h1>
+  <p class="sub">Nothing is uploaded — all processing happens locally in your browser via <a href="https://mozilla.github.io/pdf.js/">pdf.js</a>.</p>
+
+  <div class="section">
+    <div class="upload-zone" id="uploadZone">
+      <div class="icon">📄</div>
+      <div class="main-text">Drop a PDF here or click to browse</div>
+      <div class="sub-text">All processing is local — your file never leaves your device</div>
+      <input type="file" id="fileInput" accept=".pdf,application/pdf">
+    </div>
+
+    <div class="controls">
+      <div class="ctrl-group">
+        <label>Scale</label>
+        <select id="scaleSelect">
+          <option value="1">1× (72 DPI)</option>
+          <option value="2" selected>2× (144 DPI)</option>
+          <option value="3">3× (216 DPI)</option>
+          <option value="4">4× (288 DPI)</option>
+          <option value="5">5× (360 DPI)</option>
+          <option value="6">6× (432 DPI)</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <label>Pages</label>
+        <input type="text" id="pageRange" placeholder="all" value="all" style="width:4rem">
+        <span style="font-size:.3rem;color:var(--text-deep)">e.g. 1-5, 7, 9-12</span>
+      </div>
+      <button class="btn btn-primary" id="convertBtn" disabled>Render PNGs</button>
+      <button class="btn" id="downloadAllBtn" disabled>⬇ Download All ZIP</button>
+      <button class="btn btn-danger" id="clearBtn" style="margin-left:auto">Clear</button>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Processing...</div>
+    </div>
+
+    <div id="fileInfo"></div>
+    <div class="preview-grid" id="previewGrid"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const fileInput = document.getElementById('fileInput');
+const uploadZone = document.getElementById('uploadZone');
+const previewGrid = document.getElementById('previewGrid');
+const fileInfo = document.getElementById('fileInfo');
+const convertBtn = document.getElementById('convertBtn');
+const downloadAllBtn = document.getElementById('downloadAllBtn');
+const clearBtn = document.getElementById('clearBtn');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const scaleSelect = document.getElementById('scaleSelect');
+const pageRange = document.getElementById('pageRange');
+
+let currentPDF = null;
+let currentFileName = '';
+let renderedPages = [];
+let renderedBlobs = [];
+
+// Drag & drop
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  if(e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+});
+
+fileInput.addEventListener('change', e => {
+  if(e.target.files.length > 0) handleFile(e.target.files[0]);
+});
+
+function parsePageRange(rangeStr, totalPages) {
+  if(!rangeStr || rangeStr.trim() === '' || rangeStr.trim() === 'all') {
+    return Array.from({length: totalPages}, (_, i) => i + 1);
+  }
+  const pages = new Set();
+  const parts = rangeStr.split(',').map(s => s.trim());
+  for(const part of parts) {
+    if(part.includes('-')) {
+      const [a, b] = part.split('-').map(Number);
+      for(let i = Math.max(1, a); i <= Math.min(b, totalPages); i++) pages.add(i);
+    } else {
+      const n = Number(part);
+      if(n >= 1 && n <= totalPages) pages.add(n);
+    }
+  }
+  const result = [...pages].sort((a, b) => a - b);
+  return result.length > 0 ? result : Array.from({length: totalPages}, (_, i) => i + 1);
+}
+
+async function handleFile(file) {
+  if(file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    alert('Please select a PDF file.');
+    return;
+  }
+
+  reset();
+
+  currentFileName = file.name;
+  const arrayBuffer = await file.arrayBuffer();
+
+  try {
+    currentPDF = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+  } catch(e) {
+    alert('Failed to load PDF: ' + e.message);
+    return;
+  }
+
+  const totalPages = currentPDF.numPages;
+  const sizeKB = (file.size / 1024).toFixed(1);
+
+  fileInfo.innerHTML = `
+    <div class="file-info">
+      <span class="name">📄 ${file.name}</span>
+      <span class="pages">${totalPages} page${totalPages > 1 ? 's' : ''}</span>
+      <span class="size">${sizeKB} KB</span>
+      <span class="badge badge-ready">Loaded</span>
+    </div>
+  `;
+
+  convertBtn.disabled = false;
+  convertBtn.textContent = `Render ${totalPages} Page${totalPages > 1 ? 's' : ''}`;
+}
+
+async function renderAll() {
+  if(!currentPDF) return;
+
+  convertBtn.disabled = true;
+  downloadAllBtn.disabled = true;
+  renderedPages = [];
+  renderedBlobs = [];
+  previewGrid.innerHTML = '';
+  progressWrap.style.display = 'block';
+
+  const total = currentPDF.numPages;
+  const scale = parseFloat(scaleSelect.value);
+  const pages = parsePageRange(pageRange.value, total);
+  let completed = 0;
+
+  for(const pageNum of pages) {
+    progressFill.style.width = `${(completed / pages.length) * 100}%`;
+    progressText.textContent = `Rendering page ${pageNum} of ${pages.length} (${Math.round(completed/pages.length*100)}%)`;
+
+    try {
+      const page = await currentPDF.getPage(pageNum);
+      const viewport = page.getViewport({scale});
+
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+
+      // White background (PNG needs it, PDF can have transparent bg)
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      await page.render({canvasContext: ctx, viewport}).promise;
+
+      // Convert to blob
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      renderedBlobs.push(blob);
+      renderedPages.push(pageNum);
+
+      // Preview card
+      const imgUrl = URL.createObjectURL(blob);
+      const card = document.createElement('div');
+      card.className = 'preview-card';
+      card.innerHTML = `
+        <img src="${imgUrl}" alt="Page ${pageNum}" loading="lazy">
+        <div class="preview-info">
+          <span class="page-num">Page ${pageNum}</span>
+          <span style="font-size:.32rem;color:var(--text-deep)">${viewport.width}×${viewport.height}</span>
+          <button class="dl-btn" data-page="${pageNum}" title="Download">⬇</button>
+        </div>
+      `;
+      card.querySelector('.dl-btn').addEventListener('click', () => downloadPage(pageNum));
+      previewGrid.appendChild(card);
+
+    } catch(e) {
+      console.error('Page render error:', e);
+      const card = document.createElement('div');
+      card.className = 'preview-card';
+      card.style.padding = '1rem';
+      card.style.textAlign = 'center';
+      card.innerHTML = `<span style="color:var(--red);font-family:var(--font-display);font-size:.4rem">Failed page ${pageNum}</span>`;
+      previewGrid.appendChild(card);
+    }
+
+    completed++;
+  }
+
+  progressFill.style.width = '100%';
+  progressText.textContent = `Done — ${renderedPages.length} page${renderedPages.length > 1 ? 's' : ''} rendered`;
+
+  convertBtn.textContent = 'Re-render';
+  convertBtn.disabled = false;
+  downloadAllBtn.disabled = renderedPages.length === 0;
+}
+
+function downloadPage(pageNum) {
+  const idx = renderedPages.indexOf(pageNum);
+  if(idx === -1) return;
+  const blob = renderedBlobs[idx];
+  const a = document.createElement('a');
+  const baseName = currentFileName.replace(/\.pdf$/i, '');
+  a.download = `${baseName}_p${pageNum}.png`;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function downloadAllZip() {
+  if(renderedBlobs.length === 0) return;
+
+  const zip = new JSZip();
+  const baseName = currentFileName.replace(/\.pdf$/i, '');
+
+  for(let i = 0; i < renderedPages.length; i++) {
+    const fileName = `${baseName}_p${renderedPages[i]}.png`;
+    zip.file(fileName, renderedBlobs[i]);
+  }
+
+  progressText.textContent = 'Creating ZIP archive...';
+  const zipBlob = await zip.generateAsync({type: 'blob'});
+  const a = document.createElement('a');
+  a.download = `${baseName}.zip`;
+  a.href = URL.createObjectURL(zipBlob);
+  a.click();
+  URL.revokeObjectURL(a.href);
+  progressText.textContent = `Done — ${renderedPages.length} page${renderedPages.length > 1 ? 's' : ''} rendered`;
+}
+
+function reset() {
+  currentPDF = null;
+  renderedPages = [];
+  renderedBlobs = [];
+  previewGrid.innerHTML = '';
+  fileInfo.innerHTML = '';
+  progressWrap.style.display = 'none';
+  progressFill.style.width = '0%';
+  convertBtn.disabled = true;
+  downloadAllBtn.disabled = true;
+  convertBtn.textContent = 'Render PNGs';
+}
+
+// Event listeners
+convertBtn.addEventListener('click', renderAll);
+downloadAllBtn.addEventListener('click', downloadAllZip);
+clearBtn.addEventListener('click', reset);
+
+// Re-parse page range if pages change
+pageRange.addEventListener('change', () => {
+  if(currentPDF) convertBtn.disabled = false;
+});
+</script>
+</body>
+</html>
