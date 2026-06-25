@@ -742,6 +742,7 @@ class Game {
     this.updateHUD();
     // Spawn initial planes
     for(let i=0;i<3;i++) this.spawnAircraft();
+    this.updateHUD(); // refresh count after spawning
   }
 
   updateHUD() {
