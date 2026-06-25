@@ -69,6 +69,144 @@ code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.04
   <p class="sub">Complete reference for all Hermes Agent commands. Run <code>hermes --help</code> in the terminal or <code>/help</code> in-session. Based on <a href="https://hermes-agent.nousresearch.com/docs">official docs</a>.</p>
 
   <!-- ================================================================ -->
+  <!-- TELEGRAM SLASH COMMANDS (MESSAGING PLATFORM) -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">💬</span> Telegram Commands (Interact with Me)</h2>
+    <div class="body">
+      <p style="font-size:.48rem;color:var(--text-dim);margin-bottom:.3rem">These are the <strong>slash commands you can type right here in Telegram</strong> to control sessions, check usage, change settings, run skills, and more. Run <code>/help</code> for the live list or <code>/commands</code> to browse by page.</p>
+    </div>
+
+    <h3>🔄 Session Control</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/new</code></td><td>Start a fresh conversation — new session, empty history</td></tr>
+        <tr><td><code>/reset</code></td><td>Same as <code>/new</code>, reset everything</td></tr>
+        <tr><td><code>/retry</code></td><td>Re-send your last message to me</td></tr>
+        <tr><td><code>/undo</code></td><td>Remove the last exchange (your message + my reply)</td></tr>
+        <tr><td><code>/title [name]</code></td><td>Name the current session so you can resume it later</td></tr>
+        <tr><td><code>/resume [name]</code></td><td>Continue a previously named session</td></tr>
+        <tr><td><code>/compress [here N]</code></td><td>Manually shrink context. <code>/compress here 2</code> keeps last 2 exchanges verbatim</td></tr>
+        <tr><td><code>/stop</code></td><td>Kill all background tasks and interrupt me immediately</td></tr>
+        <tr><td><code>/queue &lt;msg&gt;</code></td><td>Queue a message for the next turn without interrupting what I'm doing now</td></tr>
+        <tr><td><code>/steer &lt;msg&gt;</code></td><td>Inject a mid-turn note — I see it after the next tool call, no interruption</td></tr>
+        <tr><td><code>/background &lt;msg&gt;</code></td><td>Run a prompt in a separate background session. Results come back to this chat when done</td></tr>
+        <tr><td><code>/rollback [N]</code></td><td>List or restore filesystem checkpoints</td></tr>
+        <tr><td><code>/goal &lt;text&gt;</code></td><td>Set a persistent goal I work toward across turns. Sub: <code>/goal status</code>, <code>/goal pause</code>, <code>/goal resume</code>, <code>/goal clear</code></td></tr>
+        <tr><td><code>/branch [name]</code></td><td>Fork the current session to explore a different path</td></tr>
+        <tr><td><code>/status</code></td><td>Show session info — model, provider, profile, ID, recent tool usage, files touched</td></tr>
+      </table>
+    </div>
+
+    <h3>⚙️ Settings</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/model [provider:model]</code></td><td>Show or switch models. E.g. <code>/model anthropic/claude-sonnet-4</code></td></tr>
+        <tr><td><code>/personality [name]</code></td><td>Change my personality for this session</td></tr>
+        <tr><td><code>/reasoning [level|show|hide]</code></td><td>Change reasoning effort or toggle reasoning display</td></tr>
+        <tr><td><code>/fast [normal|fast|status]</code></td><td>Toggle priority processing mode</td></tr>
+        <tr><td><code>/voice [on|off|tts|status]</code></td><td>Control spoken replies</td></tr>
+        <tr><td><code>/yolo</code></td><td>Toggle YOLO — skip all dangerous-command approval prompts</td></tr>
+        <tr><td><code>/footer [on|off]</code></td><td>Toggle the metadata footer on my replies (model, context %, cwd)</td></tr>
+      </table>
+    </div>
+
+    <h3>🧰 Tools &amp; Skills</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/&lt;skill-name&gt;</code></td><td>Run any installed skill by name. E.g. <code>/plan</code>, <code>/gif-search</code>, <code>/github-workflow</code></td></tr>
+        <tr><td><code>/skills [pending|approve|reject]</code></td><td>Review pending skill writes staged by the write-approval gate</td></tr>
+        <tr><td><code>/memory [pending|approve|reject]</code></td><td>Review pending memory writes staged by the write-approval gate</td></tr>
+        <tr><td><code>/learn &lt;what&gt;</code></td><td>Teach me a reusable skill from a directory, URL, workflow, or notes</td></tr>
+        <tr><td><code>/cron</code></td><td>Manage scheduled tasks — list, add, edit, pause, resume, run, remove</td></tr>
+        <tr><td><code>/suggestions [accept|dismiss|catalog|clear]</code></td><td>Review suggested automations and create them</td></tr>
+        <tr><td><code>/blueprint [name] [slot=value...]</code></td><td>Set up automations from a template</td></tr>
+        <tr><td><code>/curator [status|run|pin|archive]</code></td><td>Background skill maintenance controls</td></tr>
+        <tr><td><code>/kanban &lt;action&gt;</code></td><td>Drive the multi-agent collaboration board</td></tr>
+        <tr><td><code>/reload-mcp</code></td><td>Reload MCP server connections from config</td></tr>
+        <tr><td><code>/reload-skills</code></td><td>Re-scan for newly installed or removed skills</td></tr>
+        <tr><td><code>/plugins</code></td><td>List installed plugins and their status</td></tr>
+      </table>
+    </div>
+
+    <h3>ℹ️ Info &amp; Analytics</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/help</code></td><td>Show the full help message with all commands</td></tr>
+        <tr><td><code>/commands [page]</code></td><td>Browse all commands and skills, paginated</td></tr>
+        <tr><td><code>/usage</code></td><td>Show token usage, cost breakdown, context window, session duration, and live provider quota</td></tr>
+        <tr><td><code>/credits</code></td><td>Show your Nous credit balance + top-up link</td></tr>
+        <tr><td><code>/insights [days]</code></td><td>Usage analytics and statistics</td></tr>
+        <tr><td><code>/version</code></td><td>Show Hermes Agent version, build, and environment info</td></tr>
+        <tr><td><code>/profile</code></td><td>Show active profile name and home directory</td></tr>
+        <tr><td><code>/debug</code></td><td>Upload debug report and get shareable links</td></tr>
+      </table>
+    </div>
+
+    <h3>🌐 Gateway Control</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td><code>/sethome</code></td><td>Mark this chat as your home channel for deliveries</td></tr>
+        <tr><td><code>/topic [off|help|session-id]</code></td><td><strong>Telegram DM only</strong> — manage multi-session topic mode</td></tr>
+        <tr><td><code>/platform [list|pause|resume] [name]</code></td><td>Operate gateway platforms from chat</td></tr>
+        <tr><td><code>/approve [session|always]</code></td><td>Approve a pending dangerous command</td></tr>
+        <tr><td><code>/deny</code></td><td>Reject a pending dangerous command</td></tr>
+        <tr><td><code>/update</code></td><td>Update Hermes Agent to the latest version</td></tr>
+        <tr><td><code>/restart</code></td><td>Gracefully restart the gateway</td></tr>
+      </table>
+    </div>
+
+    <h3>⭐ Most Useful Day-to-Day</h3>
+    <div class="body" style="padding-bottom:.65rem">
+      <div class="cmd-group">
+        <span class="cmd">/usage</span>
+        <span class="desc">Check my token usage and cost for the current session</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/status</span>
+        <span class="desc">See what model I'm running, session ID, recent activity</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/new</span>
+        <span class="desc">Start fresh when the conversation gets long</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/undo</span>
+        <span class="desc">Take back your last message and my response</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/retry</span>
+        <span class="desc">Re-send your last message if I misunderstood</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/stop</span>
+        <span class="desc">Interrupt me if I'm going down the wrong path</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/model</span>
+        <span class="desc">Switch to a different model mid-conversation</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/queue</span>
+        <span class="desc">Tell me something for the next turn without interrupting</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/background</span>
+        <span class="desc">Offload a task — I'll work on it and deliver the result here</span>
+      </div>
+      <div class="cmd-group">
+        <span class="cmd">/help</span>
+        <span class="desc">Get the live, authoritative list of commands</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
   <!-- CLI -->
   <!-- ================================================================ -->
   <div class="section">
@@ -87,7 +225,7 @@ code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.04
         <tr><td><code>--yolo</code></td><td>Skip dangerous command approval</td></tr>
         <tr><td><code>--pass-session-id</code></td><td>Include session ID in system prompt</td></tr>
       </table>
-      <p style="font-size:.46rem;color:var(--text-deep);margin-top:.15rem">No subcommand defaults to <code>chat</code>. Pass <code>-q "query"</code> for one-shot mode.</p>
+      <p style="font-size:.46rem;color:var(--text-deep);margin-top:.15rem">No subcommand defaults to <code>chat</code>. Pass <code>-q &quot;query&quot;</code> for one-shot mode.</p>
     </div>
 
     <h3>💬 Chat</h3>
@@ -95,7 +233,7 @@ code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.04
       <table>
         <tr><th>Command</th><th>Description</th></tr>
         <tr><td><code>hermes</code></td><td>Interactive chat (default)</td></tr>
-        <tr><td><code>hermes chat -q "query"</code></td><td>Single query, non-interactive</td></tr>
+        <tr><td><code>hermes chat -q &quot;query&quot;</code></td><td>Single query, non-interactive</td></tr>
         <tr><td><code>hermes chat -m &lt;model&gt;</code></td><td>Override model (e.g. <code>anthropic/claude-sonnet-4</code>)</td></tr>
         <tr><td><code>hermes chat -t &lt;toolsets&gt;</code></td><td>Comma-separated toolset override</td></tr>
         <tr><td><code>hermes chat --provider &lt;name&gt;</code></td><td>Force provider (openrouter, anthropic, nous, etc.)</td></tr>
@@ -221,7 +359,7 @@ code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.04
       <table>
         <tr><th>Command</th><th>Description</th></tr>
         <tr><td><code>hermes cron list</code></td><td>List jobs (--all for disabled)</td></tr>
-        <tr><td><code>hermes cron create &lt;schedule&gt;</code></td><td>Create job: '30m', 'every 2h', '0 9 * * *'</td></tr>
+        <tr><td><code>hermes cron create &lt;schedule&gt;</code></td><td>Create job: &#39;30m&#39;, &#39;every 2h&#39;, &#39;0 9 * * *&#39;</td></tr>
         <tr><td><code>hermes cron edit &lt;id&gt;</code></td><td>Edit schedule, prompt, delivery</td></tr>
         <tr><td><code>hermes cron pause/resume &lt;id&gt;</code></td><td>Control job state</td></tr>
         <tr><td><code>hermes cron run &lt;id&gt;</code></td><td>Trigger on next tick</td></tr>
@@ -338,7 +476,7 @@ code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.04
         <tr><td><code>/reload</code></td><td>Reload .env variables (CLI)</td></tr>
         <tr><td><code>/reload-mcp</code></td><td>Reload MCP servers</td></tr>
         <tr><td><code>/cron</code></td><td>Manage cron jobs (CLI)</td></tr>
-        <tr><td><code>/curator [sub]</code></td><td>Skill maintenance (status, run, pin, archive…)</td></tr>
+        <tr><td><code>/curator [sub]</code></td><td>Skill maintenance (status, run, pin, archive&hellip;)</td></tr>
         <tr><td><code>/kanban [sub]</code></td><td>Multi-profile collaboration board</td></tr>
         <tr><td><code>/plugins</code></td><td>List plugins (CLI)</td></tr>
       </table>
@@ -520,12 +658,12 @@ code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.04
         <li><strong>First time?</strong> Run <code>hermes setup</code> for the interactive wizard</li>
         <li><strong>Change model mid-stream:</strong> <code>/model anthropic/claude-sonnet-4</code> (or any provider/model)</li>
         <li><strong>Resume work:</strong> <code>hermes --continue</code> picks up your last session</li>
-        <li><strong>One-shot queries:</strong> <code>hermes chat -q "Find all TODO comments in my project"</code></li>
+        <li><strong>One-shot queries:</strong> <code>hermes chat -q &quot;Find all TODO comments in my project&quot;</code></li>
         <li><strong>Safe mode:</strong> <code>hermes --yolo</code> skips command approval prompts</li>
-        <li><strong>Background jobs:</strong> <code>/background "Write a unit test for api/auth.py"</code></li>
+        <li><strong>Background jobs:</strong> <code>/background &quot;Write a unit test for api/auth.py&quot;</code></li>
         <li><strong>Context compression:</strong> Run <code>/compress</code> manually when the session feels sluggish</li>
         <li><strong>Session history:</strong> <code>hermes sessions list</code> or <code>hermes sessions browse</code></li>
-        <li><strong>Save skills:</strong> After solving a complex problem, say "save this as a skill"</li>
+        <li><strong>Save skills:</strong> After solving a complex problem, say &quot;save this as a skill&quot;</li>
         <li><strong>Profiles:</strong> Use <code>hermes profile create work</code> for isolated configs</li>
         <li><strong>Voice:</strong> <code>/voice on</code> enables voice-to-voice; <code>/voice tts</code> for text-to-speech only</li>
         <li><strong>Plugins:</strong> <code>hermes plugins list</code> to see what's available</li>
