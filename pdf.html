@@ -319,6 +319,15 @@ function renderPage(pageNum) {
   });
 }
 
+// Convert screen coordinates → native PDF coordinates
+function toNative(pos) {
+  return { x: pos.x / scale, y: pos.y / scale };
+}
+// Convert native PDF coordinates → canvas coordinates
+function toCanvas(native) {
+  return { x: native.x * scale, y: native.y * scale };
+}
+
 // ===== Zoom =====
 function updateZoomDisplay() {
   const pct = Math.round(scale * 100);
@@ -401,11 +410,11 @@ window.addEventListener('resize', () => {
 });
 
 // ===== Page Navigation =====
-$('btnPrev').addEventListener('click', () => { if (currentPage > 1) { panOffsetX = 0; panOffsetY = 0; renderPage(currentPage - 1); } });
-$('btnNext').addEventListener('click', () => { if (currentPage < totalPages) { panOffsetX = 0; panOffsetY = 0; renderPage(currentPage + 1); } });
+$('btnPrev').addEventListener('click', () => { zoomMenu.classList.remove('show'); zoomMenuOpen = false; if (currentPage > 1) { panOffsetX = 0; panOffsetY = 0; renderPage(currentPage - 1); } });
+$('btnNext').addEventListener('click', () => { zoomMenu.classList.remove('show'); zoomMenuOpen = false; if (currentPage < totalPages) { panOffsetX = 0; panOffsetY = 0; renderPage(currentPage + 1); } });
 $('pageInput').addEventListener('change', function() {
   let p = parseInt(this.value);
-  if (p < 1) p = 1;
+  if (isNaN(p) || p < 1) p = 1;
   if (p > totalPages) p = totalPages;
   if (p !== currentPage) { panOffsetX = 0; panOffsetY = 0; renderPage(p); }
   else this.value = currentPage;
@@ -464,16 +473,21 @@ function redrawAnnotations() {
       ctx.lineWidth = a.size;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      a.points.forEach((p, i) => { i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y) });
+      a.points.forEach((p, i) => {
+        const cp = toCanvas(p);
+        i === 0 ? ctx.moveTo(cp.x, cp.y) : ctx.lineTo(cp.x, cp.y);
+      });
       ctx.stroke();
     } else if (a.type === 'highlight') {
+      const rc = toCanvas(a);
       const c = a.color;
       ctx.fillStyle = 'rgba(' + parseInt(c.slice(1,3),16) + ',' + parseInt(c.slice(3,5),16) + ',' + parseInt(c.slice(5,7),16) + ',0.25)';
-      ctx.fillRect(a.x, a.y, a.w, a.h);
+      ctx.fillRect(rc.x, rc.y, rc.w, rc.h);
     } else if (a.type === 'text') {
+      const tc = toCanvas(a);
       ctx.font = (a.size * 4) + 'px Inter, sans-serif';
       ctx.fillStyle = a.color;
-      ctx.fillText(a.text, a.x, a.y);
+      ctx.fillText(a.text, tc.x, tc.y);
     }
   });
 }
@@ -492,6 +506,7 @@ function getCanvasPos(e) {
 ac.addEventListener('mousedown', e => {
   if (!pdfDoc) return;
   const pos = getCanvasPos(e);
+  const nPos = toNative(pos);
   lastX = pos.x; lastY = pos.y;
 
   if (currentTool === 'pan') {
@@ -503,7 +518,7 @@ ac.addEventListener('mousedown', e => {
 
   if (currentTool === 'pen') {
     isDrawing = true;
-    annotations.push({ type: 'path', page: currentPage, color: currentColor, size: currentSize, points: [{ x: pos.x, y: pos.y }] });
+    annotations.push({ type: 'path', page: currentPage, color: currentColor, size: currentSize, points: [{ x: nPos.x, y: nPos.y }] });
     actx.beginPath();
     actx.strokeStyle = currentColor;
     actx.lineWidth = currentSize;
@@ -515,12 +530,12 @@ ac.addEventListener('mousedown', e => {
 
   if (currentTool === 'highlight') {
     isDrawing = true;
-    dragStart = pos;
+    dragStart = nPos;
     return;
   }
 
   if (currentTool === 'text') {
-    showTextInput(pos);
+    showTextInput(nPos);
     return;
   }
 
@@ -530,7 +545,7 @@ ac.addEventListener('mousedown', e => {
       const a = pageAnnots[i];
       if (a.type === 'path') {
         for (const p of a.points) {
-          if (Math.hypot(p.x - pos.x, p.y - pos.y) < currentSize * 3) {
+          if (Math.hypot(p.x - nPos.x, p.y - nPos.y) < (currentSize * 3) / scale) {
             const idx = annotations.indexOf(a);
             if (idx >= 0) annotations.splice(idx, 1);
             redrawAnnotations();
@@ -538,15 +553,15 @@ ac.addEventListener('mousedown', e => {
           }
         }
       } else if (a.type === 'highlight') {
-        if (pos.x >= a.x && pos.x <= a.x + a.w && pos.y >= a.y && pos.y <= a.y + a.h) {
+        if (nPos.x >= a.x && nPos.x <= a.x + a.w && nPos.y >= a.y && nPos.y <= a.y + a.h) {
           const idx = annotations.indexOf(a);
           if (idx >= 0) annotations.splice(idx, 1);
           redrawAnnotations();
           return;
         }
       } else if (a.type === 'text') {
-        const tw = actx.measureText(a.text).width;
-        if (pos.x >= a.x - 5 && pos.x <= a.x + tw + 5 && pos.y >= a.y - 16 && pos.y <= a.y + 5) {
+        const tc = toCanvas(a);
+        if (pos.x >= tc.x - 5 && pos.x <= tc.x + actx.measureText(a.text).width + 5 && pos.y >= tc.y - 16 && pos.y <= tc.y + 5) {
           const idx = annotations.indexOf(a);
           if (idx >= 0) annotations.splice(idx, 1);
           redrawAnnotations();
@@ -561,6 +576,7 @@ ac.addEventListener('mousedown', e => {
 ac.addEventListener('mousemove', e => {
   if (!pdfDoc) return;
   const pos = getCanvasPos(e);
+  const nPos = toNative(pos);
 
   if (currentTool === 'pan' && isPanning && dragStart) {
     const dx = e.clientX - dragStart.x;
@@ -575,7 +591,7 @@ ac.addEventListener('mousemove', e => {
   if (currentTool === 'pen' && isDrawing) {
     const lastAnnot = annotations[annotations.length - 1];
     if (!lastAnnot || lastAnnot.type !== 'path') return;
-    lastAnnot.points.push({ x: pos.x, y: pos.y });
+    lastAnnot.points.push({ x: nPos.x, y: nPos.y });
     actx.lineTo(pos.x, pos.y);
     actx.stroke();
     actx.beginPath();
@@ -588,9 +604,9 @@ ac.addEventListener('mousemove', e => {
     redrawAnnotations();
     const c = currentColor;
     ctx.fillStyle = 'rgba(' + parseInt(c.slice(1,3),16) + ',' + parseInt(c.slice(3,5),16) + ',' + parseInt(c.slice(5,7),16) + ',0.25)';
-    const w = pos.x - dragStart.x;
-    const h = pos.y - dragStart.y;
-    ctx.fillRect(dragStart.x, dragStart.y, w, h);
+    const w = (pos.x - toCanvas(dragStart).x);
+    const h = (pos.y - toCanvas(dragStart).y);
+    ctx.fillRect(toCanvas(dragStart).x, toCanvas(dragStart).y, w, h);
     lastX = pos.x; lastY = pos.y;
     return;
   }
@@ -599,10 +615,11 @@ ac.addEventListener('mousemove', e => {
 function acEnd() {
   if (currentTool === 'highlight' && isDrawing && dragStart) {
     const pos = { x: lastX, y: lastY };
-    const w = pos.x - dragStart.x;
-    const h = pos.y - dragStart.y;
-    if (Math.abs(w) > 2 || Math.abs(h) > 2) {
-      annotations.push({ type: 'highlight', page: currentPage, color: currentColor, x: Math.min(dragStart.x, pos.x), y: Math.min(dragStart.y, pos.y), w: Math.abs(w), h: Math.abs(h) });
+    const nEnd = toNative(pos);
+    const w = nEnd.x - dragStart.x;
+    const h = nEnd.y - dragStart.y;
+    if (Math.abs(w) > 2/scale || Math.abs(h) > 2/scale) {
+      annotations.push({ type: 'highlight', page: currentPage, color: currentColor, x: Math.min(dragStart.x, nEnd.x), y: Math.min(dragStart.y, nEnd.y), w: Math.abs(w), h: Math.abs(h) });
     }
   }
   isDrawing = false;
@@ -636,12 +653,13 @@ ac.addEventListener('touchend', e => {
 }, { passive: false });
 
 // ===== Text Input Overlay =====
-function showTextInput(pos) {
+function showTextInput(nPos) {
   if (textInput) textInput.remove();
   const input = document.createElement('input');
   input.type = 'text';
   input.className = 'text-input-overlay';
-  input.style.cssText = 'position:absolute;background:transparent;border:none;border-bottom:1px solid ' + currentColor + ';color:' + currentColor + ';font-family:Inter,sans-serif;font-size:' + (currentSize * 2) + 'px;outline:none;left:' + (pos.x / scale) + 'px;top:' + (pos.y / scale) + 'px;z-index:10;min-width:50px;caret-color:' + currentColor;
+  const tc = toCanvas(nPos);
+  input.style.cssText = 'position:absolute;background:transparent;border:none;border-bottom:1px solid ' + currentColor + ';color:' + currentColor + ';font-family:Inter,sans-serif;font-size:' + (currentSize * 2) + 'px;outline:none;left:' + tc.x + 'px;top:' + tc.y + 'px;z-index:10;min-width:50px;caret-color:' + currentColor;
   input.placeholder = 'Type...';
   const container = $('pageContainer');
   container.appendChild(input);
@@ -649,7 +667,7 @@ function showTextInput(pos) {
   textInput = input;
   input.addEventListener('blur', () => {
     if (input.value.trim()) {
-      annotations.push({ type: 'text', page: currentPage, color: currentColor, size: currentSize, text: input.value, x: pos.x, y: pos.y });
+      annotations.push({ type: 'text', page: currentPage, color: currentColor, size: currentSize, text: input.value, x: nPos.x, y: nPos.y });
       redrawAnnotations();
     }
     input.remove();
@@ -699,8 +717,8 @@ function savePDF() {
         const pageAnnots = annotByPage[pageNumStr];
 
         for (const a of pageAnnots) {
-          const x = (a.x || 0) / scale;
-          const y = height - ((a.y || 0) / scale);
+          const x = (a.x || 0);
+          const y = height - (a.y || 0);
 
           if (a.type === 'path' && a.points && a.points.length > 1) {
             const color = hexToRgb(a.color || '#E8C04A');
@@ -709,10 +727,10 @@ function savePDF() {
               const p2 = a.points[i];
               if (!p1 || !p2) continue;
               page.drawLine({
-                start: { x: p1.x / scale, y: height - (p1.y / scale) },
-                end: { x: p2.x / scale, y: height - (p2.y / scale) },
+                start: { x: p1.x, y: height - p1.y },
+                end: { x: p2.x, y: height - p2.y },
                 color: rgb(color.r, color.g, color.b),
-                thickness: (a.size || 3) / scale * 0.5,
+                thickness: (a.size || 3) * 0.15,
                 opacity: 0.8,
               });
             }
@@ -721,10 +739,10 @@ function savePDF() {
           if (a.type === 'highlight') {
             const color = hexToRgb(a.color || '#E8C04A');
             page.drawRectangle({
-              x: (a.x || 0) / scale,
-              y: height - ((a.y || 0) + (a.h || 20)) / scale,
-              width: (a.w || 50) / scale,
-              height: (a.h || 20) / scale,
+              x: (a.x || 0),
+              y: height - ((a.y || 0) + (a.h || 20)),
+              width: (a.w || 50),
+              height: (a.h || 20),
               color: rgb(color.r, color.g, color.b),
               opacity: 0.25,
             });
@@ -733,7 +751,7 @@ function savePDF() {
           if (a.type === 'text' && a.text) {
             page.drawText(a.text, {
               x: x,
-              y: y - 4 / scale,
+              y: y - 4,
               size: (a.size || 3) * 0.8,
               font: font,
               color: rgb(0.91, 0.75, 0.29),
@@ -771,19 +789,33 @@ function hexToRgb(hex) {
 $('btnPrint').addEventListener('click', () => {
   if (!pdfDoc) return;
   const win = window.open('', '_blank');
-  win.document.write('<html><head><title>Print</title><style>body{margin:0}canvas{display:block;width:100%}</style></head><body>');
+  if (!win) {
+    // Popup blocked fallback: render inline and use the browser's built-in print
+    const blob = new Blob([pdfData], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.target = '_blank';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return;
+  }
+  win.document.write('<html><head><title>Print: ' + fileName + '</title><style>body{margin:0}canvas{display:block;width:100%}</style></head><body>');
   const renderAll = async () => {
     for (let i = 1; i <= totalPages; i++) {
-      const page = await pdfDoc.getPage(i);
-      const vp = page.getViewport({ scale: 1.5 });
-      const c = document.createElement('canvas');
-      c.width = vp.width; c.height = vp.height;
-      await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-      win.document.body.appendChild(c);
+      try {
+        const page = await pdfDoc.getPage(i);
+        const vp = page.getViewport({ scale: 1.5 });
+        const c = document.createElement('canvas');
+        c.width = vp.width; c.height = vp.height;
+        await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+        win.document.body.appendChild(c);
+      } catch(e) { /* skip page on render error */ }
     }
     win.document.write('</body></html>');
     win.document.close();
-    setTimeout(() => win.print(), 500);
+    setTimeout(() => { try { win.print(); } catch(e) { /* popup may be closed */ } }, 500);
   };
   renderAll();
 });

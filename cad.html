@@ -62,8 +62,15 @@ a:hover{color:var(--orange)}
   </div>
   <input class="file-input" type="file" id="fileInput" accept=".stl,.step,.stp">
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script>
 (function(){
+  if (typeof THREE === 'undefined') {
+    document.getElementById('cadStatus').textContent = '⚠️ Three.js failed to load — check internet connection';
+    return;
+  }
   const dropzone=document.getElementById('dropzone');
   const wrap=document.getElementById('viewerWrap');
   const fileInput=document.getElementById('fileInput');
@@ -416,8 +423,5 @@ a:hover{color:var(--orange)}
   }
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 </body>
 </html>
