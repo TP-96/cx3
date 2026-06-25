@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Commands & Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--card:#141312;--card-edge:#22201c;--gold:#E8C04A;--gold-dim:#9a7528;--orange:#FF6A1A;--text:#f0ede8;--text-dim:#b8b2a5;--text-deep:#6b6555;--font-head:'Bebas Neue',sans-serif;--font-display:'Share Tech Mono',monospace;--font-body:'Inter',sans-serif}
+html{height:100%}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100%}
+a{color:var(--gold);text-decoration:none}a:hover{color:var(--orange)}
+.nav-bar{display:flex;align-items:center;gap:.5rem;max-width:900px;margin:0 auto;padding:.75rem .5rem 0}
+.nav-bar a{font-family:var(--font-display);font-size:.45rem;color:var(--text-deep);border:1px solid var(--card-edge);padding:.2rem .5rem;transition:all .1s}
+.nav-bar a:hover{color:var(--gold);border-color:var(--gold-dim)}
+.nav-bar .title{margin-left:auto;font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);letter-spacing:.05em}
+.page{max-width:900px;margin:0 auto;padding:1rem .75rem 4rem}
+h1{font-family:var(--font-head);font-size:1.5rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.1rem}
+h1 span{color:var(--text-deep);font-family:var(--font-display);font-size:.5rem;letter-spacing:.08em;display:block}
+.sub{font-size:.55rem;color:var(--text-dim);margin-bottom:1.5rem}
+
+/* Section */
+.section{background:var(--card);border:1px solid var(--card-edge);margin-bottom:.75rem;overflow:hidden}
+.section h2{font-family:var(--font-head);font-size:.95rem;padding:.5rem .7rem;background:rgba(232,192,74,.03);border-bottom:1px solid var(--card-edge);color:var(--gold);letter-spacing:.08em;display:flex;align-items:center;gap:.4rem}
+.section h2 .icon{font-size:.8rem}
+.section h3{font-family:var(--font-display);font-size:.45rem;color:var(--text);padding:.4rem .7rem .15rem;letter-spacing:.04em;margin-top:.25rem;border-top:1px solid var(--card-edge)}
+.section h3:first-of-type{margin-top:0;border-top:none}
+.section .body{padding:0 .7rem .5rem}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:.52rem;margin:.3rem 0}
+th{font-family:var(--font-display);font-size:.4rem;color:var(--text-deep);text-align:left;padding:.25rem .3rem;border-bottom:1px solid var(--card-edge);letter-spacing:.05em;text-transform:uppercase}
+td{padding:.22rem .3rem;border-bottom:1px solid rgba(34,32,28,.5);color:var(--text-dim);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{font-family:var(--font-display);color:var(--gold);white-space:nowrap}
+td:nth-child(2){color:var(--text)}
+td em{color:var(--text-deep);font-style:normal;font-size:.45rem}
+
+/* Inline code */
+code{font-family:var(--font-display);background:rgba(232,192,74,.06);padding:.05rem .2rem;border-radius:2px;font-size:.45rem;color:var(--gold)}
+.tag{font-family:var(--font-display);font-size:.35rem;padding:.06rem .2rem;border:1px solid var(--card-edge);color:var(--text-deep);letter-spacing:.04em;display:inline-block;margin-right:.15rem;margin-bottom:.15rem}
+.tag-live{color:var(--gold);border-color:var(--gold-dim)}
+.tag-wip{color:var(--orange);border-color:var(--orange)}
+.bullet-list{list-style:none;padding:0}
+.bullet-list li{padding:.15rem 0;font-size:.52rem;color:var(--text-dim)}
+.bullet-list li::before{content:'▸ ';color:var(--text-deep)}
+
+@media(max-width:500px){
+  .page{padding:.5rem .25rem 3rem}
+  h1{font-size:1.1rem}
+  .section h2{font-size:.8rem;padding:.4rem .5rem}
+  table{font-size:.46rem}
+  td:first-child{white-space:normal}
+}
+</style>
+</head>
+<body>
+<div class="nav-bar">
+  <a href="index.html">← BACK</a>
+  <span class="title">COMMANDS & REFERENCE</span>
+</div>
+<div class="page">
+  <h1>Commands & Reference<span>CX-3 Flight Computer · PDF Viewer · CAD Viewer</span></h1>
+  <p class="sub">Complete command reference for all tools in the CX-3 project suite. Click any page to jump to its section.</p>
+
+  <!-- ================================================================ -->
+  <!-- CX-3 FLIGHT COMPUTER -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">🛩️</span> CX-3 Flight Computer <code>cx3.html</code></h2>
+
+    <h3>🔢 Calculator Modes</h3>
+    <div class="body">
+      <table>
+        <tr><th>Mode</th><th>Inputs</th><th>Outputs</th></tr>
+        <tr><td>TSD</td><td>Distance, Speed, Time (enter any 2)</td><td>Distance, Speed, Time (computed)</td></tr>
+        <tr><td>FUEL</td><td>Used, Flow, Time (enter any 2), Fuel Type (100LL/Jet A)</td><td>Used, Flow, Time, Remaining (gal &amp; lbs)</td></tr>
+        <tr><td>WIND</td><td>Course, TAS, Wind Dir, Wind Speed</td><td>WCA, Heading, GS, X-wind, H-wind</td></tr>
+        <tr><td>ALT</td><td>Altitude, Temp (enter 1), Pressure Alt, OAT</td><td>Density Altitude, True Altitude</td></tr>
+        <tr><td>CONV</td><td>Value, From unit, To unit</td><td>Converted value (distance, speed, temp, volume, mass, fuel)</td></tr>
+        <tr><td>W&amp;B</td><td>Station, Weight, Arm (add rows)</td><td>Total Weight, Moment, CG Location</td></tr>
+      </table>
+    </div>
+
+    <h3>⌨️ Keypad Commands</h3>
+    <div class="body">
+      <table>
+        <tr><th>Key</th><th>Action</th></tr>
+        <tr><td>0–9</td><td>Enter digit into active input field</td></tr>
+        <tr><td>.</td><td>Decimal point</td></tr>
+        <tr><td>±</td><td>Toggle negative/positive</td></tr>
+        <tr><td>⌫</td><td>Delete last character</td></tr>
+        <tr><td>CLR</td><td>Clear current input</td></tr>
+        <tr><td>ENT / ▶</td><td>Trigger COMPUTE</td></tr>
+        <tr><td>COMPUTE</td><td>Calculate result based on active mode</td></tr>
+        <tr><td>CLR (soft)</td><td>Clear all inputs in active panel</td></tr>
+      </table>
+      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Tip:</strong> Inputs are auto-focused. The keypad always targets the active input field. Press <code>TAB</code> to cycle through inputs.</p>
+    </div>
+
+    <h3>📐 Function Row (GRAPH mode)</h3>
+    <div class="body">
+      <p style="font-size:.5rem;color:var(--text-dim);margin-bottom:.2rem;">Available in any graphing panel (GRAPH, 3D, QUAD, CUBIC). Click to insert into the expression input.</p>
+      <table>
+        <tr><th>Button</th><th>Inserts</th><th>Description</th></tr>
+        <tr><td>( &nbsp; )</td><td>Parentheses</td><td>Group expressions</td></tr>
+        <tr><td>+ &nbsp; − &nbsp; × &nbsp; ÷</td><td>Arithmetic</td><td>Add, subtract, multiply, divide</td></tr>
+        <tr><td>^</td><td><code>^</code></td><td>Power (e.g. <code>x^2</code>)</td></tr>
+        <tr><td>√</td><td><code>sqrt(</code></td><td>Square root</td></tr>
+        <tr><td>sin</td><td><code>sin(</code></td><td>Sine (radians)</td></tr>
+        <tr><td>cos</td><td><code>cos(</code></td><td>Cosine (radians)</td></tr>
+        <tr><td>tan</td><td><code>tan(</code></td><td>Tangent (radians)</td></tr>
+        <tr><td>eˣ</td><td><code>exp(</code></td><td>Exponential (e^x)</td></tr>
+        <tr><td>ln</td><td><code>ln(</code></td><td>Natural logarithm (base e)</td></tr>
+        <tr><td>∫</td><td><code>int(</code></td><td>Integration (numeric)</td></tr>
+        <tr><td>d/dx</td><td><code>der(</code></td><td>Derivative (numeric)</td></tr>
+        <tr><td>π</td><td><code>π</code></td><td>Pi constant</td></tr>
+        <tr><td>e</td><td><code>Math.E</code></td><td>Euler's number</td></tr>
+      </table>
+    </div>
+
+    <h3>📊 Graphing Commands</h3>
+    <div class="body">
+      <table>
+        <tr><th>Mode</th><th>Description</th><th>Example Expression</th></tr>
+        <tr><td>GRAPH</td><td>2D function plot (<code>f(x)</code>)</td><td><code>sin(x)</code>, <code>x^2</code>, <code>ln(x)</code>, <code>exp(-x)*sin(x)</code></td></tr>
+        <tr><td>3D</td><td>3D surface plot (<code>f(x,y)</code>)</td><td><code>sin(x)*cos(y)</code>, <code>x^2-y^2</code></td></tr>
+        <tr><td>QUAD</td><td>Quadratic solver (<code>ax² + bx + c = 0</code>)</td><td>Enter a, b, c coefficients</td></tr>
+        <tr><td>CUBIC</td><td>Cubic solver (<code>ax³ + bx² + cx + d = 0</code>)</td><td>Enter a, b, c, d coefficients</td></tr>
+      </table>
+      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Functions:</strong> <code>sin(</code> <code>cos(</code> <code>tan(</code> <code>asin(</code> <code>acos(</code> <code>atan(</code> <code>sqrt(</code> <code>ln(</code> <code>log(</code> <code>exp(</code> <code>abs(</code> <code>floor(</code> <code>ceil(</code> <code>π</code> <code>int(</code> <code>der(</code></p>
+      <p style="font-size:.48rem;color:var(--text-deep);"><strong>Variables:</strong> <code>x</code> (f(x)), <code>x</code> &amp; <code>y</code> (f(x,y))</p>
+      <p style="font-size:.48rem;color:var(--text-deep);"><strong>Auto-range:</strong> Leave Y-range blank for auto-scale. Use <code>auto</code> to fit visible data.</p>
+    </div>
+
+    <h3>💡 Fuel Density Shortcuts</h3>
+    <div class="body">
+      <table>
+        <tr><th>Key</th><th>Density</th></tr>
+        <tr><td>100LL</td><td>6.0 lbs/gal</td></tr>
+        <tr><td>Jet A</td><td>6.7 lbs/gal</td></tr>
+        <tr><td>Custom</td><td>User-defined density</td></tr>
+      </table>
+    </div>
+
+    <h3>⌨️ Keyboard Shortcuts (CX-3)</h3>
+    <div class="body">
+      <table>
+        <tr><th>Key</th><th>Action</th></tr>
+        <tr><td>Enter</td><td>Trigger COMPUTE (when input is focused)</td></tr>
+        <tr><td>Backspace</td><td>Delete last character</td></tr>
+        <tr><td>Tab</td><td>Cycle through input fields</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- PDF VIEWER -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">📄</span> PDF Viewer &amp; Editor <code>pdf.html</code></h2>
+
+    <h3>📂 File Operations</h3>
+    <div class="body">
+      <table>
+        <tr><th>Action</th><th>How</th></tr>
+        <tr><td>Open PDF</td><td>Click the drop zone or drag-and-drop a <code>.pdf</code> file onto it</td></tr>
+        <tr><td>Save (download)</td><td>Click 💾 — annotations are embedded and downloaded as <code>_edited.pdf</code></td></tr>
+        <tr><td>Print</td><td>Click 🖨️ — opens a print dialog (falls back to download if popup blocked)</td></tr>
+      </table>
+    </div>
+
+    <h3>🔍 Zoom Controls</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Action</th></tr>
+        <tr><td>🔍+ / 🔍−</td><td>Zoom in / zoom out by 25% steps</td></tr>
+        <tr><td>Ctrl + Scroll</td><td>Smooth zoom (like Adobe Acrobat)</td></tr>
+        <tr><td>⬇️ Zoom %</td><td>Click the percentage to open preset dropdown</td></tr>
+        <tr><td>400% → 50%</td><td>Preset zoom levels</td></tr>
+        <tr><td>▬ Fit Width</td><td>Scale page to fill viewer width</td></tr>
+        <tr><td>▭ Fit Page</td><td>Scale page to fit entirely in viewer</td></tr>
+      </table>
+      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Auto Fit:</strong> Fit to Width is applied automatically on load and on window resize.</p>
+    </div>
+
+    <h3>📖 Page Navigation</h3>
+    <div class="body">
+      <table>
+        <tr><th>Command</th><th>Action</th></tr>
+        <tr><td>◀ / ▶</td><td>Previous / Next page</td></tr>
+        <tr><td>PG [N]</td><td>Type a page number and press Enter</td></tr>
+        <tr><td>← / → (Arrow)</td><td>Previous / Next page (keyboard)</td></tr>
+        <tr><td>PgUp / PgDn</td><td>Previous / Next page</td></tr>
+      </table>
+    </div>
+
+    <h3>✏️ Annotation Tools</h3>
+    <div class="body">
+      <table>
+        <tr><th>Tool</th><th>Button</th><th>How to Use</th></tr>
+        <tr><td>Pan</td><td>✋</td><td>Click and drag to scroll the page (default tool)</td></tr>
+        <tr><td>Pen</td><td>✏️</td><td>Click and drag to draw freehand lines</td></tr>
+        <tr><td>Highlight</td><td>🖍️</td><td>Click and drag to create rectangular highlight regions</td></tr>
+        <tr><td>Text</td><td>🔤</td><td>Click to place a text overlay, type, press Enter to confirm</td></tr>
+        <tr><td>Eraser</td><td>🧹</td><td>Click on any annotation to delete it</td></tr>
+      </table>
+    </div>
+
+    <h3>🎨 Annotation Controls</h3>
+    <div class="body">
+      <table>
+        <tr><th>Control</th><th>Description</th></tr>
+        <tr><td>Color swatches</td><td>6 preset colors: gold, orange, green, blue, pink, white</td></tr>
+        <tr><td>🎨 Color picker</td><td>Click the circle for custom color selection</td></tr>
+        <tr><td>Size slider</td><td>1–20px brush thickness for pen and text</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- CAD VIEWER -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">📐</span> CAD File Viewer <code>cad.html</code></h2>
+
+    <h3>📂 File Operations</h3>
+    <div class="body">
+      <table>
+        <tr><th>Action</th><th>How</th></tr>
+        <tr><td>Open file</td><td>Click the drop zone or drag-and-drop a <code>.stl</code>, <code>.step</code>, or <code>.stp</code> file</td></tr>
+        <tr><td>Reset view</td><td>Click <code>RESET VIEW</code> to center the model</td></tr>
+      </table>
+    </div>
+
+    <h3>🖱️ Navigation</h3>
+    <div class="body">
+      <table>
+        <tr><th>Action</th><th>Mouse / Touch</th></tr>
+        <tr><td>Rotate</td><td>Click and drag (left mouse)</td></tr>
+        <tr><td>Zoom</td><td>Scroll wheel</td></tr>
+        <tr><td>Pan</td><td>Right-click and drag</td></tr>
+      </table>
+    </div>
+
+    <h3>🎨 Rendering</h3>
+    <div class="body">
+      <table>
+        <tr><th>Mode</th><th>Button</th><th>Description</th></tr>
+        <tr><td>Solid</td><td>SOLID</td><td>Rendered mesh with lighting and shading (default)</td></tr>
+        <tr><td>Wireframe</td><td>WIRE</td><td>Triangular mesh wireframe overlays</td></tr>
+      </table>
+    </div>
+
+    <h3>📏 Supported Formats</h3>
+    <div class="body">
+      <table>
+        <tr><th>Format</th><th>Extension</th><th>Notes</th></tr>
+        <tr><td>STL</td><td><code>.stl</code></td><td>Binary STL via Three.js STLLoader — auto-centered and scaled</td></tr>
+        <tr><td>STEP</td><td><code>.step</code>, <code>.stp</code></td><td>In-browser STEP parser — supports AP203/AP242 entities: CARTESIAN_POINT, POLY_LOOP, ADVANCED_FACE, TRIANGULATED_FACE</td></tr>
+      </table>
+      <p style="font-size:.48rem;color:var(--text-deep);margin-top:.2rem"><strong>Size limit:</strong> Files up to ~50MB. Larger files may cause browser slowdown.</p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- KEYBOARD / GLOBAL -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">⌨️</span> Global Keyboard Shortcuts</h2>
+    <div class="body">
+      <table>
+        <tr><th>Shortcut</th><th>Works In</th><th>Action</th></tr>
+        <tr><td>Enter</td><td>All tools</td><td>Submit current input / trigger compute</td></tr>
+        <tr><td>Esc</td><td>PDF Viewer</td><td>Cancel text annotation</td></tr>
+        <tr><td>← / →</td><td>PDF Viewer</td><td>Previous / Next page</td></tr>
+        <tr><td>Ctrl+Scroll</td><td>PDF Viewer</td><td>Smooth zoom in/out</td></tr>
+        <tr><td>Tab</td><td>CX-3 Calculator</td><td>Cycle through input fields</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- MATH REFERENCE -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">∑</span> Math Function Reference</h2>
+    <div class="body">
+      <p style="font-size:.52rem;color:var(--text-dim);margin-bottom:.3rem;">All functions available in GRAPH and 3D graph expression inputs. Type or use func-row buttons.</p>
+      <table>
+        <tr><th>Function</th><th>Example</th><th>Result</th></tr>
+        <tr><td><code>sin(x)</code></td><td><code>sin(0)</code></td><td>0</td></tr>
+        <tr><td><code>cos(x)</code></td><td><code>cos(π)</code></td><td>−1</td></tr>
+        <tr><td><code>tan(x)</code></td><td><code>tan(π/4)</code></td><td>1</td></tr>
+        <tr><td><code>asin(x)</code></td><td><code>asin(1)</code></td><td>π/2</td></tr>
+        <tr><td><code>acos(x)</code></td><td><code>acos(0)</code></td><td>π/2</td></tr>
+        <tr><td><code>atan(x)</code></td><td><code>atan(1)</code></td><td>π/4</td></tr>
+        <tr><td><code>ln(x)</code></td><td><code>ln(e)</code></td><td>1</td></tr>
+        <tr><td><code>log(x)</code></td><td><code>log(e)</code></td><td>1 (alias for ln)</td></tr>
+        <tr><td><code>exp(x)</code></td><td><code>exp(1)</code></td><td>e ≈ 2.718</td></tr>
+        <tr><td><code>sqrt(x)</code></td><td><code>sqrt(9)</code></td><td>3</td></tr>
+        <tr><td><code>abs(x)</code></td><td><code>abs(−5)</code></td><td>5</td></tr>
+        <tr><td><code>floor(x)</code></td><td><code>floor(3.7)</code></td><td>3</td></tr>
+        <tr><td><code>ceil(x)</code></td><td><code>ceil(3.2)</code></td><td>4</td></tr>
+        <tr><td><code>x^y</code></td><td><code>2^3</code></td><td>8</td></tr>
+        <tr><td><code>π</code></td><td><code>π</code></td><td>3.14159…</td></tr>
+        <tr><td><code>e</code></td><td><code>e</code></td><td>2.71828…</td></tr>
+        <tr><td><code>int(expr, a, b)</code></td><td><code>int(x^2, 0, 1)</code></td><td>∫x² dx ≈ 0.333</td></tr>
+        <tr><td><code>der(expr, x)</code></td><td><code>der(x^2, 2)</code></td><td>d/dx x² at x=2 ≈ 4</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- TIPS -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2><span class="icon">💡</span> Tips &amp; Tricks</h2>
+    <div class="body">
+      <ul class="bullet-list">
+        <li><strong>CX-3 input fields</strong> — Enter any 2 values, leave the rest blank; the missing value is computed.</li>
+        <li><strong>Fuel type</strong> — Tap 100LL or Jet A to switch density; tap Custom to enter an exact value.</li>
+        <li><strong>W&amp;B station rows</strong> — Click +STATION to add more rows, ✕ to remove.</li>
+        <li><strong>Graph auto-scale</strong> — Leave Y-range blank for auto Y-axis; the plot fills the viewable area.</li>
+        <li><strong>3D graphing</strong> — Use <code>x</code> and <code>y</code> variables in the expression. Drag to rotate the 3D surface.</li>
+        <li><strong>PDF annotations</strong> — Survival across saves: annotations are embedded into the downloaded PDF file.</li>
+        <li><strong>PDF zoom</strong> — Ctrl+Scroll on a trackpad gives smooth Acrobat-style zoom.</li>
+        <li><strong>CAD files</strong> — STEP files use an in-browser parser; complex assemblies may take a few seconds.</li>
+        <li><strong>Mobile</strong> — Pages are responsive. Use numeric keypad on touch devices for quick input.</li>
+        <li><strong>Dark mode</strong> — All tools feature a dark, low-glare theme optimized for flight deck and late-night use.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

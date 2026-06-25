@@ -46,6 +46,7 @@ a:hover{color:var(--orange)}
 .badge-live{color:var(--green);border:1px solid var(--green)}
 .badge-wip{color:var(--gold);border:1px solid var(--gold-dim)}
 .badge-plan{color:var(--text-deep);border:1px solid var(--text-deep)}
+.badge-docs{color:var(--orange);border:1px solid var(--orange)}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
 .card{
@@ -128,6 +129,14 @@ const projects = [
     status: 'wip',
     statusLabel: 'New',
     tags: ['PDF', 'annotations', 'editor', 'tools']
+  },
+  {
+    title: 'Commands & Reference',
+    url: 'commands.html',
+    desc: 'Complete command reference for all CX-3 tools — calculator modes, keypad shortcuts, function row, graphing, PDF annotation tools, CAD navigation, keyboard shortcuts, and math function reference.',
+    status: 'live',
+    statusLabel: 'Docs',
+    tags: ['reference', 'commands', 'help']
   },
   {
     title: 'Airplane Tracker',
