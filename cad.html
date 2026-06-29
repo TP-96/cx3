@@ -1057,8 +1057,8 @@ function startNewSketch(plane) {
 
 function finishSketch() {
   if (!sketchMode) return;
-  if (sketchEntities.length < 3) {
-    setStatus('Sketch needs at least 3 entities to form a closed profile.');
+  if (sketchEntities.length === 0) {
+    setStatus('Sketch is empty. Draw some entities first.');
     return;
   }
 
@@ -1468,30 +1468,95 @@ function rebuildSketchPreview() {
 
 function buildShapeFromEntities(entities) {
   const ents = entities || sketchEntities;
-  if (!ents || ents.length < 3) return null;
+  if (!ents || ents.length === 0) return null;
 
-  // Collect all points in order to build a closed polygon
-  // Try to chain entities together
-  // For simplicity: use the first line's start as starting point, then chain
-  // This is a simplified approach - real CAD would handle complex topology
-
-  // Try to build a continuous closed path
-  const pts = chainEntitiesIntoPath(ents);
-  if (!pts || pts.length < 3) return null;
-
-  // Create THREE.Shape
-  const shape = new THREE.Shape();
-  shape.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length; i++) {
-    shape.lineTo(pts[i].x, pts[i].y);
+  // Case 1: Single circle → create circular shape
+  if (ents.length === 1 && ents[0].type === 'circle') {
+    const c = ents[0].pts[0];
+    const r = Math.sqrt((ents[0].pts[1].x - c.x)**2 + (ents[0].pts[1].y - c.y)**2);
+    if (r < 0.01) return null;
+    const shape = new THREE.Shape();
+    const segs = 64;
+    for (let i = 0; i <= segs; i++) {
+      const a = (i / segs) * Math.PI * 2;
+      const x = c.x + Math.cos(a) * r;
+      const y = c.y + Math.sin(a) * r;
+      if (i === 0) shape.moveTo(x, y);
+      else shape.lineTo(x, y);
+    }
+    return shape;
   }
-  shape.closePath();
 
-  // Check for circles (separate closed loops)
-  // For holes: circles inside the main shape become holes
-  // For simplicity in v1: just use the outer boundary
+  // Case 2: Single rect → use its 4 decomposed segments (handled by chainEntitiesIntoPath)
+  // Case 3: Mixed entities → chain line/rect segments, add circles as holes
 
-  return shape;
+  // Try to build a continuous closed path from line/rect segments
+  const pts = chainEntitiesIntoPath(ents);
+  if (pts && pts.length >= 3) {
+    // Create outer shape from chained path
+    const shape = new THREE.Shape();
+    shape.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      shape.lineTo(pts[i].x, pts[i].y);
+    }
+    shape.closePath();
+
+    // Add circles as holes
+    for (const ent of ents) {
+      if (ent.type === 'circle') {
+        const c = ent.pts[0];
+        const r = Math.sqrt((ent.pts[1].x - c.x)**2 + (ent.pts[1].y - c.y)**2);
+        if (r < 0.01) continue;
+        const hole = new THREE.Path();
+        const segs = 48;
+        for (let i = 0; i <= segs; i++) {
+          const a = (i / segs) * Math.PI * 2;
+          const x = c.x + Math.cos(a) * r;
+          const y = c.y + Math.sin(a) * r;
+          if (i === 0) hole.moveTo(x, y);
+          else hole.lineTo(x, y);
+        }
+        shape.holes.push(hole);
+      }
+    }
+    return shape;
+  }
+
+  // Case 4: Only circles (no outer boundary) — use the first circle as outer
+  const circles = ents.filter(e => e.type === 'circle');
+  if (circles.length >= 1) {
+    const c = circles[0].pts[0];
+    const r = Math.sqrt((circles[0].pts[1].x - c.x)**2 + (circles[0].pts[1].y - c.y)**2);
+    if (r < 0.01) return null;
+    const shape = new THREE.Shape();
+    const segs = 64;
+    for (let i = 0; i <= segs; i++) {
+      const a = (i / segs) * Math.PI * 2;
+      const x = c.x + Math.cos(a) * r;
+      const y = c.y + Math.sin(a) * r;
+      if (i === 0) shape.moveTo(x, y);
+      else shape.lineTo(x, y);
+    }
+    // Add remaining circles as holes
+    for (let j = 1; j < circles.length; j++) {
+      const cc = circles[j].pts[0];
+      const rr = Math.sqrt((circles[j].pts[1].x - cc.x)**2 + (circles[j].pts[1].y - cc.y)**2);
+      if (rr < 0.01) continue;
+      const hole = new THREE.Path();
+      const holeSegs = 48;
+      for (let i = 0; i <= holeSegs; i++) {
+        const a = (i / holeSegs) * Math.PI * 2;
+        const x = cc.x + Math.cos(a) * rr;
+        const y = cc.y + Math.sin(a) * rr;
+        if (i === 0) hole.moveTo(x, y);
+        else hole.lineTo(x, y);
+      }
+      shape.holes.push(hole);
+    }
+    return shape;
+  }
+
+  return null;
 }
 
 function chainEntitiesIntoPath(entities) {
