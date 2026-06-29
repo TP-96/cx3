@@ -1,596 +1,1457 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>ATCSIM — Air Traffic Control</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:24px}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;user-select:none}
-:root{--bg:#070809;--card:#0f0e0c;--card-edge:#1a1814;--gold:#E8C04A;--gold-dim:#8a6a20;--orange:#F45D00;--green:#5fbb7a;--cyan:#3ab7c8;--red:#d94545;--magenta:#b47bc8;--text:#e4ddd0;--text-dim:#9a9488;--text-deep:#4a4538;--font-head:'Bebas Neue',sans-serif;--font-display:'Share Tech Mono',monospace;--font-body:'Inter',sans-serif}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font-body)}
-canvas{display:block;position:fixed;top:0;left:0;width:100%;height:100%}
-.nav-bar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:.4rem;padding:.3rem .5rem;background:rgba(7,8,9,.75);border-bottom:1px solid rgba(26,24,20,.4);backdrop-filter:blur(4px)}
-.nav-bar a{font-family:var(--font-display);font-size:.32rem;color:var(--text-deep);border:1px solid rgba(26,24,20,.5);padding:.1rem .3rem;transition:all .1s;text-decoration:none}
-.nav-bar a:hover{color:var(--gold);border-color:var(--gold-dim)}
-.nav-bar .title{font-family:var(--font-head);font-size:.65rem;color:var(--gold);letter-spacing:.1em}
-.nav-bar .sub{font-family:var(--font-display);font-size:.3rem;color:var(--text-deep);letter-spacing:.08em;margin-left:.2rem}
-.hud-top{position:fixed;top:1.4rem;left:50%;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:.6rem;padding:.25rem .6rem;background:rgba(7,8,9,.78);border:1px solid rgba(26,24,20,.4);backdrop-filter:blur(4px);border-radius:2px;pointer-events:none}
-.hud-top .item{display:flex;align-items:center;gap:.25rem;font-family:var(--font-display);font-size:.3rem;letter-spacing:.04em}
-.hud-top .label{color:var(--text-deep);text-transform:uppercase}
-.hud-top .val{color:var(--text)}.hud-top .val.gold{color:var(--gold)}.hud-top .val.green{color:var(--green)}
-.hud-top .val.cyan{color:var(--cyan)}.hud-top .val.red{color:var(--red)}
-.hud-top .sep{color:rgba(74,69,56,.3);font-size:.4rem}
-.cmd-panel{position:fixed;bottom:.5rem;left:50%;transform:translateX(-50%);z-index:70;display:none;flex-direction:column;align-items:center;gap:.25rem;pointer-events:none}
-.cmd-panel.visible{display:flex}
-.cmd-row{display:flex;align-items:center;gap:.2rem;pointer-events:auto}
-.cmd-btn{font-family:var(--font-display);font-size:.3rem;padding:.15rem .3rem;border:1px solid rgba(26,24,20,.6);background:rgba(7,8,9,.82);color:var(--text-dim);cursor:pointer;transition:all .08s;letter-spacing:.04em;line-height:1;backdrop-filter:blur(4px);border-radius:2px}
-.cmd-btn:hover{color:var(--text);border-color:var(--gold-dim);background:rgba(232,192,74,.07)}
-.cmd-btn:active{transform:scale(.95)}
-.cmd-btn.gold{color:var(--gold);border-color:rgba(232,192,74,.3)}
-.cmd-btn.gold:hover{border-color:var(--gold-dim);background:rgba(232,192,74,.1)}
-.cmd-btn.green{color:var(--green);border-color:rgba(95,187,122,.3)}
-.cmd-btn.green:hover{border-color:var(--green);background:rgba(95,187,122,.08)}
-.cmd-btn.cyan{color:var(--cyan);border-color:rgba(58,183,200,.3)}
-.cmd-btn.cyan:hover{border-color:var(--cyan)}
-.cmd-btn.red{color:var(--red);border-color:rgba(217,69,69,.3)}
-.cmd-btn.red:hover{border-color:var(--red)}
-.cmd-btn:disabled{opacity:.25;cursor:default}
-.cmd-btn:disabled:hover{background:transparent;border-color:rgba(26,24,20,.6);color:var(--text-dim)}
-.cmd-sep{width:1px;height:.75rem;background:rgba(26,24,20,.4)}
-.sel-info{position:fixed;top:2.7rem;left:50%;transform:translateX(-50%);z-index:75;display:none;align-items:center;gap:.6rem;padding:.2rem .5rem;background:rgba(7,8,9,.82);border:1px solid rgba(232,192,74,.15);backdrop-filter:blur(4px);border-radius:2px;pointer-events:none}
-.sel-info .cs{font-family:var(--font-display);font-size:.45rem;color:var(--gold);letter-spacing:.06em}
-.sel-info .d{font-family:var(--font-display);font-size:.3rem;color:var(--text-deep);display:flex;align-items:center;gap:.35rem}
-.sel-info .d .v{color:var(--text)}.sel-info .d .v.gold{color:var(--gold)}.sel-info .d .v.green{color:var(--green)}.sel-info .d .v.cyan{color:var(--cyan)}
-.radio-log{position:fixed;top:3.8rem;right:.5rem;z-index:60;width:260px;pointer-events:none}
-.radio-msg{padding:.15rem .35rem;margin-bottom:.15rem;font-family:var(--font-display);font-size:.28rem;border-left:2px solid;animation:radioIn .2s ease-out;background:rgba(7,8,9,.65);backdrop-filter:blur(4px);border-radius:0 2px 2px 0}
-.radio-msg .cs{font-weight:bold}
-@keyframes radioIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
-.radio-msg.info{border-color:var(--cyan);color:var(--cyan)}
-.radio-msg.warn{border-color:var(--gold);color:var(--gold)}
-.radio-msg.err{border-color:var(--red);color:var(--red)}
-.radio-msg.done{border-color:var(--green);color:var(--green)}
-.radio-msg.cmd{border-color:var(--gold-dim);color:var(--text-dim)}
-.combo-display{position:fixed;top:4.5rem;left:50%;transform:translateX(-50%);z-index:55;font-family:var(--font-display);font-size:.7rem;color:var(--gold);letter-spacing:.12em;opacity:0;transition:opacity .3s;text-shadow:0 0 20px rgba(232,192,74,.2);pointer-events:none}
-.combo-display.show{opacity:1}
-.combo-display .sub{font-size:.3rem;color:var(--text-deep);text-align:center;letter-spacing:.06em;margin-top:-.05rem}
-.event-pop{position:fixed;top:4rem;left:50%;transform:translateX(-50%);z-index:90;font-family:var(--font-display);font-size:.35rem;padding:.25rem .5rem;background:rgba(7,8,9,.85);border:1px solid var(--gold-dim);backdrop-filter:blur(6px);border-radius:2px;color:var(--gold);opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap;letter-spacing:.04em}
-.event-pop.show{opacity:1}
-.overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(8px)}
-.overlay.hidden{display:none}
-.overlay-box{text-align:center;border:1px solid rgba(26,24,20,.6);padding:1.5rem 2rem;background:var(--card);max-width:440px;width:90%}
-.overlay-box h2{font-family:var(--font-head);font-size:1.6rem;color:var(--gold);letter-spacing:.1em}
-.overlay-box .sub{font-family:var(--font-display);font-size:.35rem;color:var(--text-deep);letter-spacing:.08em;margin-top:.05rem}
-.overlay-box p{font-size:.5rem;color:var(--text-dim);margin:.5rem 0;line-height:1.6}
-.overlay-box .key-grid{display:grid;grid-template-columns:1fr 1fr;gap:.15rem .5rem;text-align:left;margin:.5rem 0}
-.overlay-box .key-grid .k{font-family:var(--font-display);color:var(--gold);font-size:.4rem}
-.overlay-box .key-grid .a{color:var(--text-deep);font-size:.38rem}
-.overlay-box button{font-family:var(--font-display);font-size:.5rem;padding:.4rem 1.5rem;border:1px solid rgba(232,192,74,.3);background:transparent;color:var(--gold);cursor:pointer;transition:all .1s;margin-top:.2rem;letter-spacing:.06em}
-.overlay-box button:hover{background:rgba(232,192,74,.08);border-color:var(--gold-dim)}
-.overlay-box .final-score{font-family:var(--font-display);font-size:.9rem;color:var(--text-dim);margin:.5rem 0}
-.overlay-box .final-score span{color:var(--gold);font-size:1.3rem}
-.overlay-box .stats{font-family:var(--font-display);font-size:.38rem;color:var(--text-deep);line-height:1.8}
-@media(max-width:600px){
-  .radio-log{display:none}
-  .hud-top{gap:.3rem;padding:.2rem .35rem;flex-wrap:wrap;justify-content:center;width:95%}
-  .hud-top .item{font-size:.25rem}
-  .cmd-panel{bottom:.3rem;width:98%}
-  .cmd-row{gap:.1rem;flex-wrap:wrap;justify-content:center}
-  .cmd-btn{font-size:.26rem;padding:.12rem .2rem}
-  .cmd-sep{display:none}
-  .sel-info{flex-wrap:wrap;gap:.3rem;padding:.15rem .35rem;top:2.5rem;width:95%}
-  .sel-info .cs{font-size:.38rem}
-  .sel-info .d{font-size:.26rem;gap:.2rem}
-  .overlay-box{padding:1rem}
-  .overlay-box h2{font-size:1.2rem}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ATCSIM v2 — Air Traffic Control</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0a;
+    }
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: linear-gradient(135deg, #0a0a0a 0%, #0d0d1a 40%, #1a1a2e 100%);
+      color: #00ff00;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* ── Loading Screen ── */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease;
+    }
+    .loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      color: #00ff00;
+      letter-spacing: 0.25em;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 30px rgba(0,255,0,0.4);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .loading-bar {
+      width: 320px;
+      height: 4px;
+      background: #1a1a1a;
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+    .loading-bar::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -320px;
+      width: 320px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #00ff00, #00ff66, transparent);
+      animation: sweep 1.8s ease-in-out infinite;
+    }
+    @keyframes sweep {
+      0%   { left: -320px; }
+      100% { left: 100%; }
+    }
+    .loading-sub {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: #446644;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Navigation Bar ── */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.7rem 1.5rem;
+      background: rgba(0,255,0,0.03);
+      border-bottom: 1px solid rgba(0,255,0,0.15);
+      flex-shrink: 0;
+      z-index: 100;
+      flex-wrap: wrap;
+    }
+    .nav-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: #00ff00;
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 15px rgba(0,255,0,0.3);
+    }
+    .nav-title small {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: #446644;
+      letter-spacing: 0;
+      margin-left: 0.3rem;
+    }
+    .nav-bar a {
+      color: #446644;
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: color 0.2s;
+    }
+    .nav-bar a:hover { color: #00ff00; }
+    .nav-status {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: #335533;
+    }
+
+    /* ── HUD Bar ── */
+    .hud-bar {
+      display: flex;
+      justify-content: center;
+      gap: 1.8rem;
+      padding: 0.6rem 1.5rem;
+      background: rgba(0,0,0,0.85);
+      border-bottom: 1px solid rgba(0,255,0,0.1);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 1rem;
+    }
+    .hud-label {
+      color: #446644;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+    .hud-value {
+      color: #00ff00;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    .hud-value.warn { color: #ff4444; }
+    .hud-sep { color: #223322; font-size: 1.2rem; }
+
+    /* ── Canvas Container ── */
+    .game-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+    }
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* ── Selection Info Panel ── */
+    .sel-panel {
+      position: absolute;
+      top: 0.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem 1.2rem;
+      background: rgba(0,0,0,0.92);
+      border: 1px solid #00ff00;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,255,0,0.15);
+      font-size: 0.8rem;
+      white-space: nowrap;
+      pointer-events: auto;
+    }
+    .sel-panel.visible { display: flex; flex-wrap: wrap; justify-content: center; }
+    .sel-panel .sp-lbl { color: #446644; }
+    .sel-panel .sp-val { color: #00ff00; font-weight: bold; margin-right: 0.5rem; }
+
+    /* ── Command Panel ── */
+    .cmd-panel {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1rem;
+      background: rgba(0,0,0,0.9);
+      border: 1px solid rgba(0,255,0,0.3);
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,255,0,0.1);
+    }
+    .cmd-panel.visible { display: flex; }
+    .cmd-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+    .cmd-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid #00ff00;
+      background: rgba(0,255,0,0.08);
+      color: #00ff00;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .cmd-btn:hover {
+      background: rgba(0,255,0,0.2);
+      box-shadow: 0 0 12px rgba(0,255,0,0.25);
+      transform: translateY(-1px);
+    }
+    .cmd-btn:active { transform: translateY(0); }
+    .cmd-btn.cyan  { border-color: #00ffff; color: #00ffff; }
+    .cmd-btn.cyan:hover  { background: rgba(0,255,255,0.2); box-shadow: 0 0 12px rgba(0,255,255,0.25); }
+    .cmd-btn.red   { border-color: #ff4444; color: #ff4444; }
+    .cmd-btn.red:hover   { background: rgba(255,68,68,0.2); box-shadow: 0 0 12px rgba(255,68,68,0.25); }
+    .cmd-btn.gold  { border-color: #ffcc00; color: #ffcc00; }
+    .cmd-btn.gold:hover  { background: rgba(255,204,0,0.2); box-shadow: 0 0 12px rgba(255,204,0,0.25); }
+    .cmd-sep {
+      width: 1px;
+      height: 1.6rem;
+      background: rgba(0,255,0,0.2);
+    }
+
+    /* ── Radio Log ── */
+    .radio-log {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 40;
+      width: min(300px, 45vw);
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.88);
+      border: 1px solid rgba(0,255,0,0.2);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      pointer-events: auto;
+    }
+    .radio-log::-webkit-scrollbar { width: 3px; }
+    .radio-log::-webkit-scrollbar-track { background: #111; }
+    .radio-log::-webkit-scrollbar-thumb { background: #335533; border-radius: 2px; }
+    .radio-msg {
+      padding: 0.3rem 0.5rem;
+      margin-bottom: 0.3rem;
+      border-left: 2px solid #00ff00;
+      background: rgba(0,255,0,0.03);
+      border-radius: 3px;
+      animation: fadeInMsg 0.25s ease;
+    }
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .radio-msg.info { border-color: #00ff00; color: #88ff88; }
+    .radio-msg.err  { border-color: #ff4444; color: #ff6666; }
+    .radio-msg.done { border-color: #00ffff; color: #66ffff; }
+
+    /* ── Combo Display ── */
+    .combo-popup {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .combo-popup.show { opacity: 1; }
+    .combo-main {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #00ff00;
+      text-shadow: 0 0 40px rgba(0,255,0,0.6);
+    }
+    .combo-sub {
+      font-size: 1rem;
+      color: #88ff88;
+      margin-top: 0.2rem;
+    }
+
+    /* ── Event Popup ── */
+    .event-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 60;
+      background: rgba(0,0,0,0.92);
+      border: 1px solid #00ff00;
+      padding: 1.5rem 2.5rem;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.3rem;
+      color: #00ff00;
+      box-shadow: 0 0 30px rgba(0,255,0,0.2);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    .event-popup.show { opacity: 1; }
+
+    /* ── Overlay (win/lose) ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.85);
+      animation: overlayIn 0.4s ease;
+    }
+    @keyframes overlayIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .overlay-box {
+      text-align: center;
+      padding: 2.5rem;
+      background: rgba(0,0,0,0.9);
+      border: 1px solid #00ff00;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0,255,0,0.15);
+    }
+    .overlay-icon { font-size: 3.5rem; margin-bottom: 0.5rem; }
+    .overlay-title { font-size: 2rem; margin-bottom: 1rem; }
+    .overlay-score { font-size: 1.3rem; margin-bottom: 0.5rem; color: #88ff88; }
+    .overlay-combo { font-size: 1rem; margin-bottom: 1.5rem; color: #446644; }
+    .overlay-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+      padding: 0.7rem 2rem;
+      border: 1px solid #00ff00;
+      background: rgba(0,255,0,0.1);
+      color: #00ff00;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .overlay-btn:hover {
+      background: rgba(0,255,0,0.25);
+      box-shadow: 0 0 20px rgba(0,255,0,0.3);
+    }
+    .overlay-btn.lose { border-color: #ff4444; color: #ff4444; }
+    .overlay-btn.lose:hover { background: rgba(255,68,68,0.25); box-shadow: 0 0 20px rgba(255,68,68,0.3); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-bar { padding: 0.5rem 0.8rem; gap: 0.8rem; }
+      .nav-title { font-size: 1.4rem; }
+      .nav-bar a { font-size: 0.7rem; }
+      .hud-bar { gap: 0.8rem; padding: 0.4rem 0.8rem; }
+      .hud-item { font-size: 0.8rem; }
+      .radio-log { width: 50vw; max-height: 150px; font-size: 0.65rem; }
+      .sel-panel { font-size: 0.7rem; padding: 0.4rem 0.8rem; gap: 0.5rem; }
+      .cmd-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+      .combo-main { font-size: 1.8rem; }
+    }
+
+    /* ── Tooltip hint ── */
+    .hint {
+      position: absolute;
+      bottom: 4.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      font-size: 0.75rem;
+      color: #335533;
+      background: rgba(0,0,0,0.7);
+      padding: 0.3rem 1rem;
+      border-radius: 4px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .hint.show { opacity: 1; }
+  </style>
 </head>
 <body>
-<nav class="nav-bar">
-  <a href="index.html">← BACK</a>
-  <span class="title">ATCSIM</span>
-  <span class="sub">OTTAWA CENTER</span>
-</nav>
-<canvas id="c"></canvas>
 
-<div class="hud-top" id="hud">
-  <span class="item"><span class="label">Score</span><span class="val gold" id="scoreVal">0</span></span>
-  <span class="sep">|</span>
-  <span class="item"><span class="label">Landed</span><span class="val green" id="landedVal">0</span></span>
-  <span class="sep">|</span>
-  <span class="item"><span class="label">Lost</span><span class="val red" id="lostVal">0</span></span>
-  <span class="sep">|</span>
-  <span class="item"><span class="label">Lvl</span><span class="val cyan" id="levelVal">1</span></span>
-  <span class="sep">|</span>
-  <span class="item"><span class="label">Active</span><span class="val" id="activeVal">0</span></span>
-  <span class="sep">|</span>
-  <span class="item"><span class="label">Combo</span><span class="val gold" id="comboVal">×1</span></span>
-</div>
-
-<div class="sel-info" id="selInfo">
-  <span class="cs" id="selCS">---</span>
-  <span class="d">ALT <span class="v gold" id="selAlt">---</span></span>
-  <span class="d">SPD <span class="v cyan" id="selSpd">---</span></span>
-  <span class="d">HDG <span class="v" id="selHdg">---</span></span>
-  <span class="d">TYPE <span class="v" id="selType">---</span></span>
-</div>
-
-<div class="combo-display" id="comboDisplay"><div id="comboText"></div><div class="sub" id="comboSub"></div></div>
-<div class="event-pop" id="eventPopup"></div>
-<div class="radio-log" id="radioLog"></div>
-
-<div class="cmd-panel" id="cmdPanel">
-  <div class="cmd-row">
-    <button class="cmd-btn green" id="btnAltUp">ALT ▲ +10</button>
-    <button class="cmd-btn" id="btnAltDn">ALT ▼ -10</button>
-    <span class="cmd-sep"></span>
-    <button class="cmd-btn green" id="btnSpdUp">SPD ▲ +20</button>
-    <button class="cmd-btn" id="btnSpdDn">SPD ▼ -20</button>
-    <span class="cmd-sep"></span>
-    <button class="cmd-btn" id="btnHdg">⎔ VECTOR</button>
+  <!-- ─── Loading Screen ─── -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-text">◈ ATCSIM v2</div>
+    <div class="loading-bar"></div>
+    <div class="loading-sub">Initializing radar systems ...</div>
   </div>
-  <div class="cmd-row">
-    <button class="cmd-btn" id="btnN">N</button>
-    <button class="cmd-btn" id="btnNE">NE</button>
-    <button class="cmd-btn" id="btnE">E</button>
-    <button class="cmd-btn" id="btnSE">SE</button>
-    <button class="cmd-btn" id="btnS">S</button>
-    <button class="cmd-btn" id="btnSW">SW</button>
-    <button class="cmd-btn" id="btnW">W</button>
-    <button class="cmd-btn" id="btnNW">NW</button>
-    <span class="cmd-sep"></span>
-    <button class="cmd-btn gold" id="btnApproach">✈ APPROACH</button>
-    <button class="cmd-btn cyan" id="btnHold">⏸ HOLD</button>
-    <span class="cmd-sep"></span>
-    <button class="cmd-btn red" id="btnEmergency">⚠ EMERG</button>
-  </div>
-</div>
 
-<div class="overlay" id="briefing">
-  <div class="overlay-box">
-    <h2>◈ ATCSIM</h2>
-    <div class="sub">OTTAWA TRACON</div>
-    <p>Guide aircraft to the runways. Click to select, drag to vector, or use the command panel.<br>Chain landings for combo multiplier. Keep separation — collisions cost 500pts.<br><span style="color:var(--red)">5 lost aircraft and your sector is closed.</span></p>
-    <div class="key-grid">
-      <span class="k">Click / Tap aircraft</span><span class="a">Select</span>
-      <span class="k">Drag from aircraft</span><span class="a">Set heading</span>
-      <span class="k">1-8</span><span class="a">Compass headings</span>
-      <span class="k">A / S</span><span class="a">Altitude ▲/▼</span>
-      <span class="k">Q / W</span><span class="a">Speed ▲/▼</span>
-      <span class="k">E</span><span class="a">Approach mode</span>
-      <span class="k">H</span><span class="a">Hold pattern</span>
-      <span class="k">Space</span><span class="a">Pause / Resume</span>
-      <span class="k">D / Esc</span><span class="a">Deselect</span>
+  <!-- ─── Navigation ─── -->
+  <div class="nav-bar">
+    <span class="nav-title">◈ ATCSIM <small>v2</small></span>
+    <a href="https://tp-96.github.io/cx3/" target="_blank">↩ CX-3 HUB</a>
+    <a href="https://tp-96.github.io/Track/" target="_blank">💰 TRACKER</a>
+    <a href="https://tp-96.github.io/cx3/planner/" target="_blank">📋 PLANNER</a>
+    <span class="nav-status" id="navStatus">RADAR STANDBY</span>
+  </div>
+
+  <!-- ─── HUD ─── -->
+  <div class="hud-bar" id="hudBar">
+    <div class="hud-item">
+      <span class="hud-label">SCORE</span>
+      <span class="hud-value" id="hudScore">0</span>
     </div>
-    <button onclick="G.start()">▶ START</button>
+    <span class="hud-sep">│</span>
+    <div class="hud-item">
+      <span class="hud-label">COMBO</span>
+      <span class="hud-value" id="hudCombo">×1</span>
+    </div>
+    <span class="hud-sep">│</span>
+    <div class="hud-item">
+      <span class="hud-label">TRAFFIC</span>
+      <span class="hud-value" id="hudTraffic">0</span>
+    </div>
+    <span class="hud-sep">│</span>
+    <div class="hud-item">
+      <span class="hud-label">MISSING</span>
+      <span class="hud-value warn" id="hudMissing">3</span>
+    </div>
+    <span class="hud-sep">│</span>
+    <div class="hud-item">
+      <span class="hud-label">LEVEL</span>
+      <span class="hud-value" id="hudLevel">1</span>
+    </div>
   </div>
-</div>
 
-<div class="overlay hidden" id="gameOver">
-  <div class="overlay-box">
-    <h2>// SECTOR LOST</h2>
-    <div class="sub">OPERATIONS TERMINATED</div>
-    <div class="final-score"><span id="finalScore">0</span></div>
-    <div class="stats" id="finalStats">Landed: 0<br>Lost: 0<br>Best Combo: ×1<br>Level Reached: 1</div>
-    <button onclick="G.reset()">↻ TRY AGAIN</button>
+  <!-- ─── Game Area ─── -->
+  <div class="game-area" id="gameArea">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Selection info -->
+    <div class="sel-panel" id="selPanel">
+      <span><span class="sp-lbl">CALL:</span> <span class="sp-val" id="selCall">---</span></span>
+      <span><span class="sp-lbl">ALT:</span> <span class="sp-val" id="selAlt">---</span></span>
+      <span><span class="sp-lbl">SPD:</span> <span class="sp-val" id="selSpd">---</span></span>
+      <span><span class="sp-lbl">HDG:</span> <span class="sp-val" id="selHdg">---°</span></span>
+      <span><span class="sp-lbl">TYPE:</span> <span class="sp-val" id="selType">---</span></span>
+      <span><span class="sp-lbl">RWY:</span> <span class="sp-val" id="selRwy">---</span></span>
+    </div>
+
+    <!-- Command panel -->
+    <div class="cmd-panel" id="cmdPanel">
+      <div class="cmd-row">
+        <button class="cmd-btn" id="btnStart">▶ START</button>
+        <button class="cmd-btn cyan" id="btnApproach">▽ APPROACH</button>
+        <button class="cmd-btn" id="btnHold">◯ HOLD</button>
+        <button class="cmd-btn red" id="btnEmergency">⚠ EMERG</button>
+        <span class="cmd-sep"></span>
+        <button class="cmd-btn gold" id="btnReset">↺ RESET</button>
+      </div>
+    </div>
+
+    <!-- Radio log -->
+    <div class="radio-log" id="radioLog"></div>
+
+    <!-- Combo popup -->
+    <div class="combo-popup" id="comboPopup">
+      <div class="combo-main" id="comboMain">+0</div>
+      <div class="combo-sub" id="comboSub"></div>
+    </div>
+
+    <!-- Event popup -->
+    <div class="event-popup" id="eventPopup"></div>
+
+    <!-- Hint -->
+    <div class="hint" id="hint">Click an aircraft to select · Drag to vector · ▷ START</div>
   </div>
-</div>
 
 <script>
-// ─── ATCSIM v2 ──────────────────────────────────────────
-const C=document.getElementById('c'),X=C.getContext('2d');
-let W,H;
-function resize(){W=C.width=window.innerWidth;H=C.height=window.innerHeight}
-resize();window.addEventListener('resize',resize);
+/* ===================================================================
+ *  ATCSIM v2 — Full Air Traffic Control Simulation
+ *  Single-file, zero-dependency, self-contained HTML5 game.
+ * =================================================================== */
 
-const $=id=>document.getElementById(id);
-function rng(a,b){return Math.random()*(b-a)+a}
-function rngi(a,b){return Math.floor(rng(a,b+1))}
-function dist(x1,y1,x2,y2){return Math.hypot(x2-x1,y2-y1)}
-function hdgTo(x1,y1,x2,y2){return ((Math.atan2(y2-y1,x2-x1)*180/Math.PI)+360)%360}
-function lerp(a,b,t){return a+(b-a)*t}
-function clamp(v,l,h){return Math.max(l,Math.min(h,v))}
-function hdgDiff(a,b){let d=b-a;while(d>180)d-=360;while(d<-180)d+=360;return d}
+/* ── Defensive: ensure console exists ── */
+if (!window.console) { window.console = { log: function(){}, error: function(){}, warn: function(){} }; }
 
-const CALLSIGNS=['UAL','DAL','AAL','SWA','JBU','FDX','UPS','BAW','AFR','KLM','QFA','CPA','CES','SIA','ANA','JAL','THY','UAE','ETD','ACA','WJA','EVA','MAS','NKS','FFT','ASA','SKW','RPA'];
-const NAMES=['Alpha','Bravo','Charlie','Delta','Echo','Foxtrot','Golf','Hotel','India','Juliet','Kilo','Lima','Mike','Nov','Oscar','Papa','Quebec','Romeo','Sierra','Tango','Uniform'];
-const AIRCRAFT_TYPES={
-  heavy:{name:'Heavy',speedR:[440,510],altR:[310,390],turnRate:1.2,radius:8,score:150,color:'#b47bc8'},
-  medium:{name:'Medium',speedR:[360,460],altR:[280,370],turnRate:2.0,radius:6,score:100,color:'#3ab7c8'},
-  light:{name:'Light',speedR:[240,340],altR:[100,240],turnRate:3.5,radius:5,score:70,color:'#5fbb7a'}
-};
-const TYPES=['heavy','heavy','medium','medium','medium','light','light'];
-const RUNWAYS=[
-  {name:'RWY 09',x:()=>80,y:()=>H/2,appDir:90,color:'#5fbb7a'},
-  {name:'RWY 27',x:()=>W-80,y:()=>H/2,appDir:270,color:'#3ab7c8'},
-  {name:'RWY 18',x:()=>W/2,y:()=>H-80,appDir:180,color:'#b47bc8'}
+/* ═══════════════════════════════════════════════════════════════════
+ *  CONSTANTS & CONFIGURATION
+ * ═══════════════════════════════════════════════════════════════════ */
+
+const CONFIG = Object.freeze({
+  VERSION:              '2.0',
+  GAME_DURATION:        120,           // seconds per round
+  INITIAL_MISSING:      3,             // planes that can be lost
+  COMBO_WINDOW:         4,             // seconds to maintain combo
+  SPAWN_INTERVAL_MIN:   3.5,           // seconds between spawns (at level 1)
+  SPAWN_INTERVAL_DECAY: 0.2,           // reduction per level
+  MIN_SPAWN_INTERVAL:   1.2,
+  MAX_CONCURRENT:       8,
+  MISSING_PENALTY:      100,
+  EMERGENCY_PENALTY:    200,
+  EMERGENCY_TIMEOUT:    8,
+  LEVEL_UP_SCORE_BASE:  600,
+  LEVEL_UP_SCORE_INC:   400,
+  RUNWAY_CAPTURE_DIST:  30,            // px to snap landing
+  COLLISION_DIST:       35,            // separation minimum
+  LEARN_PHASE_DURATION: 3,             // seconds of no-spawn intro
+
+  AIRPORT_NAME: 'Ottawa Macdonald-Cartier',
+  ICAO: 'CYOW',
+});
+
+const CALLSIGNS = [
+  'ACA','WJA','Rouge','Jazz','SWA','DAL','UAL','AAL','JBU',
+  'FDX','UPS','BAW','AFR','KLM','QFA','CPA','CES','SIA',
+  'ANA','JAL','THY','UAE','ETD','EVA','MAS','NKS','FFT','ASA','SKW','RPA'
 ];
-const EMERGENCIES=['LOW FUEL','ENGINE FAIL','MEDICAL','BIRD STRIKE','HYDRAULIC','FIRE'];
-
-// ─── Radio ───
-class Radio{
-  constructor(){this.msgs=[];this.el=$('radioLog');}
-  say(text,type='cmd',cs=''){
-    this.msgs.push({text,type,cs});
-    if(this.msgs.length>8)this.msgs.shift();
-    this.el.innerHTML=this.msgs.map(m=>
-      `<div class="radio-msg ${m.type}"><span class="cs">${m.cs?m.cs+' ':'[CTR] '}</span>${m.text}</div>`
-    ).join('');
+const AIRCRAFT_TYPES = Object.freeze({
+  heavy: {
+    name:      'Commercial Jet',
+    speedR:    [380, 510],
+    altR:      [25000, 37000],
+    radius:    24,
+    turnRate:  1.0,
+    score:     150,
+    color:     '#ff6666',
+    trailCol:  'rgba(255,102,102,0.25)',
+  },
+  medium: {
+    name:      'Regional Jet',
+    speedR:    [240, 340],
+    altR:      [18000, 28000],
+    radius:    20,
+    turnRate:  1.3,
+    score:     100,
+    color:     '#ffff66',
+    trailCol:  'rgba(255,255,102,0.25)',
+  },
+  light: {
+    name:      'Business Jet',
+    speedR:    [140, 240],
+    altR:      [8000, 15000],
+    radius:    14,
+    turnRate:  1.6,
+    score:     75,
+    color:     '#66ff66',
+    trailCol:  'rgba(102,255,102,0.25)',
   }
-  clear(){this.msgs=[];this.el.innerHTML='';}
-}
-const RADIO=new Radio();
+});
+const TYPE_KEYS = Object.keys(AIRCRAFT_TYPES);
 
-let eventTimer=0;
-function showEvent(text,dur=2){
-  const el=$('eventPopup');el.textContent=text;
-  el.classList.add('show');eventTimer=dur;
-}
-function showCombo(text,sub){
-  const el=$('comboDisplay'),t=$('comboText'),s=$('comboSub');
-  t.textContent=text;s.textContent=sub||'';
-  el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500);
+/* ── Runway definitions in normalized [0..1] space ── */
+const RUNWAY_DEFS = [
+  { name:'RWY 07/25', nx:0.50, ny:0.88, w:0.08, h:0.012, angle:0 },
+  { name:'RWY 14/32', nx:0.50, ny:0.10, w:0.08, h:0.012, angle:0 },
+  { name:'RWY 18/36', nx:0.90, ny:0.50, w:0.012, h:0.08, angle:0 },
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  MATH HELPERS
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function lerp(a, b, t) { return a + (b - a) * Math.max(0, Math.min(1, t)); }
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
+
+function hdgTo(x1, y1, x2, y2) {
+  return (Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI + 360) % 360;
 }
 
-// ─── Aircraft ───
-let AC_ID=0;
-class Aircraft{
-  constructor(){
-    this.id=++AC_ID;
-    this.callsign=CALLSIGNS[rngi(0,CALLSIGNS.length-1)]+rngi(10,999);
-    this.name=NAMES[rngi(0,NAMES.length-1)];
-    const tk=TYPES[rngi(0,TYPES.length-1)];const t=AIRCRAFT_TYPES[tk];
-    this.typeName=t.name;this.typeKey=tk;this.turnRate=t.turnRate;
-    this.baseSpeed=rng(t.speedR[0],t.speedR[1]);this.speed=this.baseSpeed;
-    this.targetSpd=this.baseSpeed;this.scoreVal=t.score;this.color=t.color;
-    this.altitude=rng(t.altR[0],t.altR[1]);this.targetAlt=this.altitude;
-    this.radius=t.radius;this.selected=false;this.active=true;
-    this.landed=false;this.holding=false;this.approachMode=false;
-    this.targetRunway=null;this.emergency=null;this.emerTimer=0;this.emerCalled=false;
-    const side=rngi(0,3),pad=40;
-    if(side===0){this.x=pad;this.y=rng(pad,H-pad);this.heading=0;this.targetHdg=rng(-15,15)}
-    else if(side===1){this.x=W-pad;this.y=rng(pad,H-pad);this.heading=180;this.targetHdg=180+rng(-15,15)}
-    else if(side===2){this.x=rng(pad,W-pad);this.y=pad;this.heading=90;this.targetHdg=90+rng(-15,15)}
-    else{this.x=rng(pad,W-pad);this.y=H-pad;this.heading=270;this.targetHdg=270+rng(-15,15)}
-    this.x+=Math.cos(this.heading*Math.PI/180)*60;
-    this.y+=Math.sin(this.heading*Math.PI/180)*60;
-    this.trail=[];this.sepPhase=rng(0,6.28);
-    this.avoidHdg=null;this.avoidTimer=0;this.holdPhase=0;this.intro=1;
+function hdgDiff(a, b) {
+  let d = ((b - a) % 360 + 540) % 360 - 180;
+  return d;
+}
+
+function wrapHeading(h) { return ((h % 360) + 360) % 360; }
+
+function rand(min, max) { return Math.random() * (max - min) + min; }
+
+function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
+
+function randItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  DOM HELPERS
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function $(id) { return document.getElementById(id); }
+
+function setText(el, text) { if (el) el.textContent = text; }
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  GAME STATE
+ * ═══════════════════════════════════════════════════════════════════ */
+
+let W = 800, H = 600;
+let canvas, ctx;
+let lastTime = 0;
+let animFrameId = null;
+let acIdCounter = 0;
+
+let G = null; // game state, built by initGame()
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  AIRCRAFT CONSTRUCTOR
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function Aircraft() {
+  this.id = ++acIdCounter;
+  this.callsign = randItem(CALLSIGNS) + randInt(100, 999);
+  const tk = randItem(TYPE_KEYS);
+  const t  = AIRCRAFT_TYPES[tk];
+
+  this.typeKey     = tk;
+  this.typeName    = t.name;
+  this.color       = t.color;
+  this.trailCol    = t.trailCol;
+  this.radius      = t.radius;
+  this.turnRate    = t.turnRate;
+  this.baseScore   = t.score;
+
+  this.baseSpeed   = rand(t.speedR[0], t.speedR[1]);
+  this.speed       = this.baseSpeed;
+  this.targetSpeed = this.baseSpeed;
+
+  this.altitude    = rand(t.altR[0], t.altR[1]);
+  this.targetAlt   = this.altitude;
+
+  /* Spawn from one of 4 edges */
+  const pad = 60;
+  const side = randInt(0, 3);
+  switch (side) {
+    case 0: // left
+      this.x = -pad;
+      this.y = rand(pad, H - pad);
+      this.heading = rand(-20, 20);
+      break;
+    case 1: // right
+      this.x = W + pad;
+      this.y = rand(pad, H - pad);
+      this.heading = rand(160, 200);
+      break;
+    case 2: // top
+      this.x = rand(pad, W - pad);
+      this.y = -pad;
+      this.heading = rand(70, 110);
+      break;
+    default: // bottom
+      this.x = rand(pad, W - pad);
+      this.y = H + pad;
+      this.heading = rand(250, 290);
+      break;
   }
-  get altFL(){return Math.round(this.altitude/10)*10}
-  update(dt){
-    if(!this.active||this.landed)return;
-    this.intro=Math.max(0,this.intro-dt*2);
-    this.speed=lerp(this.speed,this.targetSpd,clamp(2*dt,0,1));
-    this.altitude=lerp(this.altitude,this.targetAlt,clamp(2*dt,0,1));
+  this.targetHdg = this.heading + rand(-25, 25);
+  this.targetHdg = wrapHeading(this.targetHdg);
 
-    if(this.avoidTimer>0){
-      this.avoidTimer-=dt;
-      let d=hdgDiff(this.heading,this.avoidHdg);this.heading+=d*5*dt;
-      this.heading=((this.heading%360)+360)%360;
-    }else if(this.holding){
-      this.holdPhase+=dt*this.turnRate*0.15;
-      this.targetSpd=Math.min(this.targetSpd,220);
-      const r=35,cx=this.x+r*Math.cos(this.holdPhase*0.8),cy=this.y+r*Math.sin(this.holdPhase*0.8);
-      this.targetHdg=hdgTo(this.x,this.y,cx,cy)+90;
-    }else{
-      let d=hdgDiff(this.heading,this.targetHdg);
-      const rate=this.turnRate*120*dt;
-      if(Math.abs(d)<rate)this.heading=this.targetHdg;
-      else this.heading+=Math.sign(d)*rate;
-      this.heading=((this.heading%360)+360)%360;
+  /* Move aircraft slightly into the visible area so they don't appear at the edge */
+  this.x += Math.cos(this.heading * Math.PI/180) * rand(40, 100);
+  this.y += Math.sin(this.heading * Math.PI/180) * rand(40, 100);
+
+  this.trail       = [];
+  this.selected    = false;
+  this.active      = true;
+  this.landed      = false;
+  this.holding     = false;
+  this.approach    = false;
+  this.targetRwy   = null;
+  this.emergency   = null;
+  this.emerTimer   = 0;
+  this.emerCalled  = false;
+  this.introAlpha  = 1;          // fades in over 1s
+  this.holdAngle   = rand(0, Math.PI * 2);
+}
+
+/* ── Per-frame update ── */
+Aircraft.prototype.update = function(dt) {
+  if (!this.active || this.landed) return;
+  if (G && G.paused) return;
+
+  this.introAlpha = Math.max(0, this.introAlpha - dt * 2);
+
+  /* Smooth speed & altitude transitions */
+  this.speed     = lerp(this.speed, this.targetSpeed, clamp(dt * 2, 0, 1));
+  this.altitude  = lerp(this.altitude, this.targetAlt, clamp(dt * 1.5, 0, 1));
+
+  /* Heading logic */
+  if (this.holding) {
+    /* Hold pattern: orbit a point ahead */
+    this.holdAngle += dt * this.turnRate * 0.6;
+    this.targetSpeed = Math.min(this.targetSpeed, 200);
+    this.targetHdg = wrapHeading(this.heading + this.turnRate * 60 * dt);
+  } else if (this.approach && this.targetRwy) {
+    /* Approach mode: fly toward runway threshold */
+    const gx = this.targetRwy.cx, gy = this.targetRwy.cy;
+    const d = dist(this.x, this.y, gx, gy);
+    if (d < CONFIG.RUNWAY_CAPTURE_DIST) {
+      this.land();
+      return;
     }
-
-    if(this.approachMode&&this.targetRunway){
-      const rwy=this.targetRunway,gx=rwy.x(),gy=rwy.y();
-      const d=dist(this.x,this.y,gx,gy);
-      if(d<35){this.land();return;}
-      const desired=hdgTo(this.x,this.y,gx,gy);
-      let diff=hdgDiff(this.heading,desired);
-      const rate=this.turnRate*150*dt;
-      if(Math.abs(diff)<rate)this.targetHdg=desired;
-      else this.targetHdg=this.heading+Math.sign(diff)*rate;
-      this.targetHdg=((this.targetHdg%360)+360)%360;
-      this.targetSpd=Math.min(200,this.baseSpeed*0.5);
-      this.targetAlt=lerp(this.targetAlt,5,clamp(3*dt,0,1));
+    const desired = hdgTo(this.x, this.y, gx, gy);
+    let diff = hdgDiff(this.heading, desired);
+    const rate = this.turnRate * 2.5 * dt;
+    this.targetHdg = this.heading + clamp(diff, -rate, rate);
+    this.targetSpeed = clamp(this.baseSpeed * 0.45, 120, 200);
+    this.targetAlt = lerp(this.targetAlt, 0, clamp(dt * 2, 0, 1));
+  } else {
+    /* Normal flight: turn toward target heading */
+    let diff = hdgDiff(this.heading, this.targetHdg);
+    const rate = this.turnRate * 150 * dt;
+    if (Math.abs(diff) < rate) {
+      /* Close enough: snap */
+      this.heading = this.targetHdg;
+    } else {
+      this.targetHdg = wrapHeading(this.heading + Math.sign(diff) * rate);
     }
+  }
+  this.heading = wrapHeading(this.heading);
 
-    if(this.emergency&&!this.emerCalled){
-      this.emerTimer+=dt;
-      if(this.emerTimer>8){
-        this.emerCalled=true;
-        RADIO.say(this.emergency+'! MAYDAY MAYDAY!','err',this.callsign);
-        showEvent(this.callsign+' — '+this.emergency,3);G.score=Math.max(0,G.score-200);
-      }
-    }
-
-    const spdPx=this.speed*0.0045*60*dt;
-    this.x+=Math.cos(this.heading*Math.PI/180)*spdPx;
-    this.y+=Math.sin(this.heading*Math.PI/180)*spdPx;
-    this.trail.push({x:this.x,y:this.y});
-    if(this.trail.length>40)this.trail.shift();
-    const m=-80;
-    if(this.x<m||this.x>W-m||this.y<m||this.y>H-m){
-      if(!this.approachMode&&this.active){this.active=false;G.loseAircraft(this);}
-    }
-    this.sepPhase+=dt*2;
-  }
-  land(){
-    if(this.landed)return;
-    this.landed=true;this.active=false;this.selected=false;
-    G.landAircraft(this);
-    const bonus=this.emergency?300:0,total=this.scoreVal+bonus;
-    const comboText=G.combo>1?' ×'+G.combo+' COMBO!':'';
-    RADIO.say('Runway '+this.targetRunway.name+'. Welcome to Ottawa.','done',this.callsign);
-    showCombo('+'+total+(comboText?' '+comboText:''),this.callsign+' — '+this.typeName+' — '+this.targetRunway.name);
-  }
-  draw(ctx){
-    if(!this.active||this.landed)return;
-    const{x,y,heading:hd,radius:r}=this,rad=hd*Math.PI/180;
-    if(this.trail.length>2){
-      ctx.beginPath();ctx.moveTo(this.trail[0].x,this.trail[0].y);
-      for(let i=1;i<this.trail.length;i++)ctx.lineTo(this.trail[i].x,this.trail[i].y);
-      ctx.strokeStyle=this.selected?'rgba(232,192,74,.25)':this.approachMode?'rgba(95,187,122,.2)':'rgba(58,183,200,.12)';
-      ctx.lineWidth=1.2;ctx.stroke();
-    }
-    ctx.save();ctx.globalAlpha=1-this.intro;
-    const gr=ctx.createRadialGradient(x,y,0,x,y,r*5);
-    const gc=this.selected?'232,192,74':this.approachMode?'95,187,122':this.holding?'217,69,69':this.emergency?'255,100,0':this.color.slice(4,-1);
-    gr.addColorStop(0,'rgba('+gc+',.12)');gr.addColorStop(1,'rgba('+gc+',0)');
-    ctx.fillStyle=gr;ctx.beginPath();ctx.arc(x,y,r*5,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,35,0,Math.PI*2);
-    ctx.strokeStyle='rgba(58,183,200,'+(.04+.03*Math.sin(this.sepPhase))+')';ctx.lineWidth=.5;ctx.stroke();
-
-    ctx.save();ctx.translate(x,y);ctx.rotate(rad);
-    ctx.beginPath();ctx.moveTo(r*1.6,0);ctx.lineTo(-r*1.2,-r*1.1);ctx.lineTo(-r*0.5,0);ctx.lineTo(-r*1.2,r*1.1);ctx.closePath();
-    ctx.fillStyle=this.emergency?'#ff6400':this.selected?'#E8C04A':this.color;
-    ctx.fill();ctx.strokeStyle='rgba(0,0,0,.3)';ctx.lineWidth=.5;ctx.stroke();
-    ctx.restore();
-
-    ctx.fillStyle=this.selected?'#E8C04A':'rgba(200,195,185,.7)';
-    ctx.font='10px Share Tech Mono';ctx.textAlign='center';
-    ctx.fillText(this.callsign,x,y-r-13);
-    ctx.fillStyle=this.approachMode?'rgba(95,187,122,.6)':this.emergency?'rgba(255,100,0,.7)':'rgba(120,115,105,.5)';
-    ctx.font='8px Share Tech Mono';
-    ctx.fillText('FL'+Math.round(this.altFL/10)*10+' '+Math.round(this.speed)+'kt',x,y+r+16);
-    if(this.emergency){ctx.fillStyle='#ff6400';ctx.font='bold 14px sans-serif';ctx.fillText('⚠',x-r*2.5,y-6);}
-    ctx.restore();
-  }
-}
-
-// ─── Terrain ───
-function drawTerrain(){
-  const gr=X.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.6);
-  gr.addColorStop(0,'#0a0d0f');gr.addColorStop(1,'#050607');
-  X.fillStyle=gr;X.fillRect(0,0,W,H);
-  X.strokeStyle='rgba(26,24,20,.15)';X.lineWidth=.3;
-  for(let x=0;x<W;x+=40){X.beginPath();X.moveTo(x,0);X.lineTo(x,H);X.stroke();}
-  for(let y=0;y<H;y+=40){X.beginPath();X.moveTo(0,y);X.lineTo(W,y);X.stroke();}
-  X.strokeStyle='rgba(26,24,20,.06)';
-  for(let x=0;x<W;x+=10){X.beginPath();X.moveTo(x,0);X.lineTo(x,H);X.stroke();}
-  for(let y=0;y<H;y+=10){X.beginPath();X.moveTo(0,y);X.lineTo(W,y);X.stroke();}
-}
-
-function drawRunway(rwy){
-  const x=rwy.x(),y=rwy.y(),len=55,wid=6;
-  X.save();X.translate(x,y);X.rotate(rwy.appDir*Math.PI/180);
-  const gr=X.createRadialGradient(0,0,0,0,0,60);
-  gr.addColorStop(0,rwy.color+'15');gr.addColorStop(1,rwy.color+'00');
-  X.fillStyle=gr;X.beginPath();X.arc(0,0,60,0,Math.PI*2);X.fill();
-  X.fillStyle='rgba(26,24,20,.6)';X.fillRect(-wid/2,-len/2,wid,len);
-  for(let i=-len/2+4;i<len/2-4;i+=6){X.fillStyle='rgba(255,255,255,.12)';X.fillRect(-.5,i,wid-1,2);}
-  for(let t=-1;t<=1;t+=2)for(let i=-2;i<=2;i++){X.fillStyle='rgba(255,255,255,.15)';X.fillRect(i*2.5-1,t*(len/2-3),2,2);}
-  X.shadowColor=rwy.color;X.shadowBlur=8;
-  X.fillStyle=rwy.color;X.beginPath();X.arc(-3,-len/2-10,1.5,0,Math.PI*2);X.fill();
-  X.beginPath();X.arc(3,-len/2-10,1.5,0,Math.PI*2);X.fill();
-  X.shadowBlur=0;
-  X.fillStyle='rgba(200,195,185,.25)';X.font='9px Share Tech Mono';X.textAlign='center';
-  X.fillText(rwy.name,0,-len/2-16);
-  X.restore();
-}
-
-// ─── Game ───
-class Game{
-  constructor(){this.reset();this.setupInput();
-    RADIO.say('Ottawa Center online. Radar contact.','info');
-    RADIO.say('Runways 09, 18, 27 active.','info');
-  }
-  reset(){
-    this.ac=[];this.selected=null;this.score=0;this.landed=0;this.lost=0;
-    this.level=1;this.combo=1;this.bestCombo=1;this.spawnTimer=0;this.gameTime=0;
-    this.running=false;this.paused=false;this.dragging=false;this.dragAC=null;
-    this.mx=0;this.my=0;this.dgx=0;this.dgy=0;this.spawnedThisLevel=0;
-    this.warnedPairs=new Set();
-    $('briefing').classList.remove('hidden');$('gameOver').classList.add('hidden');
-    $('selInfo').style.display='none';$('cmdPanel').classList.remove('visible');
-    RADIO.clear();
-  }
-  start(){
-    $('briefing').classList.add('hidden');$('gameOver').classList.add('hidden');
-    this.ac=[];this.selected=null;this.score=0;this.landed=0;this.lost=0;
-    this.level=1;this.combo=1;this.bestCombo=1;this.spawnTimer=0;this.gameTime=0;
-    this.running=true;this.paused=false;this.dragging=false;this.dragAC=null;
-    this.spawnedThisLevel=0;this.warnedPairs=new Set();
-    for(let i=0;i<3;i++)this.spawn();this.renderHUD();
-    RADIO.clear();RADIO.say('Traffic active. Squawk code assigned.','info');
-  }
-  spawn(){
-    const cap=4+this.level*2;
-    if(this.ac.filter(a=>a.active&&!a.landed).length>=cap)return;
-    this.ac.push(new Aircraft());this.spawnedThisLevel++;
-  }
-  findAC(x,y){let b=null,bd=30;for(const a of this.ac){if(!a.active||a.landed)continue;const d=dist(x,y,a.x,a.y);if(d<bd){bd=d;b=a;}}return b;}
-  select(ac){if(this.selected&&this.selected!==ac)this.selected.selected=false;this.selected=ac;if(ac)ac.selected=true;this.renderSelInfo();$('selInfo').style.display=ac?'flex':'none';$('cmdPanel').classList.toggle('visible',!!ac);}
-  desel(){if(this.selected)this.selected.selected=false;this.selected=null;$('selInfo').style.display='none';$('cmdPanel').classList.remove('visible');}
-  cmd(fn){if(!this.selected||!this.selected.active||this.selected.landed)return;fn(this.selected);this.renderSelInfo();}
-  landAircraft(ac){
-    this.landed++;this.combo++;if(this.combo>this.bestCombo)this.bestCombo=this.combo;
-    const mult=Math.min(this.combo,10);this.score+=ac.scoreVal*mult+(ac.emergency?300:0);
-    if(this.landed%5===0){this.level=Math.min(30,1+Math.floor(this.landed/5));
-      showEvent('LEVEL '+this.level+' — Traffic increasing',2);RADIO.say('Level '+this.level+': expect heavier traffic.','info');}
-    this.renderHUD();
-  }
-  loseAircraft(ac){
-    if(!ac.active&&!ac.landed)return;this.lost++;this.combo=1;
-    this.score=Math.max(0,this.score-150);this.renderHUD();
-    RADIO.say('Aircraft lost from radar.','err','[CTR]');
-    if(this.lost>=5){this.running=false;this.gameOver();}
-  }
-  gameOver(){
-    this.running=false;$('finalScore').textContent=this.score;
-    $('finalStats').innerHTML='Landed: '+this.landed+'<br>Lost: '+this.lost+'<br>Best Combo: ×'+this.bestCombo+'<br>Level Reached: '+this.level;
-    $('gameOver').classList.remove('hidden');this.desel();RADIO.say('Sector closed. Operations terminated.','err');
-  }
-  checkSep(){
-    const act=this.ac.filter(a=>a.active&&!a.landed);
-    for(let i=0;i<act.length;i++)for(let j=i+1;j<act.length;j++){
-      const a=act[i],b=act[j],d=dist(a.x,a.y,b.x,b.y),ad=Math.abs(a.altitude-b.altitude);
-      if(d<40&&ad<20){
-        const pk=[a.callsign,b.callsign].sort().join('-');
-        if(!this.warnedPairs.has(pk)){
-          this.warnedPairs.add(pk);this.combo=Math.max(1,this.combo-2);
-          this.score=Math.max(0,this.score-50);
-          RADIO.say('Altitude deviation! Maintain separation!','warn');
-          showEvent('SEPARATION VIOLATION — -50pts',2);
-          [a,b].forEach(ac=>{const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;ac.avoidHdg=hdgTo(ac.x,ac.y,mx,my)+180;ac.avoidTimer=3;ac.holding=false;});
-        }
-      }else if(d>60)this.warnedPairs.delete([a.callsign,b.callsign].sort().join('-'));
-      if(d<12&&ad<15){
-        a.active=false;b.active=false;
-        this.score=Math.max(0,this.score-500);this.lost+=2;this.combo=1;
-        RADIO.say('CRASH! Sector alert!','err','[CTR]');
-        showEvent('⚠ COLLISION — -500pts',3);
-        if(this.lost>=5){this.running=false;this.gameOver();}this.renderHUD();
+  /* Emergency countdown */
+  if (this.emergency && !this.emerCalled) {
+    this.emerTimer += dt;
+    if (this.emerTimer > CONFIG.EMERGENCY_TIMEOUT) {
+      this.emerCalled = true;
+      radioLog(`[EMERGENCY] ${this.callsign} — ${this.emergency}! MAYDAY MAYDAY!`, 'err');
+      showEvent(`${this.callsign} MAYDAY — ${this.emergency}`, 3.5, '#ff4444');
+      if (G) {
+        G.score = Math.max(0, G.score - CONFIG.EMERGENCY_PENALTY);
+        updateHUD();
       }
     }
   }
-  renderHUD(){$('scoreVal').textContent=this.score;$('landedVal').textContent=this.landed;
-    $('lostVal').textContent=this.lost;$('levelVal').textContent=this.level;
-    const act=this.ac.filter(a=>a.active&&!a.landed).length;
-    $('activeVal').textContent=act;$('comboVal').textContent='×'+this.combo;
-  }
-  renderSelInfo(){
-    if(!this.selected)return;const a=this.selected;
-    $('selCS').textContent=a.callsign;$('selAlt').textContent='FL'+Math.round(a.altFL/10)*10;
-    $('selSpd').textContent=Math.round(a.speed)+'kt';$('selHdg').textContent=Math.round(a.heading)+'°';
-    $('selType').textContent=a.typeName+(a.emergency?' ⚠':'');
-  }
-  setupInput(){
-    C.addEventListener('mousedown',e=>{if(!this.running||this.paused)return;
-      const r=C.getBoundingClientRect(),p={x:e.clientX-r.left,y:e.clientY-r.top};
-      const ac=this.findAC(p.x,p.y);
-      if(ac){this.select(ac);this.dragging=true;this.dragAC=ac;this.dgx=p.x;this.dgy=p.y;}
-      else this.desel();
-    });
-    C.addEventListener('mousemove',e=>{const r=C.getBoundingClientRect();this.mx=e.clientX-r.left;this.my=e.clientY-r.top;if(this.dragging&&this.dragAC){this.dgx=this.mx;this.dgy=this.my;}});
-    C.addEventListener('mouseup',e=>{
-      if(this.dragging&&this.dragAC){const r=C.getBoundingClientRect(),p={x:e.clientX-r.left,y:e.clientY-r.top};
-        const d=dist(this.dragAC.x,this.dragAC.y,p.x,p.y);
-        if(d>20){const h=hdgTo(this.dragAC.x,this.dragAC.y,p.x,p.y);
-          this.dragAC.targetHdg=((h%360)+360)%360;this.dragAC.holding=false;this.dragAC.approachMode=false;
-          RADIO.say('Roger, heading '+Math.round(this.dragAC.targetHdg)+'.','cmd',this.dragAC.callsign);this.renderSelInfo();}
-      }this.dragging=false;this.dragAC=null;
-    });
-    C.addEventListener('touchstart',e=>{e.preventDefault();if(!this.running||this.paused)return;
-      const t=e.touches[0],r=C.getBoundingClientRect(),p={x:t.clientX-r.left,y:t.clientY-r.top};
-      const ac=this.findAC(p.x,p.y);if(ac){this.select(ac);this.dragging=true;this.dragAC=ac;this.dgx=p.x;this.dgy=p.y;}else this.desel();
-    },{passive:false});
-    C.addEventListener('touchmove',e=>{e.preventDefault();if(this.dragging&&this.dragAC&&e.touches.length>0){const t=e.touches[0],r=C.getBoundingClientRect();this.dgx=t.clientX-r.left;this.dgy=t.clientY-r.top;}},{passive:false});
-    C.addEventListener('touchend',e=>{e.preventDefault();
-      if(this.dragging&&this.dragAC){const d=dist(this.dragAC.x,this.dragAC.y,this.dgx,this.dgy);
-        if(d>20){const h=hdgTo(this.dragAC.x,this.dragAC.y,this.dgx,this.dgy);
-          this.dragAC.targetHdg=((h%360)+360)%360;this.dragAC.holding=false;this.dragAC.approachMode=false;
-          RADIO.say('Roger, heading '+Math.round(this.dragAC.targetHdg)+'.','cmd',this.dragAC.callsign);this.renderSelInfo();}
-      }this.dragging=false;this.dragAC=null;
-    },{passive:false});
 
-    document.addEventListener('keydown',e=>{
-      if(!this.running)return;
-      if(e.key===' '){e.preventDefault();this.paused=!this.paused;RADIO.say(this.paused?'SIM PAUSED':'SIM UNPAUSED','info');return;}
-      if(!this.selected||!this.selected.active||this.selected.landed)return;const a=this.selected;
-      const dirs={1:270,2:315,3:0,4:45,5:90,6:135,7:180,8:225};
-      if(e.key in dirs){a.targetHdg=dirs[e.key];a.holding=false;a.approachMode=false;RADIO.say('Heading '+dirs[e.key]+'.','cmd',a.callsign);}
-      if(e.key==='a'){a.targetAlt=Math.min(410,a.targetAlt+10);RADIO.say('Climb to FL'+Math.round(a.targetAlt/10)*10+'.','cmd',a.callsign);}
-      if(e.key==='s'){a.targetAlt=Math.max(20,a.targetAlt-10);RADIO.say('Descend to FL'+Math.round(a.targetAlt/10)*10+'.','cmd',a.callsign);}
-      if(e.key==='q'){a.targetSpd=Math.min(520,a.targetSpd+20);RADIO.say('Speed '+Math.round(a.targetSpd)+' knots.','cmd',a.callsign);}
-      if(e.key==='w'){a.targetSpd=Math.max(180,a.targetSpd-20);RADIO.say('Slow to '+Math.round(a.targetSpd)+' knots.','cmd',a.callsign);}
-      if(e.key==='e'){this.assignApproach(a);}
-      if(e.key==='h'){a.holding=!a.holding;a.holdPhase=0;if(a.holding){a.approachMode=false;RADIO.say('Entering hold.','cmd',a.callsign);}else RADIO.say('Leaving hold.','cmd',a.callsign);}
-      if(e.key==='d'||e.key==='Escape'){this.desel();}
-      this.renderSelInfo();
-    });
-    const bind=(id,fn)=>{const el=$(id);if(el)el.onclick=()=>this.cmd(fn);};
-    bind('btnAltUp',a=>{a.targetAlt=Math.min(410,a.targetAlt+10);RADIO.say('Climb to FL'+Math.round(a.targetAlt/10)*10+'.','cmd',a.callsign);});
-    bind('btnAltDn',a=>{a.targetAlt=Math.max(20,a.targetAlt-10);RADIO.say('Descend to FL'+Math.round(a.targetAlt/10)*10+'.','cmd',a.callsign);});
-    bind('btnSpdUp',a=>{a.targetSpd=Math.min(520,a.targetSpd+20);RADIO.say('Speed '+Math.round(a.targetSpd)+' knots.','cmd',a.callsign);});
-    bind('btnSpdDn',a=>{a.targetSpd=Math.max(180,a.targetSpd-20);RADIO.say('Slow to '+Math.round(a.targetSpd)+' knots.','cmd',a.callsign);});
-    const compass={btnN:270,btnNE:315,btnE:0,btnSE:45,btnS:90,btnSW:135,btnW:180,btnNW:225};
-    Object.entries(compass).forEach(([id,h])=>bind(id,a=>{a.targetHdg=h;a.holding=false;a.approachMode=false;RADIO.say('Heading '+h+'.','cmd',a.callsign);}));
-    bind('btnApproach',a=>this.assignApproach(a));
-    bind('btnHold',a=>{a.holding=!a.holding;a.holdPhase=0;if(a.holding){a.approachMode=false;RADIO.say('Entering hold.','cmd',a.callsign);}else RADIO.say('Leaving hold.','cmd',a.callsign);});
-    bind('btnEmergency',a=>{if(!a.emergency){a.emergency=EMERGENCIES[rngi(0,EMERGENCIES.length-1)];a.emerTimer=0;RADIO.say(a.emergency+'! Requesting priority.','err',a.callsign);showEvent(a.callsign+' — '+a.emergency,3);}});
-    if($('btnHdg'))$('btnHdg').onclick=()=>{RADIO.say('Click+drag on aircraft to vector.','info');showEvent('Drag from aircraft to set heading',1.5);};
-  }
-  assignApproach(a){
-    let best=null,bestD=Infinity;
-    for(const rwy of RUNWAYS){const d=dist(a.x,a.y,rwy.x(),rwy.y());if(d<bestD){bestD=d;best=rwy;}}
-    a.targetRunway=best;a.approachMode=true;a.holding=false;
-    RADIO.say('Cleared for approach '+best.name+'. Contact tower.','cmd',a.callsign);
-  }
-  update(dt){
-    if(!this.running||this.paused)return;
-    this.gameTime+=dt;this.spawnTimer+=dt;
-    if(this.spawnTimer>Math.max(1.5,8-this.level*0.35)){this.spawnTimer=0;this.spawn();}
-    if(eventTimer>0){eventTimer-=dt;if(eventTimer<=0)$('eventPopup').classList.remove('show');}
-    for(const a of this.ac)a.update(dt);
-    this.checkSep();
-    if(this.level>=3&&Math.random()<0.0003*this.level){
-      const c=this.ac.filter(a=>a.active&&!a.landed&&!a.emergency);
-      if(c.length>0){const ac=c[rngi(0,c.length-1)];ac.emergency=EMERGENCIES[rngi(0,EMERGENCIES.length-1)];ac.emerTimer=0;RADIO.say(ac.emergency+'! MAYDAY!','err',ac.callsign);showEvent(ac.callsign+' — '+ac.emergency,3);}
+  /* Move */
+  const speedPx = this.speed * 0.004 * 60 * dt;
+  this.x += Math.cos(this.heading * Math.PI/180) * speedPx;
+  this.y += Math.sin(this.heading * Math.PI/180) * speedPx;
+
+  /* Trail */
+  this.trail.push({ x: this.x, y: this.y });
+  if (this.trail.length > 50) this.trail.shift();
+
+  /* Out of bounds = lost */
+  const margin = -120;
+  if (this.x < margin || this.x > W + margin || this.y < margin || this.y > H + margin) {
+    if (this.active) {
+      this.active = false;
+      lostAircraft(this);
     }
-    this.renderHUD();
-    if(this.selected&&(!this.selected.active||this.selected.landed))this.desel();
-    else if(this.selected)this.renderSelInfo();
   }
-  draw(){
-    X.clearRect(0,0,W,H);drawTerrain();
-    const cx=W/2,cy=H/2;
-    for(let i=1;i<=4;i++){const rr=Math.min(W,H)*0.18*i;X.beginPath();X.arc(cx,cy,rr,0,Math.PI*2);X.strokeStyle='rgba(26,24,20,'+(.03+.02*i)+')';X.lineWidth=.5;X.stroke();}
-    X.beginPath();X.moveTo(cx-W*0.35,cy);X.lineTo(cx+W*0.35,cy);X.moveTo(cx,cy-H*0.35);X.lineTo(cx,cy+H*0.35);X.strokeStyle='rgba(26,24,20,.04)';X.lineWidth=.5;X.stroke();
-    for(const rwy of RUNWAYS)drawRunway(rwy);
+};
 
-    if(this.dragging&&this.dragAC&&this.dragAC.active){
-      const{x,y}=this.dragAC;X.beginPath();X.moveTo(x,y);X.lineTo(this.dgx,this.dgy);
-      X.strokeStyle='rgba(232,192,74,.4)';X.lineWidth=1.5;X.setLineDash([4,4]);X.stroke();X.setLineDash([]);
-      const a=hdgTo(x,y,this.dgx,this.dgy)*Math.PI/180;
-      X.beginPath();X.moveTo(this.dgx,this.dgy);X.lineTo(this.dgx-7*Math.cos(a-.4),this.dgy-7*Math.sin(a-.4));
-      X.moveTo(this.dgx,this.dgy);X.lineTo(this.dgx-7*Math.cos(a+.4),this.dgy-7*Math.sin(a+.4));
-      X.strokeStyle='rgba(232,192,74,.5)';X.lineWidth=1.5;X.stroke();
-      const h=((hdgTo(x,y,this.dgx,this.dgy)%360)+360)%360;
-      X.fillStyle='rgba(232,192,74,.5)';X.font='10px Share Tech Mono';X.textAlign='center';
-      X.fillText(Math.round(h)+'°',(x+this.dgx)/2,(y+this.dgy)/2-12);
-    }
+/* ── Land ── */
+Aircraft.prototype.land = function() {
+  if (this.landed || !this.active) return;
+  this.landed = true;
+  this.active = false;
+  this.selected = false;
+  scoreLanding(this);
+};
 
-    for(const a of this.ac)a.draw(X);
-    const vg=X.createRadialGradient(cx,cy,Math.min(W,H)*.25,cx,cy,Math.max(W,H)*.65);
-    vg.addColorStop(0,'rgba(7,8,9,0)');vg.addColorStop(1,'rgba(7,8,9,.35)');
-    X.fillStyle=vg;X.fillRect(0,0,W,H);
+/* ── Deselect ── */
+Aircraft.prototype.deselect = function() {
+  this.selected = false;
+};
 
-    if(this.paused){
-      X.fillStyle='rgba(0,0,0,.5)';X.fillRect(0,0,W,H);
-      X.fillStyle='var(--gold)';X.font='40px Share Tech Mono';X.textAlign='center';X.fillText('⏸ PAUSED',W/2,H/2);
-      X.fillStyle='rgba(200,195,185,.4)';X.font='16px Share Tech Mono';X.fillText('Press SPACE to resume',W/2,H/2+30);
+/* ═══════════════════════════════════════════════════════════════════
+ *  CORE GAME LOGIC
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function initGame() {
+  acIdCounter = 0;
+  G = {
+    running:       false,
+    paused:        false,
+    gameOver:      false,
+    aircraft:      [],
+    runways:       [],
+    score:         0,
+    combo:         1,
+    comboTimer:    0,
+    missing:       CONFIG.INITIAL_MISSING,
+    maxMissing:    CONFIG.INITIAL_MISSING,
+    level:         1,
+    gameTime:      0,
+    learnTimer:    0,
+    spawnTimer:    0,
+    totalLanded:   0,
+    totalLost:     0,
+    bestCombo:     1,
+    selected:      null,
+  };
+
+  generateRunways();
+  setStatus('RADAR ONLINE — LEVEL 1');
+  hideOverlay();
+  updateHUD();
+}
+
+function generateRunways() {
+  G.runways = RUNWAY_DEFS.map(def => ({
+    name:  def.name,
+    cx:    def.nx * W,
+    cy:    def.ny * H,
+    w:     def.w * W,
+    h:     def.h * H,
+  }));
+}
+
+function spawnAircraft() {
+  if (G.aircraft.length >= CONFIG.MAX_CONCURRENT) return;
+  const ac = new Aircraft();
+  G.aircraft.push(ac);
+  radioLog(`[INIT] ${ac.callsign} — ${ac.typeName} enters airspace`, 'info');
+}
+
+function lostAircraft(ac) {
+  if (ac.landed || !ac.active) return;
+  G.score = Math.max(0, G.score - CONFIG.MISSING_PENALTY);
+  G.missing--;
+  G.combo = 1;
+  G.comboTimer = 0;
+  G.totalLost++;
+  radioLog(`[LOST] ${ac.callsign} — departed airspace`, 'err');
+  if (G.selected === ac) deselectCurrent();
+  updateHUD();
+
+  if (G.missing <= 0) {
+    endGame(false);
+  }
+}
+
+function scoreLanding(ac) {
+  if (!ac.active) return;
+
+  let pts = ac.baseScore;
+  if (ac.emergency) pts += 300;
+  if (G.combo > 1) pts += Math.floor(pts * (G.combo - 1) * 0.5);
+
+  G.score += pts;
+  G.comboTimer = CONFIG.COMBO_WINDOW;
+  G.combo++;
+  if (G.combo > G.bestCombo) G.bestCombo = G.combo;
+  G.totalLanded++;
+
+  const rwyName = ac.targetRwy ? ac.targetRwy.name : 'RWY --';
+  radioLog(`[LAND] ${ac.callsign} — ${rwyName}. Welcome to ${CONFIG.AIRPORT_NAME}.`, 'done');
+  showCombo(`+${pts}`, `${ac.callsign} · ${ac.typeName} · ${rwyName}`);
+
+  if (G.combo === 3) showEvent('×3 COMBO!', 1.5);
+  else if (G.combo === 5) showEvent('×5 COMBO! 🔥', 1.8);
+  else if (G.combo >= 10) showEvent('×10 COMBO! 💥 MEGA!', 2.5);
+
+  /* Check level up */
+  const levelThreshold = CONFIG.LEVEL_UP_SCORE_BASE + (G.level - 1) * CONFIG.LEVEL_UP_SCORE_INC;
+  if (G.score >= levelThreshold) {
+    G.level++;
+    showEvent(`▲ LEVEL ${G.level} — Traffic increasing!`, 2.5, '#00ffff');
+    setStatus(`LEVEL ${G.level} — ${G.aircraft.length} in sector`);
+    /* Spawn extra traffic immediately */
+    const extra = Math.min(G.level, 3);
+    for (let i = 0; i < extra; i++) spawnAircraft();
+  }
+
+  deselectCurrent();
+  updateHUD();
+}
+
+function deselectCurrent() {
+  if (G.selected) G.selected.deselect();
+  G.selected = null;
+  $('selPanel').classList.remove('visible');
+}
+
+function updateHUD() {
+  setText($('hudScore'),  G.score);
+  setText($('hudCombo'),  G.combo > 1 ? `×${G.combo}` : '×1');
+  setText($('hudTraffic'), G.aircraft.filter(a => a.active && !a.landed).length);
+  setText($('hudMissing'), G.missing);
+  setText($('hudLevel'),  G.level);
+}
+
+function setStatus(msg) {
+  setText($('navStatus'), msg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SELECTION & VECTORING
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function selectAircraftAt(mx, my) {
+  if (!G || G.gameOver) return;
+  deselectCurrent();
+  /* Iterate reverse so top-most (visually later) picks first */
+  for (let i = G.aircraft.length - 1; i >= 0; i--) {
+    const a = G.aircraft[i];
+    if (!a.active || a.landed || a.holding) continue;
+    const hitDist = dist(a.x, a.y, mx, my);
+    const threshold = Math.max(a.radius + 12, 18);
+    if (hitDist < threshold) {
+      a.selected = true;
+      G.selected = a;
+      showSelectionInfo(a);
+      return;
     }
   }
 }
 
-const G=new Game();
-let lastT=0;
-function loop(t){const dt=Math.min(0.05,(t-lastT)/1000);lastT=t;G.update(dt);G.draw();requestAnimationFrame(loop);}
-requestAnimationFrame(loop);
+function showSelectionInfo(a) {
+  const panel = $('selPanel');
+  setText($('selCall'), a.callsign);
+  setText($('selAlt'),  `${Math.round(a.altitude / 100) * 100}ft`);
+  setText($('selSpd'),  `${Math.round(a.speed)}kt`);
+  setText($('selHdg'),  `${Math.round(a.heading)}°`);
+  setText($('selType'), a.typeName);
+  setText($('selRwy'),  a.targetRwy ? a.targetRwy.name : '--');
+  panel.classList.add('visible');
+}
+
+function vectorAircraftTo(fromX, fromY, toX, toY) {
+  if (!G || !G.selected || G.gameOver) return;
+  const hdg = hdgTo(fromX, fromY, toX, toY);
+  G.selected.targetHdg = hdg;
+  G.selected.targetSpeed = Math.max(G.selected.targetSpeed, 220);
+  /* Cancel approach if they were vectored away */
+  if (G.selected.approach) {
+    const gx = G.selected.targetRwy.cx, gy = G.selected.targetRwy.cy;
+    if (dist(toX, toY, gx, gy) > CONFIG.RUNWAY_CAPTURE_DIST * 4) {
+      G.selected.approach = false;
+      G.selected.targetRwy = null;
+    }
+  }
+  radioLog(`[VECTOR] ${G.selected.callsign} — turn to ${Math.round(hdg)}°`, 'info');
+}
+
+function setApproach() {
+  if (!G || !G.selected || G.gameOver) return;
+  /* Pick nearest runway */
+  let bestRwy = null, bestDist = Infinity;
+  for (const rwy of G.runways) {
+    const d = dist(G.selected.x, G.selected.y, rwy.cx, rwy.cy);
+    if (d < bestDist) { bestDist = d; bestRwy = rwy; }
+  }
+  G.selected.approach = true;
+  G.selected.targetRwy = bestRwy;
+  G.selected.holding = false;
+  radioLog(`[APPROACH] ${G.selected.callsign} — cleared to ${bestRwy.name}`, 'done');
+  showEvent(`${G.selected.callsign} cleared ${bestRwy.name}`, 1.5, '#00ffff');
+}
+
+function setHold() {
+  if (!G || !G.selected || G.gameOver) return;
+  G.selected.holding = !G.selected.holding;
+  if (G.selected.holding) {
+    G.selected.approach = false;
+    G.selected.targetRwy = null;
+    G.selected.targetSpeed = clamp(G.selected.speed, 140, 200);
+    radioLog(`[HOLD] ${G.selected.callsign} — enter holding pattern`, 'info');
+  } else {
+    radioLog(`[HOLD] ${G.selected.callsign} — exit holding, resume normal`, 'info');
+  }
+}
+
+function setEmergency() {
+  if (!G || !G.selected || G.gameOver) return;
+  if (!G.selected.emergency) {
+    G.selected.emergency = 'LOW FUEL';
+    radioLog(`[EMERG] ${G.selected.callsign} — LOW FUEL declared`, 'err');
+    showEvent(`⚠ ${G.selected.callsign} LOW FUEL`, 2.5, '#ff4444');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  COLLISION DETECTION
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function checkCollisions() {
+  const active = G.aircraft.filter(a => a.active && !a.landed && !a.holding);
+  for (let i = 0; i < active.length; i++) {
+    for (let j = i + 1; j < active.length; j++) {
+      const a = active[i], b = active[j];
+      const d = dist(a.x, a.y, b.x, b.y);
+      if (d < CONFIG.COLLISION_DIST) {
+        /* Both are destroyed */
+        a.active = false; b.active = false;
+        G.score = Math.max(0, G.score - CONFIG.MISSING_PENALTY * 2);
+        G.missing = Math.max(0, G.missing - 2);
+        G.combo = 1;
+        G.comboTimer = 0;
+        radioLog(`[CRASH] COLLISION: ${a.callsign} & ${b.callsign}!`, 'err');
+        showEvent(`✖ COLLISION — ${a.callsign} & ${b.callsign}`, 4, '#ff4444');
+        updateHUD();
+        if (G.missing <= 0) endGame(false);
+        return; // avoid iterating on stale state
+      }
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  GAME LOOP
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function startGame() {
+  if (G && G.running) return;
+  hideOverlay();
+  initGame();
+  G.running = true;
+  G.learnTimer = 0;
+  G.spawnTimer = 2; // grace period before first spawn
+  G.gameTime = 0;
+  G.comboTimer = 0;
+  /* Clear radio log */
+  $('radioLog').innerHTML = '<div class="radio-msg info">[ATC] Ottawa Center online</div>';
+  setStatus('SECTOR ACTIVE — LEVEL 1');
+  showEvent('SECTOR ACTIVE', 2);
+  $('hint').classList.remove('show');
+  /* Spawn initial aircraft */
+  spawnAircraft();
+  spawnAircraft();
+  updateHUD();
+}
+
+function endGame(won) {
+  if (!G || G.gameOver) return;
+  G.running = false;
+  G.gameOver = true;
+  deselectCurrent();
+  if (won) {
+    setStatus('SECTOR SAFE — ALL CLEAR');
+  } else {
+    setStatus('SECTOR CLOSED — TOO MANY MISSING');
+  }
+  showOverlay(won);
+}
+
+function gameLoop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  let dt = (timestamp - lastTime) / 1000;
+  lastTime = timestamp;
+  dt = Math.min(dt, 0.05); // cap to avoid spiral of death
+
+  if (G && G.running && !G.paused) {
+    updateGame(dt);
+  }
+  render();
+  animFrameId = requestAnimationFrame(gameLoop);
+}
+
+function updateGame(dt) {
+  G.gameTime += dt;
+
+  /* Learning phase — no spawns */
+  G.learnTimer += dt;
+  G.comboTimer = Math.max(0, G.comboTimer - dt);
+
+  /* Spawn logic */
+  const interval = Math.max(CONFIG.MIN_SPAWN_INTERVAL,
+    CONFIG.SPAWN_INTERVAL_MIN - (G.level - 1) * CONFIG.SPAWN_INTERVAL_DECAY);
+  G.spawnTimer -= dt;
+  if (G.spawnTimer <= 0 && G.learnTimer > CONFIG.LEARN_PHASE_DURATION) {
+    spawnAircraft();
+    G.spawnTimer = interval + rand(-0.5, 0.5);
+  }
+
+  /* Update aircraft */
+  for (const ac of G.aircraft) {
+    ac.update(dt);
+  }
+
+  /* Collision check */
+  checkCollisions();
+
+  /* Combo decay */
+  if (G.combo > 1 && G.comboTimer <= 0) {
+    G.combo = 1;
+    showEvent('Combo expired', 1.2);
+  }
+
+  /* Auto-respawn if traffic is zero */
+  const activeCount = G.aircraft.filter(a => a.active && !a.landed).length;
+  if (activeCount === 0 && G.learnTimer > 2 && G.missing > 0) {
+    G.spawnTimer = 0;
+  }
+
+  updateHUD();
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  RENDERER
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function render() {
+  ctx.fillStyle = '#020208';
+  ctx.fillRect(0, 0, W, H);
+
+  if (!G || !G.runways) return;
+
+  /* ── Grid (radar rings) ── */
+  ctx.strokeStyle = 'rgba(0,255,0,0.04)';
+  ctx.lineWidth = 1;
+  const centers = [
+    { x: W*0.3, y: H*0.4 }, { x: W*0.7, y: H*0.3 }, { x: W*0.5, y: H*0.7 }
+  ];
+  for (const c of centers) {
+    for (let r = 40; r < 300; r += 50) {
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  /* ── Runway surfaces ── */
+  for (const rwy of G.runways) {
+    ctx.fillStyle = 'rgba(0,255,0,0.12)';
+    ctx.fillRect(rwy.cx - rwy.w/2, rwy.cy - rwy.h/2, rwy.w, rwy.h);
+    ctx.strokeStyle = 'rgba(0,255,0,0.35)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(rwy.cx - rwy.w/2, rwy.cy - rwy.h/2, rwy.w, rwy.h);
+    /* Runway label */
+    ctx.fillStyle = 'rgba(0,255,0,0.25)';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(rwy.name, rwy.cx, rwy.cy + 4);
+  }
+
+  /* ── Ground strip ── */
+  ctx.fillStyle = 'rgba(0,255,0,0.02)';
+  ctx.fillRect(0, H - 8, W, 8);
+
+  /* ── Aircraft ── */
+  for (const a of G.aircraft) {
+    if (!a.active) continue;
+
+    const alpha = a.landed ? 0.3 : (1 - a.introAlpha * 0.5);
+
+    /* Trail */
+    if (a.trail.length > 1 && a.active) {
+      ctx.strokeStyle = a.trailCol || 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(a.trail[0].x, a.trail[0].y);
+      for (let k = 1; k < a.trail.length; k++) {
+        ctx.lineTo(a.trail[k].x, a.trail[k].y);
+      }
+      ctx.stroke();
+    }
+
+    /* Aircraft shape — triangle pointing in heading direction */
+    const hdgRad = a.heading * Math.PI / 180;
+    const r = a.radius;
+    const tipX = a.x + Math.cos(hdgRad) * r * 1.3;
+    const tipY = a.y + Math.sin(hdgRad) * r * 1.3;
+    const leftX  = a.x + Math.cos(hdgRad + 2.3) * r;
+    const leftY  = a.y + Math.sin(hdgRad + 2.3) * r;
+    const rightX = a.x + Math.cos(hdgRad - 2.3) * r;
+    const rightY = a.y + Math.sin(hdgRad - 2.3) * r;
+
+    ctx.globalAlpha = alpha;
+
+    /* Glow when selected */
+    if (a.selected) {
+      ctx.shadowColor = '#00ff00';
+      ctx.shadowBlur = 18;
+    }
+
+    ctx.fillStyle = a.color;
+    ctx.beginPath();
+    ctx.moveTo(tipX, tipY);
+    ctx.lineTo(leftX, leftY);
+    ctx.lineTo(rightX, rightY);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    /* Outline */
+    ctx.strokeStyle = a.selected ? '#ffffff' : 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = a.selected ? 2 : 1;
+    ctx.stroke();
+
+    /* Callsign label */
+    ctx.fillStyle = a.selected ? '#ffffff' : 'rgba(255,255,255,0.6)';
+    ctx.font = a.selected ? 'bold 11px monospace' : '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(a.callsign, a.x, a.y - r - 10);
+
+    /* Emergency indicator */
+    if (a.emergency && !a.emerCalled) {
+      ctx.fillStyle = '#ff4444';
+      ctx.font = 'bold 14px monospace';
+      ctx.fillText('⚠', a.x, a.y - r - 26);
+      /* Pulse ring */
+      ctx.strokeStyle = `rgba(255,68,68,${0.3 + 0.3 * Math.sin(G.gameTime * 6)})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, r + 8 + Math.sin(G.gameTime * 4) * 3, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    /* Approach indicator */
+    if (a.approach && a.targetRwy) {
+      ctx.strokeStyle = 'rgba(0,255,255,0.15)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 6]);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(a.targetRwy.cx, a.targetRwy.cy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  UI: LOG, EVENTS, COMBO, OVERLAYS
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function radioLog(text, cls = 'info') {
+  const log = $('radioLog');
+  const msg = document.createElement('div');
+  msg.className = `radio-msg ${cls}`;
+  msg.textContent = text;
+  log.insertBefore(msg, log.firstChild);
+  while (log.children.length > 30) log.lastChild.remove();
+}
+
+function showEvent(text, duration = 2, color = '#00ff00') {
+  const el = $('eventPopup');
+  el.textContent = text;
+  el.style.color = color;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration * 1000);
+}
+
+function showCombo(main, sub) {
+  setText($('comboMain'), main);
+  setText($('comboSub'), sub || '');
+  $('comboPopup').classList.add('show');
+  setTimeout(() => $('comboPopup').classList.remove('show'), 1500);
+}
+
+function showOverlay(won) {
+  const existing = document.querySelector('.overlay');
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.className = 'overlay';
+  const icon  = won ? '✭' : '✖';
+  const title = won ? 'SECTOR SAFE' : 'SECTOR CLOSED';
+  const btnCls = won ? 'overlay-btn' : 'overlay-btn lose';
+  const btnTxt = won ? '▶ PLAY AGAIN' : '↺ TRY AGAIN';
+
+  div.innerHTML = `
+    <div class="overlay-box">
+      <div class="overlay-icon">${icon}</div>
+      <div class="overlay-title">${title}</div>
+      <div class="overlay-score">Score: ${G ? G.score : 0}</div>
+      <div class="overlay-combo">Best Combo: ×${G ? G.bestCombo : 1} &middot; Landed: ${G ? G.totalLanded : 0}</div>
+      <button class="${btnCls}" id="overlayRestartBtn">${btnTxt}</button>
+    </div>
+  `;
+  document.body.appendChild(div);
+  $('overlayRestartBtn').addEventListener('click', () => { hideOverlay(); startGame(); });
+}
+
+function hideOverlay() {
+  const el = document.querySelector('.overlay');
+  if (el) el.remove();
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  INPUT HANDLING
+ * ═══════════════════════════════════════════════════════════════════ */
+
+let dragStart = null;
+
+function setupInput() {
+  /* ── Mouse ── */
+  canvas.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width  / rect.width);
+    const my = (e.clientY - rect.top)  * (canvas.height / rect.height);
+    dragStart = { x: mx, y: my };
+    selectAircraftAt(mx, my);
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width  / rect.width);
+    const my = (e.clientY - rect.top)  * (canvas.height / rect.height);
+  });
+
+  canvas.addEventListener('mouseup', (e) => {
+    if (e.button !== 0 || !dragStart) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width  / rect.width);
+    const my = (e.clientY - rect.top)  * (canvas.height / rect.height);
+    const d = dist(dragStart.x, dragStart.y, mx, my);
+    if (d > 10 && G && G.selected) {
+      vectorAircraftTo(dragStart.x, dragStart.y, mx, my);
+    }
+    dragStart = null;
+  });
+
+  /* ── Touch ── */
+  let touchStart = null;
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const mx = (t.clientX - rect.left) * (canvas.width  / rect.width);
+    const my = (t.clientY - rect.top)  * (canvas.height / rect.height);
+    touchStart = { x: mx, y: my };
+    selectAircraftAt(mx, my);
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (!touchStart) return;
+    const touch = e.changedTouches[0];
+    const rect = canvas.getBoundingClientRect();
+    const mx = (touch.clientX - rect.left) * (canvas.width  / rect.width);
+    const my = (touch.clientY - rect.top)  * (canvas.height / rect.height);
+    const d = dist(touchStart.x, touchStart.y, mx, my);
+    if (d > 10 && G && G.selected) {
+      vectorAircraftTo(touchStart.x, touchStart.y, mx, my);
+    }
+    touchStart = null;
+  }, { passive: false });
+
+  /* ── Keyboard shortcuts ── */
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '1' && e.key <= '9') {
+      const idx = parseInt(e.key) - 1;
+      const active = G ? G.aircraft.filter(a => a.active && !a.landed) : [];
+      if (idx < active.length) {
+        const ac = active[idx];
+        selectAircraftAt(ac.x, ac.y);
+      }
+    } else if (e.key === 'a' || e.key === 'A') {
+      setApproach();
+    } else if (e.key === 'h' || e.key === 'H') {
+      setHold();
+    } else if (e.key === 'e' || e.key === 'E') {
+      setEmergency();
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      if (G && !G.running) startGame();
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  BUTTON BINDINGS
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function setupButtons() {
+  $('btnStart').addEventListener('click', startGame);
+  $('btnReset').addEventListener('click', () => {
+    if (G && G.running) endGame(false);
+    setTimeout(startGame, 300);
+  });
+  $('btnApproach').addEventListener('click', setApproach);
+  $('btnHold').addEventListener('click', setHold);
+  $('btnEmergency').addEventListener('click', setEmergency);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  RESIZE
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function resizeCanvas() {
+  const area = $('gameArea');
+  const rect = area.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width  = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  W = canvas.width;
+  H = canvas.height;
+  ctx = canvas.getContext('2d');
+  // apply any global scale if needed
+  if (G && G.runways) {
+    // Recalculate runway positions on new canvas size
+    G.runways.forEach((rwy, i) => {
+      const def = RUNWAY_DEFS[i];
+      rwy.cx = def.nx * W;
+      rwy.cy = def.ny * H;
+      rwy.w  = def.w * W;
+      rwy.h  = def.h * H;
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  INITIALIZATION
+ * ═══════════════════════════════════════════════════════════════════ */
+
+function boot() {
+  console.log(`ATCSIM v${CONFIG.VERSION} booting...`);
+
+  canvas = $('gameCanvas');
+  if (!canvas) { console.error('Canvas not found'); return; }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  setupInput();
+  setupButtons();
+
+  initGame();
+  setStatus('RADAR STANDBY — press ▶ START');
+
+  /* Start the render loop immediately so we see the radar background */
+  requestAnimationFrame(gameLoop);
+
+  /* Fade out loading screen after a brief pause */
+  setTimeout(() => {
+    $('loadingScreen').classList.add('fade-out');
+    /* Show hint */
+    setTimeout(() => $('hint').classList.add('show'), 600);
+  }, 1200);
+
+  console.log(`ATCSIM v${CONFIG.VERSION} ready.`);
+}
+
+/* ── Kick off on DOMContentLoaded ── */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
 </script>
 </body>
 </html>
