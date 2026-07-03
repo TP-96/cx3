@@ -1,41 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tanmay Poddar — Engineering Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══════ RESET ═══════ */
+/* ═══════════════ RESET ═══════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  --bg: #F4F2ED;
-  --fg: #1C1A18;
-  --card-bg: #FFFFFF;
-  --border-color: rgba(28,26,18,.08);
-  --ink-2: rgba(28,26,18,.55);
-  --ink-3: rgba(28,26,18,.3);
-  --gold: #BF8B2A;
-  --red: #C41E3A;
-  --red-soft: rgba(196,30,58,.08);
-  --gear-stroke: rgba(28,26,18,.07);
-  --font-canela: "Canela", Georgia, "Times New Roman", serif;
-  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--fg);
-  font-family:var(--font-ui);
-  font-size:16px;
-  line-height:1.5;
+  background:#f7f4f0;
+  color:#1c1a18;
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:18px;
+  line-height:1.6;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
-  position:relative;
 }
-::selection{background:rgba(196,30,58,.15);color:var(--fg)}
+::selection{background:rgba(244,93,0,.25);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#f0ece5}
+::-webkit-scrollbar-thumb{background:#c5c0b8;border-radius:3px}
 
-/* ═══════ GEAR CONTAINER ═══════ */
+/* ═══════════════ GEAR CONTAINER ═══════════════ */
 #gear-container{
   position:fixed;inset:0;
   pointer-events:none;
@@ -48,421 +37,337 @@ body{
 }
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-/* ═══════ HEADER ═══════ */
-header{
-  position:fixed;top:0;left:0;right:0;z-index:50;
-  height:3.5rem;
+/* ═══════════════ NAV ═══════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;
-  padding:0 1.5rem;
-  background:rgba(244,242,237,.88);
+  padding:1rem 2.5rem;
+  background:rgba(247,244,240,.92);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border-color);
+  border-bottom:1px solid rgba(0,0,0,.06);
 }
-header .logo{
-  font-family:var(--font-canela);
-  font-size:.85rem;font-weight:500;
-  color:var(--fg);text-decoration:none;
+.nav-logo{
+  font-size:1rem;font-weight:600;
+  color:#1c1a18;text-decoration:none;
   letter-spacing:-.01em;
+  transition:color .2s;
 }
-header .logo:hover{color:var(--red)}
-header nav{
+.nav-logo:hover{color:#f45d00}
+.nav-links{
   margin-left:auto;
-  display:flex;align-items:center;gap:.25rem;
+  display:flex;list-style:none;gap:.25rem;
 }
-header nav a{
-  font-family:var(--font-ui);
-  font-size:.75rem;font-weight:400;
-  color:var(--ink-3);
+.nav-links a{
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:.78rem;font-weight:400;
+  color:rgba(28,26,24,.4);
   text-decoration:none;
-  padding:.35rem .75rem;
+  padding:.35rem .8rem;
   border-radius:9999px;
-  transition:all .15s;
+  transition:all .2s;
 }
-header nav a:hover{background:rgba(0,0,0,.04);color:var(--red)}
-.cta-link{
-  font-family:var(--font-ui);
-  font-size:.75rem;font-weight:500;
-  color:var(--bg) !important;
-  background:var(--fg);
-  padding:.35rem .85rem !important;
-  border-radius:9999px;
-  transition:all .15s;
+.nav-links a:hover{
+  color:#1c1a18;
+  background:rgba(0,0,0,.04);
 }
-.cta-link:hover{background:var(--red) !important;color:#fff !important}
 
-/* ═══════ HERO ═══════ */
+/* ═══════════════ HERO ═══════════════ */
 .hero{
   min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:5rem 1.5rem 3.5rem;
-  text-align:center;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:7rem 2.5rem 5rem;
+  position:relative;
+}
+.hero-label{
+  font-size:.72rem;font-weight:400;
+  color:rgba(28,26,24,.35);
+  text-transform:uppercase;letter-spacing:.25em;
+  margin-bottom:1.5rem;
+  font-family:'JetBrains Mono',monospace;
+}
+.hero h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.2rem,6vw,4rem);
+  line-height:1.05;
+  color:#1c1a18;
+  margin-bottom:.5rem;
+  max-width:800px;
+}
+.hero h1 .big{
+  display:block;
+  font-size:clamp(3rem,10vw,7rem);
+  line-height:.92;
+  color:#f45d00;
+  margin-top:.15rem;
+}
+.hero-desc{
+  font-size:1.05rem;
+  color:rgba(28,26,24,.5);
+  max-width:580px;
+  line-height:1.7;
+  margin-bottom:2.5rem;
+}
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:1.5rem 2rem;
+  font-size:.85rem;
+  color:rgba(28,26,24,.4);
+  font-family:'JetBrains Mono',monospace;
+}
+.hero-meta a{
+  color:rgba(28,26,24,.4);
+  text-decoration:none;
+  transition:color .2s;
+}
+.hero-meta a:hover{color:#f45d00}
+
+.hero-glow{
+  position:absolute;
+  top:-20%;right:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(244,93,0,.05),transparent 70%);
+  pointer-events:none;
+  z-index:-1;
+}
+.hero-glow-2{
+  position:absolute;
+  bottom:-10%;left:-5%;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(244,93,0,.03),transparent 70%);
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* ═══════════════ SECTIONS ═══════════════ */
+.section{
+  padding:5rem 2.5rem 6rem;
+  max-width:1100px;
+  margin:0 auto;
+}
+.section-header{
+  display:flex;align-items:baseline;gap:1rem;
+  margin-bottom:3rem;
+}
+.section-number{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;font-weight:500;
+  color:#f45d00;
+  opacity:.5;
+}
+.section-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:3.5rem;
+  line-height:1;
+  color:#1c1a18;
+  letter-spacing:.01em;
+}
+
+/* ═══════════════ STATS BAR ═══════════════ */
+.stats-bar{
+  display:flex;gap:3rem;flex-wrap:wrap;
+  border-top:1px solid rgba(0,0,0,.06);
+  padding:2.5rem 2.5rem 3rem;
+  max-width:1100px;
+  margin:0 auto;
+}
+.stat-num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2.5rem;line-height:1;
+  color:#f45d00;
+}
+.stat-label{
+  font-size:.72rem;
+  color:rgba(28,26,24,.35);
+  font-family:'JetBrains Mono',monospace;
+  margin-top:.2rem;
+}
+
+/* ═══════════════ PROJECT CARDS ═══════════════ */
+.project-card{
+  display:block;
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:16px;
+  padding:2.5rem;
+  margin-bottom:1.5rem;
+  text-decoration:none;
+  color:#1c1a18;
+  transition:all .3s;
   position:relative;
   overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.02);
 }
-.hero::before{
+.project-card::before{
   content:'';
-  position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(28,26,18,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(28,26,18,.025) 1px, transparent 1px);
-  background-size:60px 60px;
-  background-position:-.5px -.5px;
-  pointer-events:none;
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:#f45d00;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .4s ease;
 }
-.hero-overline{
-  font-family:var(--font-ui);
-  font-size:.625rem;font-weight:500;
-  color:var(--ink-3);
-  text-transform:uppercase;letter-spacing:.22em;
-  position:relative;
+.project-card:hover::before{transform:scaleX(1)}
+.project-card:hover{
+  background:#faf8f5;
+  border-color:rgba(244,93,0,.2);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
 }
-.hero-overline::before,
-.hero-overline::after{
-  content:'';
-  display:inline-block;
-  width:1.25rem;
-  height:1px;
-  background:var(--border-color);
-  vertical-align:middle;
-  margin:0 .6rem;
+.project-card:hover .project-arrow{transform:translateX(4px) scale(1.15);color:#f45d00}
+.project-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;font-weight:500;
+  color:rgba(28,26,24,.3);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:.6rem;
 }
-.hero-headline{
-  font-family:var(--font-canela);
-  font-size:1rem;font-weight:500;
-  color:var(--fg);
-  line-height:1.5;
-  letter-spacing:-.025em;
-  max-width:48rem;
-  margin:0 4rem;
-  padding-top:2rem;
-  position:relative;
+.project-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2rem;
+  line-height:1.1;
+  margin-bottom:.6rem;
 }
-.hero-headline em{font-style:normal;display:block;font-size:clamp(2.5rem,8vw,5rem);line-height:1.06;margin-top:.3rem}
-.hero-subheading{
-  font-family:var(--font-ui);
-  font-size:.9375rem;
-  color:var(--ink-2);
-  margin-top:.85rem;
-  max-width:34rem;
-  line-height:1.6;
+.project-desc{
+  font-size:.92rem;
+  color:rgba(28,26,24,.5);
+  line-height:1.65;
+  max-width:700px;
+  margin-bottom:1.2rem;
 }
-.hero-cta{
-  display:inline-flex;align-items:center;gap:.4rem;
-  font-family:var(--font-ui);
-  font-size:.9375rem;font-weight:500;
-  color:var(--bg);
-  background:var(--fg);
-  text-decoration:none;
-  padding:.85rem 2.5rem;
+.project-pills{
+  display:flex;flex-wrap:wrap;gap:.4rem;
+}
+.project-pill{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;font-weight:500;
+  color:rgba(244,93,0,.9);
+  background:rgba(244,93,0,.07);
+  padding:.25rem .65rem;
   border-radius:9999px;
-  margin-top:2.25rem;
-  transition:all .2s;
+  border:1px solid rgba(244,93,0,.12);
+  text-transform:uppercase;letter-spacing:.04em;
 }
-.hero-cta:hover{background:var(--red);color:#fff;transform:translateY(-2px);box-shadow:0 4px 20px rgba(196,30,58,.2)}
-.hero-footnote{
-  font-family:var(--font-ui);
-  font-size:.6875rem;
-  color:var(--ink-3);
-  letter-spacing:.12em;
-  margin-top:1.25rem;
+.project-arrow{
+  position:absolute;bottom:2.5rem;right:2.5rem;
+  font-size:1.5rem;
+  color:rgba(28,26,24,.15);
+  transition:all .3s;
 }
 
-/* ═══════ SECTIONS ═══════ */
-section{
-  padding:5.5rem 1.5rem 6.5rem;
-  position:relative;
-}
-section + section{border-top:1px solid var(--border-color)}
-.section-inner{
-  max-width:56rem;
-  margin:0 auto;
-  position:relative;
-}
-.section-label{
-  font-family:var(--font-ui);
-  font-size:.625rem;font-weight:500;
-  color:var(--red);
-  opacity:.65;
-  text-transform:uppercase;letter-spacing:.22em;
-  margin-bottom:.75rem;
-  position:relative;
-  display:inline-block;
-}
-.section-label::after{
-  content:'';
-  display:block;
-  width:1.5rem;
-  height:1.5px;
-  background:var(--red);
-  opacity:.3;
-  margin-top:.5rem;
-}
-.section-heading{
-  font-family:var(--font-canela);
-  font-size:clamp(1.5rem,3.5vw,2.5rem);
-  font-weight:400;
-  color:var(--fg);
-  line-height:1.12;
-  letter-spacing:-.01em;
-  margin-top:.65rem;
-  max-width:38rem;
-}
-
-/* ═══════ PROJECT ROWS ═══════ */
-.project-row{
-  display:flex;align-items:center;gap:2rem;
-  padding:1.5rem 0;
-  border-bottom:1px solid var(--border-color);
-  text-decoration:none;
-  color:var(--fg);
-  transition:all .25s;
-  position:relative;
-}
-.project-row:first-child{border-top:1px solid var(--border-color)}
-.project-row:hover{padding-left:.5rem}
-.project-row::before{
-  content:'';
-  position:absolute;left:0;top:0;bottom:0;
-  width:2px;
-  background:var(--red);
-  opacity:0;
-  transition:opacity .25s;
-  border-radius:0 2px 2px 0;
-}
-.project-row:hover::before{opacity:.4}
-.project-row .num{
-  font-family:var(--font-ui);
-  font-size:.6875rem;font-weight:400;
-  color:var(--ink-3);
-  min-width:2rem;
-  flex-shrink:0;
-}
-.project-row .content{flex:1}
-.project-row .tag{
-  font-family:var(--font-ui);
-  font-size:.625rem;
-  color:var(--ink-3);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  margin-bottom:.3rem;
-}
-.project-row h3{
-  font-family:var(--font-canela);
-  font-size:.9375rem;font-weight:500;
-  color:var(--fg);
-  line-height:1.3;
-  margin-bottom:.25rem;
-}
-.project-row .desc{
-  font-family:var(--font-ui);
-  font-size:.8125rem;
-  color:var(--ink-2);
-  line-height:1.55;
-  max-width:40rem;
-}
-.project-row .arrow{
-  font-size:1.1rem;
-  color:var(--red);
-  opacity:.35;
-  flex-shrink:0;
-  transition:all .25s;
-}
-.project-row:hover .arrow{opacity:1;transform:translateX(4px) scale(1.1)}
-
-/* ═══════ STEPS ═══════ */
-.steps-grid{
-  display:grid;grid-template-columns:1fr;gap:2rem;
-  margin-top:2.5rem;
-}
-.step-card{
-  padding:1.5rem;
-  background:var(--card-bg);
-  border-radius:.625rem;
-  border:1px solid var(--border-color);
-  transition:all .2s;
-}
-.step-card:hover{
-  border-color:rgba(196,30,58,.15);
-  box-shadow:0 2px 12px rgba(28,26,18,.04);
-}
-.step-card .step-num{
-  font-family:var(--font-ui);
-  font-size:.6875rem;font-weight:500;
-  color:var(--red);
-  opacity:.6;
-  letter-spacing:.04em;
-  margin-bottom:.4rem;
-}
-.step-card h3{
-  font-family:var(--font-canela);
-  font-size:1.125rem;font-weight:500;
-  color:var(--fg);
-  line-height:1.3;
-  margin-bottom:.5rem;
-}
-.step-card p{
-  font-family:var(--font-ui);
-  font-size:.8125rem;
-  color:var(--ink-2);
-  line-height:1.55;
-  max-width:30rem;
-}
-
-/* ═══════ NOTE / QUOTE ═══════ */
-.note-block{
-  padding:2.5rem 0 0;
-}
-.note-block blockquote{
-  font-family:var(--font-canela);
-  font-size:1.05rem;
-  font-weight:400;
-  color:var(--fg);
-  line-height:1.6;
-  font-style:italic;
-  max-width:38rem;
-  position:relative;
-  padding-left:1.5rem;
-  border-left:2px solid var(--red);
-  opacity:.75;
-}
-.note-block .attribution{
-  font-family:var(--font-ui);
-  font-size:.75rem;
-  color:var(--ink-2);
-  margin-top:1.25rem;
-}
-.note-block .attribution small{
-  display:block;
-  color:var(--ink-3);
-  font-size:.625rem;
-  margin-top:.1rem;
-}
-
-/* ═══════ ABOUT GRID ═══════ */
+/* ═══════════════ ABOUT ═══════════════ */
 .about-grid{
   display:grid;grid-template-columns:1fr 1fr;
-  gap:2.5rem;margin-top:2rem;
+  gap:3rem;
 }
-.about-grid p{
-  font-family:var(--font-ui);
-  font-size:.875rem;
-  color:var(--ink-2);
-  line-height:1.65;
-  margin-bottom:.75rem;
+.about-text{
+  font-size:1rem;
+  color:rgba(28,26,24,.5);
+  line-height:1.75;
 }
-.about-grid .details{
-  display:flex;flex-direction:column;gap:.75rem;
-  padding:1.5rem;
-  background:var(--card-bg);
-  border-radius:.625rem;
-  border:1px solid var(--border-color);
+.about-text p{margin-bottom:1rem}
+.about-details{
+  display:flex;flex-direction:column;gap:1.25rem;
+  padding:2rem;
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.02);
 }
-.about-grid .detail-row{
-  display:flex;gap:.75rem;
-  font-family:var(--font-ui);
-  font-size:.8125rem;
+.about-row{
+  display:flex;gap:1rem;
 }
-.about-grid .detail-row .lbl{
-  color:var(--ink-3);
-  min-width:5rem;
+.about-row .lbl{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;font-weight:500;
+  color:rgba(28,26,24,.3);
+  text-transform:uppercase;letter-spacing:.08em;
+  min-width:80px;
   flex-shrink:0;
-  font-size:.625rem;
-  text-transform:uppercase;
-  letter-spacing:.1em;
 }
-.about-grid .detail-row .val{
-  color:var(--ink-2);
+.about-row .val{
+  font-size:.9rem;
+  color:rgba(28,26,24,.5);
 }
 
-/* ═══════ CTA BANNER ═══════ */
-.cta-banner{
+/* ═══════════════ CONTACT ═══════════════ */
+.contact-section{
+  padding:6rem 2.5rem;
   text-align:center;
-  padding:6rem 1.5rem;
-  border-top:1px solid var(--border-color);
-  position:relative;
 }
-.cta-banner h2{
-  font-family:var(--font-canela);
-  font-size:clamp(1.5rem,4.5vw,2.75rem);
-  font-weight:400;
-  color:var(--fg);
-  line-height:1.15;
-  letter-spacing:-.01em;
+.contact-headline{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3rem,7vw,5rem);
+  line-height:1;
+  color:#1c1a18;
+  margin-bottom:.5rem;
 }
-.cta-banner p{
-  font-family:var(--font-ui);
-  font-size:.875rem;
-  color:var(--ink-2);
-  margin-top:.75rem;
+.contact-headline .accent{color:#f45d00}
+.contact-meta{
+  font-size:.9rem;
+  color:rgba(28,26,24,.4);
+  margin-bottom:1.5rem;
+  font-family:'JetBrains Mono',monospace;
 }
-.cta-banner .contact-links{
-  display:flex;justify-content:center;flex-wrap:wrap;gap:.75rem;
-  margin-top:1.75rem;
-}
-.cta-banner .contact-links a{
-  display:inline-flex;align-items:center;gap:.4rem;
-  font-family:var(--font-ui);
-  font-size:.8125rem;font-weight:500;
-  color:var(--fg);
-  background:var(--card-bg);
+.contact-email{
+  display:inline-block;
+  font-size:1.1rem;
+  color:rgba(28,26,24,.4);
   text-decoration:none;
-  padding:.6rem 1.25rem;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  padding-bottom:.2rem;
+  transition:all .3s;
+  margin-bottom:1.5rem;
+  font-family:'Crimson Pro',Georgia,serif;
+}
+.contact-email:hover{color:#f45d00;border-color:#f45d00}
+.contact-links{
+  display:flex;justify-content:center;gap:1rem;
+}
+.contact-links a{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:rgba(28,26,24,.4);
+  text-decoration:none;
+  padding:.5rem 1rem;
   border-radius:9999px;
-  border:1px solid var(--border-color);
+  border:1px solid rgba(0,0,0,.08);
   transition:all .2s;
 }
-.cta-banner .contact-links a:hover{
-  background:var(--red-soft);
-  border-color:var(--red);
-  color:var(--red);
-  transform:translateY(-1px);
-  box-shadow:0 2px 8px rgba(196,30,58,.08);
+.contact-links a:hover{
+  color:#f45d00;
+  border-color:rgba(244,93,0,.2);
+  background:rgba(244,93,0,.06);
 }
 
-/* ═══════ FOOTER ═══════ */
+/* ═══════════════ FOOTER ═══════════════ */
 footer{
-  padding:3rem 1.5rem;
-  border-top:1px solid var(--border-color);
-  display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;
-  font-family:var(--font-ui);
-  font-size:.6875rem;
-  color:var(--ink-3);
-  letter-spacing:.02em;
+  text-align:center;
+  padding:2rem 2.5rem 3rem;
+  font-size:.7rem;
+  font-family:'JetBrains Mono',monospace;
+  color:rgba(28,26,24,.2);
+  border-top:1px solid rgba(0,0,0,.04);
 }
-footer nav{display:flex;gap:1.5rem}
-footer nav a{color:var(--ink-3);text-decoration:none;transition:color .15s}
-footer nav a:hover{color:var(--red)}
 
-/* ═══════ RESPONSIVE ═══════ */
+/* ═══════════════ RESPONSIVE ═══════════════ */
 @media(max-width:768px){
-  header{padding:0 1rem}
-  header nav a{font-size:.65rem;padding:.25rem .55rem}
-  .hero-headline{margin:0 1rem}
-  .hero-headline em{font-size:clamp(2rem,10vw,3.5rem)}
-  .hero-overline::before,.hero-overline::after{width:.75rem;margin:0 .35rem}
-  section{padding:3.5rem 1rem 4rem}
-  .project-row{gap:1rem;padding:1.25rem 0}
-  .project-row .num{min-width:1.5rem;font-size:.6rem}
+  nav{padding:.8rem 1.25rem}
+  .nav-links a{font-size:.7rem;padding:.25rem .6rem}
+  .hero{padding:5rem 1.25rem 3rem}
+  .hero h1{font-size:clamp(1.5rem,8vw,2.5rem)}
+  .hero h1 .big{font-size:clamp(2rem,12vw,4rem)}
+  .hero-desc{font-size:.95rem}
+  .stats-bar{padding:1.5rem 1.25rem 2rem;gap:1.5rem}
+  .stat-num{font-size:2rem}
+  .section{padding:3rem 1.25rem 4rem}
+  .section-title{font-size:2.5rem}
+  .project-card{padding:1.5rem;border-radius:12px}
+  .project-title{font-size:1.5rem}
+  .project-arrow{display:none}
   .about-grid{grid-template-columns:1fr}
-  .steps-grid{gap:1.5rem}
-  .step-card{padding:1.25rem}
-  footer{flex-direction:column;text-align:center;gap:1rem}
-  footer nav{flex-wrap:wrap;justify-content:center;gap:.75rem}
+  .contact-section{padding:4rem 1.25rem}
 }
-
-/* ═══════ SCROLL REVEAL ═══════ */
-.reveal{
-  opacity:0;
-  transform:translateY(28px);
-  transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1);
-}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-d1{transition-delay:.08s}
-.reveal-d2{transition-delay:.16s}
-.reveal-d3{transition-delay:.24s}
-.reveal-d4{transition-delay:.32s}
-.reveal-d5{transition-delay:.4s}
 </style>
 </head>
 <body>
@@ -470,153 +375,189 @@ footer nav a:hover{color:var(--red)}
 <!-- ═══ GEAR BACKGROUND ═══ -->
 <div id="gear-container"></div>
 
-<!-- ═══ HEADER ═══ -->
-<header>
-  <a class="logo" href="#">Tanmay Poddar</a>
-  <nav>
-    <a href="games.html">Games</a>
-    <a href="#projects">Projects</a>
-    <a href="#about">About</a>
-    <a href="#contact" class="cta-link">Contact</a>
-  </nav>
-</header>
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a class="nav-logo" href="#">◈ Tanmay Poddar</a>
+  <ul class="nav-links">
+    <li><a href="games.html">Games</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
-  <p class="hero-overline">Engineering Portfolio</p>
-  <h1 class="hero-headline reveal reveal-d1">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-label">Engineering Portfolio</div>
+  <h1>
     Do I have the skills to build your next system?
-    <em>Find out in 60&nbsp;seconds.</em>
+    <span class="big">Find out in 60&nbsp;seconds.</span>
   </h1>
-  <p class="hero-subheading reveal reveal-d2">Second Year Mechanical Engineering Student at McMaster University with a strong interest in aerospace systems and applied physics.</p>
-  <a class="hero-cta reveal reveal-d3" href="#projects">View My Work <span style="font-size:1.1rem;display:inline-block;transition:transform .2s">→</span></a>
-  <p class="hero-footnote">Projects ↓</p>
+  <p class="hero-desc">
+    Second Year Mechanical Engineering Student at McMaster University with a
+    strong interest in aerospace systems and applied physics.
+  </p>
+  <div class="hero-meta">
+    <span>📍 Toronto, Canada</span>
+    <a href="mailto:tanmay@poddar.net">✉ tanmay@poddar.net</a>
+    <a href="#projects">↓ View My Work</a>
+  </div>
 </section>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats-bar">
+  <div>
+    <div class="stat-num">4+</div>
+    <div class="stat-label">Engineering Projects Completed</div>
+  </div>
+  <div>
+    <div class="stat-num">2+</div>
+    <div class="stat-label">Programming Languages</div>
+  </div>
+  <div>
+    <div class="stat-num">∞</div>
+    <div class="stat-label">Curiosity for Aerospace &amp; Physics</div>
+  </div>
+</div>
 
 <!-- ═══ PROJECTS ═══ -->
-<section id="projects">
-  <div class="section-inner">
-    <p class="section-label reveal">Projects</p>
-    <h2 class="section-heading reveal reveal-d1">What I've built.</h2>
-
-    <div style="margin-top:2.5rem">
-
-      <a class="project-row reveal reveal-d1" href="https://tp-96.github.io/robot-arm.html">
-        <span class="num">01</span>
-        <div class="content">
-          <p class="tag">First Year Engineering Design Project 1 · Oct – Dec 2025</p>
-          <h3>Robot Arm End-Effector</h3>
-          <p class="desc">Designed and built a universal end-effector for a Q-Arm robotic system capable of grabbing, lifting, and moving objects of varying shapes. Led a team as project manager, overseeing CAD design, prototyping, and a full Python codebase for automated item retrieval.</p>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a class="project-row reveal reveal-d2" href="#">
-        <span class="num">02</span>
-        <div class="content">
-          <p class="tag">High School Shop · Grade 12</p>
-          <h3>High School Projects</h3>
-          <p class="desc">Semester-long machining and woodworking projects including a precision aluminum mallet turned on a manual lathe, and a maple finger lap joint box built using dado stack blades — learning measurement, tolerancing, and machine error firsthand.</p>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-      <a class="project-row reveal reveal-d3" href="#">
-        <span class="num">03</span>
-        <div class="content">
-          <p class="tag">First Year Engineering Design Project 3 · Jan – Apr 2026</p>
-          <h3>Mechanical Ball Launcher</h3>
-          <p class="desc">Designed and built a ball launcher to address a real world issue for a client. Our client had specific mobility restrictions which we based the design around. 1P13 Project 3.</p>
-        </div>
-        <span class="arrow">↗</span>
-      </a>
-
-    </div>
+<section class="section" id="projects">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">Projects</h2>
   </div>
-</section>
 
-<!-- ═══ HOW IT WORKS / SKILLS ═══ -->
-<section>
-  <div class="section-inner">
-    <p class="section-label reveal">How I Work</p>
-    <h2 class="section-heading reveal reveal-d1">Three principles. No shortcuts.</h2>
-    <div class="steps-grid">
-      <div class="step-card reveal reveal-d1">
-        <p class="step-num">01</p>
-        <h3>4+ Engineering Projects Completed</h3>
-        <p>From robot arm end-effectors to mechanical ball launchers — each project built from scratch, through CAD, prototyping, and real testing.</p>
-      </div>
-      <div class="step-card reveal reveal-d2">
-        <p class="step-num">02</p>
-        <h3>2+ Programming Languages</h3>
-        <p>Python for robotics and automation, plus CAD scripting and technical computing — writing code that controls physical hardware.</p>
-      </div>
-      <div class="step-card reveal reveal-d3">
-        <p class="step-num">03</p>
-        <h3>Curiosity for Aerospace &amp; Physics</h3>
-        <p>Driven by a desire to understand how things fly, from aerodynamics to propulsion — applying physics to real engineering problems.</p>
-      </div>
+  <!-- Project 1 -->
+  <a class="project-card" href="https://tp-96.github.io/robot-arm.html">
+    <div class="project-tag">First Year Engineering Design Project 1 · Oct – Dec 2025</div>
+    <h3 class="project-title">Robot Arm End-Effector</h3>
+    <p class="project-desc">
+      Designed and built a universal end-effector for a Q-Arm robotic system capable of
+      grabbing, lifting, and moving objects of varying shapes. Led a team as project manager,
+      overseeing CAD design, prototyping, and a full Python codebase for automated item retrieval.
+    </p>
+    <div class="project-pills">
+      <span class="project-pill">CAD Design</span>
+      <span class="project-pill">Python</span>
+      <span class="project-pill">3D Printing</span>
+      <span class="project-pill">Project Management</span>
+      <span class="project-pill">Rack &amp; Pinion</span>
     </div>
+    <span class="project-arrow">↗</span>
+  </a>
 
-    <div class="note-block reveal" style="margin-top:3rem;padding-top:2.5rem;border-top:1px solid var(--border-color)">
-      <blockquote>
-        "I believe the simplest solution is often the best solution, a principle reinforced through every prototype iteration and project setback I've learned from."
-      </blockquote>
-      <div class="attribution">
-        Tanmay Poddar
-        <small>Mechanical Engineering · McMaster University</small>
-      </div>
+  <!-- Project 2 -->
+  <a class="project-card" href="#">
+    <div class="project-tag">High School Shop · Grade 12</div>
+    <h3 class="project-title">High School Projects</h3>
+    <p class="project-desc">
+      Semester-long machining and woodworking projects including a precision aluminum mallet
+      turned on a manual lathe, and a maple finger lap joint box built using dado stack blades —
+      learning measurement, tolerancing, and machine error firsthand.
+    </p>
+    <div class="project-pills">
+      <span class="project-pill">Manual Lathe</span>
+      <span class="project-pill">Metal Machining</span>
+      <span class="project-pill">Woodworking</span>
+      <span class="project-pill">Table Saw</span>
+      <span class="project-pill">Documentation &amp; Technical Drawing</span>
     </div>
-  </div>
+    <span class="project-arrow">↗</span>
+  </a>
+
+  <!-- Project 3 -->
+  <a class="project-card" href="#">
+    <div class="project-tag">First Year Engineering Design Project 3 · Jan – Apr 2026</div>
+    <h3 class="project-title">Mechanical Ball Launcher</h3>
+    <p class="project-desc">
+      Designed and built a ball launcher to address a real world issue for a client.
+      Our client had specific mobility restrictions which we based the design around. 1P13 Project 3.
+    </p>
+    <div class="project-pills">
+      <span class="project-pill">CAD Design</span>
+      <span class="project-pill">Client-Facing Design</span>
+      <span class="project-pill">3D Printing</span>
+      <span class="project-pill">Design Process &amp; Thinking</span>
+    </div>
+    <span class="project-arrow">↗</span>
+  </a>
 </section>
 
 <!-- ═══ ABOUT ═══ -->
-<section id="about">
-  <div class="section-inner">
-    <p class="section-label reveal">About</p>
-    <h2 class="section-heading reveal reveal-d1">Mechanical engineering with a focus on aerospace.</h2>
-    <div class="about-grid">
-      <div class="reveal reveal-d1">
-        <p>I'm a mechanical engineering student based in the Greater Toronto Area, passionate about aerospace systems and applied physics. My goal is to contribute meaningfully to the future of airline transportation.</p>
-        <p>My engineering work spans physical fabrication — machining metal on a lathe, building wooden joints — to software and robotics, where I've led teams building automated systems with Python and CAD-designed hardware.</p>
-        <p>I believe the simplest solution is often the best solution, a principle reinforced through every prototype iteration and project setback I've learned from.</p>
-        <p style="margin-top:1rem"><a href="mailto:tanmay@poddar.net" style="color:var(--red);font-size:.8125rem;text-decoration:none;border-bottom:1px solid rgba(196,30,58,.15);padding-bottom:.1rem;transition:border-color .15s" onmouseover="this.style.borderBottomColor='rgba(196,30,58,.4)'" onmouseout="this.style.borderBottomColor='rgba(196,30,58,.15)'">Full About Page ↗</a></p>
+<section class="section" id="about">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <h2 class="section-title">About</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        I'm a mechanical engineering student based in the Greater Toronto Area,
+        passionate about aerospace systems and applied physics. My goal is to
+        contribute meaningfully to the future of airline transportation.
+      </p>
+      <p>
+        My engineering work spans physical fabrication — machining metal on a lathe,
+        building wooden joints — to software and robotics, where I've led teams
+        building automated systems with Python and CAD-designed hardware.
+      </p>
+      <p>
+        I believe the simplest solution is often the best solution, a principle
+        reinforced through every prototype iteration and project setback I've learned from.
+      </p>
+      <a href="mailto:tanmay@poddar.net" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;font-size:.85rem;color:#f45d00;text-decoration:none;font-family:'JetBrains Mono',monospace;border-bottom:1px solid rgba(244,93,0,.2);padding-bottom:.15rem;transition:border-color .2s">
+        Full About Page ↗
+      </a>
+    </div>
+    <div class="about-details">
+      <div class="about-row">
+        <span class="lbl">Location</span>
+        <span class="val">Greater Toronto Area</span>
       </div>
-      <div class="details reveal reveal-d2">
-        <div class="detail-row"><span class="lbl">Location</span><span class="val">Greater Toronto Area</span></div>
-        <div class="detail-row"><span class="lbl">Field</span><span class="val">Engineering — Aerospace</span></div>
-        <div class="detail-row"><span class="lbl">Skills</span><span class="val">CAD, Python, Machining, 3D Printing</span></div>
-        <div class="detail-row"><span class="lbl">Interest</span><span class="val">Aerospace, Aviation &amp; Applied Physics</span></div>
-        <div class="detail-row"><span class="lbl">Education</span><span class="val">McMaster University · 2nd Year</span></div>
+      <div class="about-row">
+        <span class="lbl">Field</span>
+        <span class="val">Engineering — Aerospace</span>
+      </div>
+      <div class="about-row">
+        <span class="lbl">Skills</span>
+        <span class="val">CAD, Python, Machining</span>
+      </div>
+      <div class="about-row">
+        <span class="lbl">Interest</span>
+        <span class="val">Aerospace, Aviation &amp; Applied Physics</span>
+      </div>
+      <div class="about-row">
+        <span class="lbl">Education</span>
+        <span class="val">McMaster University · 2nd Year</span>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ CONTACT ═══ -->
-<section class="cta-banner reveal" id="contact">
-  <h2>Let's<br>Build <em style="font-style:normal;color:var(--red)">Something.</em></h2>
-  <p>It takes 60 seconds to reach out. No obligation.</p>
+<section class="contact-section" id="contact">
+  <h2 class="contact-headline">
+    Let's<br>
+    Build <span class="accent">Something.</span>
+  </h2>
+  <p class="contact-meta">It takes 60 seconds to reach out. No obligation.</p>
+  <a class="contact-email" href="mailto:tanmay@poddar.net">tanmay@poddar.net</a>
   <div class="contact-links">
-    <a href="mailto:tanmay@poddar.net">✉ tanmay@poddar.net ↗</a>
+    <a href="mailto:tanmay@poddar.net">✉ Email ↗</a>
     <a href="https://github.com/TP-96">⌂ GitHub ↗</a>
     <a href="https://linkedin.com/in/tanmay-poddar">⊞ LinkedIn ↗</a>
   </div>
 </section>
 
-<!-- rebuild -->
+<!-- ═══ FOOTER ═══ -->
 <footer>
-  <span>2026 Tanmay Poddar · Toronto, Canada</span>
-  <nav>
-    <a href="games.html">Games</a>
-    <a href="#projects">Projects</a>
-    <a href="#about">About</a>
-    <a href="mailto:tanmay@poddar.net">Contact</a>
-  </nav>
+  2026 Tanmay Poddar · Toronto, Canada
 </footer>
 
 <script>
-/* ═══════ GEAR GENERATOR + SCROLL EFFECTS ═══════ */
+/* ═══════ GEAR GENERATOR ═══════ */
 (function(){
   'use strict';
   var container = document.getElementById('gear-container');
@@ -660,9 +601,6 @@ footer nav a:hover{color:var(--red)}
     return parts.join('');
   }
 
-  // Store gears for scroll modulation
-  var gears = [];
-
   function createGear(innerR, outerR, teeth, holeR, opts) {
     var size = (outerR + 4) * 2;
     var svg = document.createElementNS(ns, 'svg');
@@ -673,7 +611,6 @@ footer nav a:hover{color:var(--red)}
 
     var g = document.createElementNS(ns, 'g');
     g.style.transformOrigin = (outerR + 2) + 'px ' + (outerR + 2) + 'px';
-    g.dataset.baseY = opts.y;
 
     var path = document.createElementNS(ns, 'path');
     path.setAttribute('d', gearPath(innerR, outerR, teeth, holeR));
@@ -684,7 +621,7 @@ footer nav a:hover{color:var(--red)}
 
     g.appendChild(path);
 
-    // Inner ring for detail
+    // Inner ring detail
     if (opts.innerRing) {
       var ring = document.createElementNS(ns, 'circle');
       ring.setAttribute('cx', '0');
@@ -722,254 +659,33 @@ footer nav a:hover{color:var(--red)}
     g.style.animation = 'spin ' + dur + 's linear infinite';
     g.style.animationDirection = opts.dir || 'normal';
 
-    // Store reference for scroll modulation
-    gears.push({
-      g: g,
-      svg: svg,
-      baseDuration: dur,
-      baseOpacity: opts.opacity || 0.06,
-      baseY: opts.y,
-      dir: opts.dir || 'normal',
-      yOff: 0
-    });
-
     return svg;
   }
 
-  /* ═══════ AIRPLANE SILHOUETTES ═══════ */
-  function airplanePath(scale) {
-    if (!scale) scale = 1;
-    return 'M 0,' + (-8*scale) +
-      ' L ' + (2*scale) + ',' + (-3*scale) +
-      ' L ' + (16*scale) + ',' + (2*scale) +
-      ' L ' + (10*scale) + ',' + (5*scale) +
-      ' L ' + (3.5*scale) + ',' + (7*scale) +
-      ' L ' + (1.5*scale) + ',' + (9*scale) +
-      ' L 0,' + (8*scale) +
-      ' L ' + (-1.5*scale) + ',' + (9*scale) +
-      ' L ' + (-3.5*scale) + ',' + (7*scale) +
-      ' L ' + (-10*scale) + ',' + (5*scale) +
-      ' L ' + (-16*scale) + ',' + (2*scale) +
-      ' L ' + (-2*scale) + ',' + (-3*scale) +
-      'Z';
-  }
-
-  function createAirplane(scale, opts) {
-    var pScale = scale || 1;
-    var margin = pScale * 20;
-    var svgSize = margin * 2;
-    var svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('viewBox', (-margin) + ' ' + (-margin) + ' ' + svgSize + ' ' + svgSize);
-    svg.setAttribute('width', svgSize);
-    svg.setAttribute('height', svgSize);
-    svg.style.cssText = 'left:' + opts.x + '%;top:' + opts.y + '%;opacity:1;pointer-events:none;z-index:-1;';
-
-    var g = document.createElementNS(ns, 'g');
-    g.style.transformOrigin = margin + 'px ' + margin + 'px';
-
-    var path = document.createElementNS(ns, 'path');
-    path.setAttribute('d', airplanePath(pScale));
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', '#1C1A18');
-    path.setAttribute('stroke-width', opts.strokeWidth || 1.2);
-    path.setAttribute('opacity', opts.opacity || 0.05);
-
-    g.appendChild(path);
-    svg.appendChild(g);
-    container.appendChild(svg);
-
-    var dur = opts.duration || 90;
-    g.style.animation = 'spin ' + dur + 's linear infinite';
-    g.style.animationDirection = opts.dir || 'normal';
-
-    gears.push({
-      g: g,
-      svg: svg,
-      baseDuration: dur,
-      baseOpacity: opts.opacity || 0.05,
-      baseY: opts.y,
-      dir: opts.dir || 'normal',
-      yOff: 0
-    });
-    return svg;
-  }
-
-  /* ═══════ McMASTER CREST ═══════ */
-  function mcMasterPath() {
-    return 'M -22,-24 L 22,-24 L 25,15 Q 0,38 -25,15 Z' +
-      ' M -14,-24 C -14,-30 -8,-33 0,-33 C 8,-33 14,-30 14,-24' +
-      ' M -12,-24 C -12,-29 -7,-32 0,-32 C 7,-32 12,-29 12,-24' +
-      ' M 0,-24 L 0,-33' +
-      ' M -22,-14 L 22,-14' +
-      ' M -22,5 L 22,5' +
-      ' M -12,-2 L -8,-9 L -4,-2 L -8,-5 Z' +
-      ' M -4,-2 L 0,-9 L 4,-2 L 0,-5 Z' +
-      ' M 4,-2 L 8,-9 L 12,-2 L 8,-5 Z' +
-      ' M -20,34 L 20,34 Q 0,37 -20,34' +
-      ' M -18,34 L 19,40 L -19,40 Z';
-  }
-
-  function createCrest(scale, opts) {
-    var s = scale || 1;
-    var margin = 45 * s;
-    var size = margin * 2;
-    var svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('viewBox', (-margin) + ' ' + (-margin) + ' ' + size + ' ' + size);
-    svg.setAttribute('width', size);
-    svg.setAttribute('height', size);
-    svg.style.cssText = 'left:' + opts.x + '%;top:' + opts.y + '%;opacity:1;pointer-events:none;z-index:-1;';
-
-    var g = document.createElementNS(ns, 'g');
-    g.style.transformOrigin = margin + 'px ' + margin + 'px';
-
-    var path = document.createElementNS(ns, 'path');
-    path.setAttribute('d', mcMasterPath());
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', '#1C1A18');
-    path.setAttribute('stroke-width', opts.strokeWidth || 1.5);
-    path.setAttribute('opacity', opts.opacity || 0.07);
-
-    g.appendChild(path);
-    svg.appendChild(g);
-    container.appendChild(svg);
-
-    var dur = opts.duration || 120;
-    g.style.animation = 'spin ' + dur + 's linear infinite';
-    g.style.animationDirection = opts.dir || 'normal';
-
-    gears.push({
-      g: g,
-      svg: svg,
-      baseDuration: dur,
-      baseOpacity: opts.opacity || 0.07,
-      baseY: opts.y,
-      dir: opts.dir || 'normal',
-      yOff: 0
-    });
-    return svg;
-  }
-
-  // ── Define gears ──
-  createGear(80, 95, 24, 16, {
-    x: 82, y: 0, opacity: 0.25, duration: 50, dir: 'normal',
-    strokeWidth: 5.0, innerRing: 55, spokes: 8
+  // ── Gears (BIG — 1.6× larger) ──
+  createGear(95, 114, 24, 20, {
+    x: 82, y: -6, opacity: 0.2, duration: 50, dir: 'normal',
+    strokeWidth: 4.5, innerRing: 68, spokes: 8
   });
-
-  createGear(50, 62, 18, 12, {
-    x: 4, y: -8, opacity: 0.22, duration: 35, dir: 'reverse',
-    strokeWidth: 4.5, innerRing: 35, spokes: 6
+  createGear(62, 80, 18, 16, {
+    x: 2, y: -10, opacity: 0.17, duration: 35, dir: 'reverse',
+    strokeWidth: 4.0, innerRing: 46, spokes: 6
   });
-
-  createGear(35, 44, 14, 8, {
-    x: 52, y: -2, opacity: 0.25, duration: 22, dir: 'normal',
-    strokeWidth: 4.5, innerRing: 24, spokes: 4
+  createGear(44, 56, 14, 10, {
+    x: 54, y: -4, opacity: 0.18, duration: 22, dir: 'normal',
+    strokeWidth: 4.0, innerRing: 30, spokes: 4
   });
-
-  createGear(22, 30, 10, 5, {
-    x: 20, y: 12, opacity: 0.25, duration: 14, dir: 'reverse',
-    strokeWidth: 4.0, innerRing: 15, spokes: 3
+  createGear(30, 38, 10, 7, {
+    x: 18, y: 10, opacity: 0.16, duration: 14, dir: 'reverse',
+    strokeWidth: 3.5, innerRing: 20, spokes: 3
   });
-
-  createGear(14, 18, 8, 3, {
-    x: 46, y: 30, opacity: 0.2, duration: 9, dir: 'normal',
-    strokeWidth: 4.0, innerRing: 10, spokes: 3
+  createGear(18, 24, 8, 4, {
+    x: 46, y: 28, opacity: 0.14, duration: 9, dir: 'normal',
+    strokeWidth: 3.5, innerRing: 12, spokes: 3
   });
-
-  createGear(10, 14, 6, 2.5, {
-    x: 90, y: 22, opacity: 0.18, duration: 6, dir: 'reverse',
-    strokeWidth: 3.5, spokes: 2
-  });
-
-  // ── Define airplanes ──
-  createAirplane(0.55, {
-    x: 15, y: 30, opacity: 0.2, duration: 70, dir: 'reverse',
-    strokeWidth: 2.5
-  });
-  createAirplane(0.7, {
-    x: 65, y: 42, opacity: 0.18, duration: 100, dir: 'normal',
-    strokeWidth: 2.5
-  });
-  createAirplane(0.4, {
-    x: 82, y: 60, opacity: 0.2, duration: 55, dir: 'reverse',
-    strokeWidth: 2.2
-  });
-  createAirplane(0.6, {
-    x: 35, y: 55, opacity: 0.17, duration: 85, dir: 'normal',
-    strokeWidth: 2.5
-  });
-  createAirplane(0.3, {
-    x: 8, y: 65, opacity: 0.18, duration: 40, dir: 'reverse',
-    strokeWidth: 2.0
-  });
-
-  // ── McMaster crest ──
-  createCrest(0.4, {
-    x: 45, y: 6, opacity: 0.22, duration: 140, dir: 'reverse',
-    strokeWidth: 2.8
-  });
-
-  // ── Scroll-driven gear modulation ──
-  var ticking = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
-        var scrollY = window.pageYOffset;
-        var wh = window.innerHeight;
-        // progress: 0 at top, 1 after scrolling 3.5 viewport heights
-        var p = Math.min(scrollY / (wh * 3.5), 1);
-        // gentle curve: gears stay visible longer
-        var ease = p;
-
-        gears.forEach(function(gear) {
-          // Slowing down: multiply duration by 1 + ease*5
-          var slowed = gear.baseDuration * (1 + ease * 5);
-          gear.g.style.animationDuration = slowed + 's';
-
-          // Fading out + thinning out
-          var paths = gear.g.querySelectorAll('path, circle, line');
-          for (var i = 0; i < paths.length; i++) {
-            var baseOp = parseFloat(paths[i].getAttribute('data-base-opacity'));
-            paths[i].setAttribute('opacity', baseOp * (1 - ease));
-
-            // Thick at top, hairline at bottom
-            var baseSw = parseFloat(paths[i].getAttribute('data-base-stroke'));
-            paths[i].setAttribute('stroke-width', baseSw * (0.08 + 0.92 * (1 - ease)));
-          }
-
-          // Parallax lift: gears drift upward subtly
-          gear.svg.style.top = (gear.baseY - ease * 5) + '%';
-        });
-
-        ticking = false;
-      });
-      ticking = true;
-    }
-  });
-
-  // Store base opacities and stroke widths on elements for scroll fading
-  gears.forEach(function(gear) {
-    var paths = gear.g.querySelectorAll('path, circle, line');
-    for (var i = 0; i < paths.length; i++) {
-      var op = parseFloat(paths[i].getAttribute('opacity')) || 0.06;
-      paths[i].setAttribute('data-base-opacity', op);
-      var sw = parseFloat(paths[i].getAttribute('stroke-width')) || 1;
-      paths[i].setAttribute('data-base-stroke', sw);
-    }
-  });
-
-})();
-
-/* ═══════ SCROLL REVEAL OBSERVER ═══════ */
-(function(){
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.08 });
-  document.querySelectorAll('.reveal').forEach(function(el) {
-    observer.observe(el);
+  createGear(14, 18, 6, 3, {
+    x: 90, y: 20, opacity: 0.12, duration: 6, dir: 'reverse',
+    strokeWidth: 3.0, spokes: 2
   });
 })();
 </script>
