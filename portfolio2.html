@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tanmay Poddar — Engineering Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════ RESET ═══════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  --bg: #100E0C;
+  --fg: #EDE9E4;
+  --card-bg: #1A1714;
+  --border-color: rgba(237,233,228,.1);
+  --ink-2: rgba(237,233,228,.66);
+  --ink-3: rgba(237,233,228,.42);
+  --gold: #D9BC6A;
+  --font-canela: "Canela", Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--font-ui);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:rgba(237,233,228,.25);color:var(--bg)}
+
+/* ═══════ HEADER ═══════ */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  height:3.5rem;
+  display:flex;align-items:center;
+  padding:0 1.5rem;
+  background:rgba(16,14,12,.8);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border-color);
+}
+header .logo{
+  font-family:var(--font-canela);
+  font-size:.9rem;font-weight:500;
+  color:var(--fg);text-decoration:none;
+}
+header nav{
+  margin-left:auto;
+  display:flex;align-items:center;gap:.25rem;
+}
+header nav a{
+  font-family:var(--font-ui);
+  font-size:.8125rem;font-weight:400;
+  color:var(--ink-3);
+  text-decoration:none;
+  padding:.35rem .75rem;
+  border-radius:9999px;
+  transition:all .15s;
+}
+header nav a:hover{background:rgba(255,255,255,.08);color:var(--fg)}
+.cta-link{
+  font-family:var(--font-ui);
+  font-size:.8125rem;font-weight:500;
+  color:var(--bg) !important;
+  background:var(--fg);
+  padding:.35rem .85rem !important;
+  border-radius:9999px;
+  transition:all .15s;
+}
+.cta-link:hover{background:#fff !important;color:var(--bg) !important}
+
+/* ═══════ HERO ═══════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5rem 1.5rem 3.5rem;
+  text-align:center;
+  overflow:hidden;
+}
+.hero-overline{
+  font-family:var(--font-ui);
+  font-size:.6875rem;font-weight:500;
+  color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.18em;
+}
+.hero-headline{
+  font-family:var(--font-canela);
+  font-size:1rem;font-weight:500;
+  color:var(--fg);
+  line-height:1.5;
+  letter-spacing:-.025em;
+  max-width:48rem;
+  margin:0 4rem;
+  padding-top:2rem;
+}
+.hero-headline em{font-style:normal;display:block;font-size:clamp(2.5rem,8vw,5rem);line-height:1.08;margin-top:.25rem}
+.hero-subheading{
+  font-family:var(--font-ui);
+  font-size:1.0625rem;
+  color:var(--ink-2);
+  margin-top:.75rem;
+  max-width:32rem;
+}
+.hero-cta{
+  display:inline-block;
+  font-family:var(--font-ui);
+  font-size:1.125rem;font-weight:500;
+  color:var(--bg);
+  background:var(--fg);
+  text-decoration:none;
+  padding:1rem 2.75rem;
+  border-radius:9999px;
+  margin-top:2rem;
+  transition:all .15s;
+}
+.hero-cta:hover{background:#fff;transform:translateY(-1px)}
+.hero-footnote{
+  font-family:var(--font-ui);
+  font-size:.8125rem;
+  color:var(--ink-3);
+  letter-spacing:.04em;
+  margin-top:1rem;
+}
+
+/* ═══════ SECTIONS ═══════ */
+section{
+  padding:5rem 1.5rem 6rem;
+}
+section + section{border-top:1px solid var(--border-color)}
+.section-inner{
+  max-width:56rem;
+  margin:0 auto;
+}
+
+.section-label{
+  font-family:var(--font-ui);
+  font-size:.6875rem;font-weight:500;
+  color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.18em;
+  margin-bottom:.75rem;
+}
+.section-heading{
+  font-family:var(--font-canela);
+  font-size:clamp(1.75rem,4vw,2.75rem);
+  font-weight:400;
+  color:var(--fg);
+  line-height:1.15;
+  letter-spacing:-.01em;
+  margin-top:.75rem;
+}
+
+/* ═══════ PRACTICE AREA ROWS (Projects) ═══════ */
+.project-row{
+  display:flex;align-items:center;gap:2rem;
+  padding:1.5rem 0;
+  border-bottom:1px solid var(--border-color);
+  text-decoration:none;
+  color:var(--fg);
+  transition:opacity .3s;
+}
+.project-row:first-child{border-top:1px solid var(--border-color)}
+.project-row:hover{opacity:.7}
+.project-row .num{
+  font-family:var(--font-ui);
+  font-size:.75rem;font-weight:400;
+  color:var(--ink-3);
+  min-width:2rem;
+  flex-shrink:0;
+}
+.project-row .content{flex:1}
+.project-row .tag{
+  font-family:var(--font-ui);
+  font-size:.6875rem;
+  color:var(--ink-3);
+  margin-bottom:.25rem;
+}
+.project-row h3{
+  font-family:var(--font-canela);
+  font-size:1rem;font-weight:500;
+  color:var(--fg);
+  line-height:1.3;
+  margin-bottom:.25rem;
+}
+.project-row .desc{
+  font-family:var(--font-ui);
+  font-size:.8125rem;
+  color:var(--ink-2);
+  line-height:1.5;
+  max-width:40rem;
+}
+.project-row .arrow{
+  font-size:1.25rem;
+  color:var(--ink-3);
+  flex-shrink:0;
+  transition:transform .2s;
+}
+.project-row:hover .arrow{transform:translateX(3px);color:var(--fg)}
+
+/* ═══════ STEPS ═══════ */
+.steps-grid{
+  display:grid;grid-template-columns:1fr;gap:1.5rem;
+  margin-top:2.5rem;
+}
+.step-card{padding:0}
+.step-card .step-num{
+  font-family:var(--font-ui);
+  font-size:.75rem;font-weight:400;
+  color:var(--ink-3);
+  margin-bottom:.5rem;
+}
+.step-card h3{
+  font-family:var(--font-canela);
+  font-size:1.25rem;font-weight:500;
+  color:var(--fg);
+  line-height:1.3;
+  margin-bottom:.5rem;
+}
+.step-card p{
+  font-family:var(--font-ui);
+  font-size:.8125rem;
+  color:var(--ink-2);
+  line-height:1.55;
+  max-width:30rem;
+}
+
+/* ═══════ NOTE / QUOTE ═══════ */
+.note-block{
+  padding:2rem 0 0;
+}
+.note-block blockquote{
+  font-family:var(--font-canela);
+  font-size:1.15rem;
+  font-weight:400;
+  color:var(--fg);
+  line-height:1.6;
+  font-style:italic;
+  max-width:38rem;
+}
+.note-block .attribution{
+  font-family:var(--font-ui);
+  font-size:.8125rem;
+  color:var(--ink-2);
+  margin-top:1.25rem;
+}
+.note-block .attribution small{
+  display:block;
+  color:var(--ink-3);
+  font-size:.6875rem;
+  margin-top:.15rem;
+}
+
+/* ═══════ ABOUT GRID ═══════ */
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2.5rem;margin-top:2rem;
+}
+.about-grid p{
+  font-family:var(--font-ui);
+  font-size:.875rem;
+  color:var(--ink-2);
+  line-height:1.65;
+  margin-bottom:.75rem;
+}
+.about-grid .details{
+  display:flex;flex-direction:column;gap:.75rem;
+  padding:1.5rem;
+  background:var(--card-bg);
+  border-radius:.5rem;
+  border:1px solid var(--border-color);
+}
+.about-grid .detail-row{
+  display:flex;gap:.75rem;
+  font-family:var(--font-ui);
+  font-size:.8125rem;
+}
+.about-grid .detail-row .lbl{
+  color:var(--ink-3);
+  min-width:5rem;
+  flex-shrink:0;
+  font-size:.6875rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.about-grid .detail-row .val{
+  color:var(--ink-2);
+}
+
+/* ═══════ CTA BANNER ═══════ */
+.cta-banner{
+  text-align:center;
+  padding:6rem 1.5rem;
+  border-top:1px solid var(--border-color);
+}
+.cta-banner h2{
+  font-family:var(--font-canela);
+  font-size:clamp(1.75rem,5vw,3rem);
+  font-weight:400;
+  color:var(--fg);
+  line-height:1.15;
+  letter-spacing:-.01em;
+}
+.cta-banner p{
+  font-family:var(--font-ui);
+  font-size:.875rem;
+  color:var(--ink-2);
+  margin-top:.75rem;
+}
+.cta-banner .contact-links{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:.75rem;
+  margin-top:1.5rem;
+}
+.cta-banner .contact-links a{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:var(--font-ui);
+  font-size:.875rem;font-weight:500;
+  color:var(--fg);
+  background:var(--card-bg);
+  text-decoration:none;
+  padding:.6rem 1.25rem;
+  border-radius:9999px;
+  border:1px solid var(--border-color);
+  transition:all .15s;
+}
+.cta-banner .contact-links a:hover{
+  background:rgba(255,255,255,.08);
+  border-color:var(--ink-2);
+}
+
+/* ═══════ FOOTER ═══════ */
+footer{
+  padding:3rem 1.5rem;
+  border-top:1px solid var(--border-color);
+  display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;
+  font-family:var(--font-ui);
+  font-size:.75rem;
+  color:var(--ink-3);
+}
+footer nav{display:flex;gap:1.5rem}
+footer nav a{color:var(--ink-3);text-decoration:none;transition:color .15s}
+footer nav a:hover{color:var(--fg)}
+
+/* ═══════ RESPONSIVE ═══════ */
+@media(max-width:768px){
+  header{padding:0 1rem}
+  header nav a{font-size:.7rem;padding:.25rem .6rem}
+  .hero-headline{margin:0 1rem}
+  .hero-headline em{font-size:clamp(2rem,10vw,3.5rem)}
+  section{padding:3.5rem 1rem 4rem}
+  .project-row{gap:1rem;padding:1.25rem 0}
+  .project-row .num{min-width:1.5rem;font-size:.65rem}
+  .about-grid{grid-template-columns:1fr}
+  .steps-grid{gap:2rem}
+  footer{flex-direction:column;text-align:center;gap:1rem}
+  footer nav{flex-wrap:wrap;justify-content:center;gap:.75rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <a class="logo" href="#">Tanmay Poddar</a>
+  <nav>
+    <a href="games.html">Games</a>
+    <a href="#projects">Projects</a>
+    <a href="#about">About</a>
+    <a href="#contact" class="cta-link">Contact</a>
+  </nav>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <p class="hero-overline">Engineering Portfolio</p>
+  <h1 class="hero-headline">
+    Do I have the skills to build your next system?
+    <em>Find out in 60&nbsp;seconds.</em>
+  </h1>
+  <p class="hero-subheading">Second-year Mechanical Engineering at McMaster. Aerospace &amp; applied physics. CAD, Python, machining.</p>
+  <a class="hero-cta" href="#projects">View My Work</a>
+  <p class="hero-footnote">Projects ↓</p>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section id="projects">
+  <div class="section-inner">
+    <p class="section-label">Projects</p>
+    <h2 class="section-heading">What I've built.</h2>
+
+    <div style="margin-top:2.5rem">
+
+      <a class="project-row" href="https://tp-96.github.io/robot-arm.html">
+        <span class="num">01</span>
+        <div class="content">
+          <p class="tag">First Year Engineering Design · Oct – Dec 2025</p>
+          <h3>Robot Arm End-Effector</h3>
+          <p class="desc">Universal end-effector for a Q-Arm robotic system. Led a team as project manager — CAD design, prototyping, 3D printing, and a full Python codebase for automated item retrieval.</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a class="project-row" href="#">
+        <span class="num">02</span>
+        <div class="content">
+          <p class="tag">High School Shop · Grade 12</p>
+          <h3>Machining &amp; Woodworking</h3>
+          <p class="desc">Semester-long projects: a precision aluminum mallet on a manual lathe, and a maple finger lap joint box using dado stack blades — learning measurement, tolerancing, and machine error firsthand.</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a class="project-row" href="#">
+        <span class="num">03</span>
+        <div class="content">
+          <p class="tag">First Year Engineering Design · Jan – Apr 2026</p>
+          <h3>Mechanical Ball Launcher</h3>
+          <p class="desc">Designed and built a ball launcher for a client with specific mobility restrictions. Client-facing design process, iterative prototyping, CAD, and 3D printing.</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a class="project-row" href="https://tp-96.github.io/cx3/cad.html">
+        <span class="num">04</span>
+        <div class="content">
+          <p class="tag">Side Project · 2026</p>
+          <h3>CX‑3 CAD — Browser Modeler</h3>
+          <p class="desc">A parametric 3D CAD modeler in the browser. Three.js-based, inspired by SolidWorks. Sketch on planes, extrude boss/cut, feature tree, STL export.</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a class="project-row" href="https://tp-96.github.io/cx3/atc.html">
+        <span class="num">05</span>
+        <div class="content">
+          <p class="tag">Side Project · 2026</p>
+          <h3>ATC Simulator</h3>
+          <p class="desc">Air traffic control game in the browser. Radar display, vectoring, holds, emergency handling, combo scoring, and level progression.</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS / SKILLS ═══ -->
+<section>
+  <div class="section-inner">
+    <p class="section-label">How I Work</p>
+    <h2 class="section-heading">Three principles. No shortcuts.</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <p class="step-num">01</p>
+        <h3>Understand the problem first</h3>
+        <p>Every project starts with the user's need — not the technology. Whether it's a client with mobility restrictions or a team building a robotic arm, the requirements define the solution.</p>
+      </div>
+      <div class="step-card">
+        <p class="step-num">02</p>
+        <h3>Design, prototype, iterate</h3>
+        <p>CAD models go through revision. Parts get remade. Code gets rewritten. Each cycle moves the design closer to something that works in the real world.</p>
+      </div>
+      <div class="step-card">
+        <p class="step-num">03</p>
+        <h3>Simple is better</h3>
+        <p>The simplest solution is often the best one — a principle reinforced through every prototype iteration and project setback I've learned from.</p>
+      </div>
+    </div>
+
+    <div class="note-block" style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border-color)">
+      <blockquote>
+        "I built this portfolio to answer one question quickly and honestly: can I build what you need? The answer is in the work."
+      </blockquote>
+      <div class="attribution">
+        Tanmay Poddar
+        <small>Mechanical Engineering · McMaster University</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="section-inner">
+    <p class="section-label">About</p>
+    <h2 class="section-heading">Mechanical engineering with a focus on aerospace.</h2>
+    <div class="about-grid">
+      <div>
+        <p>I'm a mechanical engineering student based in the Greater Toronto Area, passionate about aerospace systems and applied physics. My goal is to contribute meaningfully to the future of airline transportation.</p>
+        <p>My work spans physical fabrication — machining metal on a lathe, building wooden joints — to software and robotics, where I've led teams building automated systems with Python and CAD-designed hardware.</p>
+        <p style="margin-top:1rem"><a href="mailto:tanmay@poddar.net" style="color:var(--ink-2);font-size:.8125rem;text-decoration:none;border-bottom:1px solid var(--border-color);padding-bottom:.1rem">tanmay@poddar.net ↗</a></p>
+      </div>
+      <div class="details">
+        <div class="detail-row"><span class="lbl">Location</span><span class="val">Greater Toronto Area</span></div>
+        <div class="detail-row"><span class="lbl">Field</span><span class="val">Engineering — Aerospace</span></div>
+        <div class="detail-row"><span class="lbl">Skills</span><span class="val">CAD, Python, Machining, 3D Printing</span></div>
+        <div class="detail-row"><span class="lbl">Interest</span><span class="val">Aerospace, Aviation &amp; Applied Physics</span></div>
+        <div class="detail-row"><span class="lbl">Education</span><span class="val">McMaster University · 2nd Year</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="cta-banner" id="contact">
+  <h2>Ready to build something<em style="font-style:normal;color:var(--gold)"> together?</em></h2>
+  <p>It takes 60 seconds to reach out. No obligation.</p>
+  <div class="contact-links">
+    <a href="mailto:tanmay@poddar.net">✉ tanmay@poddar.net ↗</a>
+    <a href="https://github.com/TP-96">⌂ GitHub ↗</a>
+    <a href="https://linkedin.com/in/tanmay-poddar">⊞ LinkedIn ↗</a>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <span>2026 Tanmay Poddar · Toronto, Canada</span>
+  <nav>
+    <a href="games.html">Games</a>
+    <a href="#projects">Projects</a>
+    <a href="#about">About</a>
+    <a href="mailto:tanmay@poddar.net">Contact</a>
+  </nav>
+</footer>
+
+</body>
+</html>
