@@ -804,11 +804,15 @@ footer nav a:hover{color:var(--orange)}
           var slowed = gear.baseDuration * (1 + ease * 5);
           gear.g.style.animationDuration = slowed + 's';
 
-          // Fading out: opacity goes from base → near-zero
+          // Fading out + thinning out
           var paths = gear.g.querySelectorAll('path, circle, line');
           for (var i = 0; i < paths.length; i++) {
             var baseOp = parseFloat(paths[i].getAttribute('data-base-opacity'));
             paths[i].setAttribute('opacity', baseOp * (1 - ease));
+
+            // Thick at top, hairline at bottom
+            var baseSw = parseFloat(paths[i].getAttribute('data-base-stroke'));
+            paths[i].setAttribute('stroke-width', baseSw * (0.2 + 0.8 * (1 - ease)));
           }
 
           // Parallax lift: gears drift upward subtly
@@ -821,12 +825,14 @@ footer nav a:hover{color:var(--orange)}
     }
   });
 
-  // Store base opacities on elements for scroll fading
+  // Store base opacities and stroke widths on elements for scroll fading
   gears.forEach(function(gear) {
     var paths = gear.g.querySelectorAll('path, circle, line');
     for (var i = 0; i < paths.length; i++) {
       var op = parseFloat(paths[i].getAttribute('opacity')) || 0.06;
       paths[i].setAttribute('data-base-opacity', op);
+      var sw = parseFloat(paths[i].getAttribute('stroke-width')) || 1;
+      paths[i].setAttribute('data-base-stroke', sw);
     }
   });
 
