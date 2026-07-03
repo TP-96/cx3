@@ -451,6 +451,19 @@ footer nav a:hover{color:var(--orange)}
   footer{flex-direction:column;text-align:center;gap:1rem}
   footer nav{flex-wrap:wrap;justify-content:center;gap:.75rem}
 }
+
+/* ═══════ SCROLL REVEAL ═══════ */
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.08s}
+.reveal-d2{transition-delay:.16s}
+.reveal-d3{transition-delay:.24s}
+.reveal-d4{transition-delay:.32s}
+.reveal-d5{transition-delay:.4s}
 </style>
 </head>
 <body>
@@ -472,24 +485,24 @@ footer nav a:hover{color:var(--orange)}
 <!-- ═══ HERO ═══ -->
 <section class="hero">
   <p class="hero-overline">Engineering Portfolio</p>
-  <h1 class="hero-headline">
+  <h1 class="hero-headline reveal reveal-d1">
     Do I have the skills to build your next system?
     <em>Find out in 60&nbsp;seconds.</em>
   </h1>
-  <p class="hero-subheading">Second-year Mechanical Engineering at McMaster. Aerospace &amp; applied physics. CAD, Python, machining.</p>
-  <a class="hero-cta" href="#projects">View My Work <span style="font-size:1.1rem;display:inline-block;transition:transform .2s">→</span></a>
+  <p class="hero-subheading reveal reveal-d2">Second-year Mechanical Engineering at McMaster. Aerospace &amp; applied physics. CAD, Python, machining.</p>
+  <a class="hero-cta reveal reveal-d3" href="#projects">View My Work <span style="font-size:1.1rem;display:inline-block;transition:transform .2s">→</span></a>
   <p class="hero-footnote">Projects ↓</p>
 </section>
 
 <!-- ═══ PROJECTS ═══ -->
 <section id="projects">
   <div class="section-inner">
-    <p class="section-label">Projects</p>
-    <h2 class="section-heading">What I've built.</h2>
+    <p class="section-label reveal">Projects</p>
+    <h2 class="section-heading reveal reveal-d1">What I've built.</h2>
 
     <div style="margin-top:2.5rem">
 
-      <a class="project-row" href="https://tp-96.github.io/robot-arm.html">
+      <a class="project-row reveal reveal-d1" href="https://tp-96.github.io/robot-arm.html">
         <span class="num">01</span>
         <div class="content">
           <p class="tag">First Year Engineering Design · Oct – Dec 2025</p>
@@ -499,7 +512,7 @@ footer nav a:hover{color:var(--orange)}
         <span class="arrow">↗</span>
       </a>
 
-      <a class="project-row" href="#">
+      <a class="project-row reveal reveal-d2" href="#">
         <span class="num">02</span>
         <div class="content">
           <p class="tag">High School Shop · Grade 12</p>
@@ -509,7 +522,7 @@ footer nav a:hover{color:var(--orange)}
         <span class="arrow">↗</span>
       </a>
 
-      <a class="project-row" href="#">
+      <a class="project-row reveal reveal-d3" href="#">
         <span class="num">03</span>
         <div class="content">
           <p class="tag">First Year Engineering Design · Jan – Apr 2026</p>
@@ -519,7 +532,7 @@ footer nav a:hover{color:var(--orange)}
         <span class="arrow">↗</span>
       </a>
 
-      <a class="project-row" href="https://tp-96.github.io/cx3/cad.html">
+      <a class="project-row reveal reveal-d4" href="https://tp-96.github.io/cx3/cad.html">
         <span class="num">04</span>
         <div class="content">
           <p class="tag">Side Project · 2026</p>
@@ -529,7 +542,7 @@ footer nav a:hover{color:var(--orange)}
         <span class="arrow">↗</span>
       </a>
 
-      <a class="project-row" href="https://tp-96.github.io/cx3/atc.html">
+      <a class="project-row reveal reveal-d5" href="https://tp-96.github.io/cx3/atc.html">
         <span class="num">05</span>
         <div class="content">
           <p class="tag">Side Project · 2026</p>
@@ -546,27 +559,27 @@ footer nav a:hover{color:var(--orange)}
 <!-- ═══ HOW IT WORKS / SKILLS ═══ -->
 <section>
   <div class="section-inner">
-    <p class="section-label">How I Work</p>
-    <h2 class="section-heading">Three principles. No shortcuts.</h2>
+    <p class="section-label reveal">How I Work</p>
+    <h2 class="section-heading reveal reveal-d1">Three principles. No shortcuts.</h2>
     <div class="steps-grid">
-      <div class="step-card">
+      <div class="step-card reveal reveal-d1">
         <p class="step-num">01</p>
         <h3>Understand the problem first</h3>
         <p>Every project starts with the user's need — not the technology. Whether it's a client with mobility restrictions or a team building a robotic arm, the requirements define the solution.</p>
       </div>
-      <div class="step-card">
+      <div class="step-card reveal reveal-d2">
         <p class="step-num">02</p>
         <h3>Design, prototype, iterate</h3>
         <p>CAD models go through revision. Parts get remade. Code gets rewritten. Each cycle moves the design closer to something that works in the real world.</p>
       </div>
-      <div class="step-card">
+      <div class="step-card reveal reveal-d3">
         <p class="step-num">03</p>
         <h3>Simple is better</h3>
         <p>The simplest solution is often the best one — a principle reinforced through every prototype iteration and project setback I've learned from.</p>
       </div>
     </div>
 
-    <div class="note-block" style="margin-top:3rem;padding-top:2.5rem;border-top:1px solid var(--border-color)">
+    <div class="note-block reveal" style="margin-top:3rem;padding-top:2.5rem;border-top:1px solid var(--border-color)">
       <blockquote>
         "I built this portfolio to answer one question quickly and honestly: can I build what you need? The answer is in the work."
       </blockquote>
@@ -581,15 +594,15 @@ footer nav a:hover{color:var(--orange)}
 <!-- ═══ ABOUT ═══ -->
 <section id="about">
   <div class="section-inner">
-    <p class="section-label">About</p>
-    <h2 class="section-heading">Mechanical engineering with a focus on aerospace.</h2>
+    <p class="section-label reveal">About</p>
+    <h2 class="section-heading reveal reveal-d1">Mechanical engineering with a focus on aerospace.</h2>
     <div class="about-grid">
-      <div>
+      <div class="reveal reveal-d1">
         <p>I'm a mechanical engineering student based in the Greater Toronto Area, passionate about aerospace systems and applied physics. My goal is to contribute meaningfully to the future of airline transportation.</p>
         <p>My work spans physical fabrication — machining metal on a lathe, building wooden joints — to software and robotics, where I've led teams building automated systems with Python and CAD-designed hardware.</p>
         <p style="margin-top:1rem"><a href="mailto:tanmay@poddar.net" style="color:var(--orange);font-size:.8125rem;text-decoration:none;border-bottom:1px solid rgba(232,93,4,.15);padding-bottom:.1rem;transition:border-color .15s" onmouseover="this.style.borderBottomColor='rgba(232,93,4,.4)'" onmouseout="this.style.borderBottomColor='rgba(232,93,4,.15)'">tanmay@poddar.net ↗</a></p>
       </div>
-      <div class="details">
+      <div class="details reveal reveal-d2">
         <div class="detail-row"><span class="lbl">Location</span><span class="val">Greater Toronto Area</span></div>
         <div class="detail-row"><span class="lbl">Field</span><span class="val">Engineering — Aerospace</span></div>
         <div class="detail-row"><span class="lbl">Skills</span><span class="val">CAD, Python, Machining, 3D Printing</span></div>
@@ -601,7 +614,7 @@ footer nav a:hover{color:var(--orange)}
 </section>
 
 <!-- ═══ CONTACT ═══ -->
-<section class="cta-banner" id="contact">
+<section class="cta-banner reveal" id="contact">
   <h2>Ready to build something&thinsp;<em style="font-style:normal;color:var(--orange)">together?</em></h2>
   <p>It takes 60 seconds to reach out. No obligation.</p>
   <div class="contact-links">
@@ -731,33 +744,47 @@ footer nav a:hover{color:var(--orange)}
   // ── Define gears ──
   // Each gear: innerR, outerR, teeth, holeR, options
   createGear(50, 60, 20, 10, {
-    x: 78, y: 2, opacity: 0.035, duration: 50, dir: 'normal',
-    strokeWidth: 1.2, innerRing: 35, spokes: 8
+    x: 78, y: 2, opacity: 0.12, duration: 50, dir: 'normal',
+    strokeWidth: 1.5, innerRing: 35, spokes: 8
   });
 
   createGear(32, 40, 14, 7, {
-    x: 6, y: -4, opacity: 0.03, duration: 35, dir: 'reverse',
-    strokeWidth: 1, innerRing: 22, spokes: 6
+    x: 6, y: -4, opacity: 0.11, duration: 35, dir: 'reverse',
+    strokeWidth: 1.3, innerRing: 22, spokes: 6
   });
 
   createGear(22, 28, 12, 5, {
-    x: 55, y: 0, opacity: 0.04, duration: 22, dir: 'normal',
-    strokeWidth: 0.9, innerRing: 15, spokes: 4
+    x: 55, y: 0, opacity: 0.12, duration: 22, dir: 'normal',
+    strokeWidth: 1.2, innerRing: 15, spokes: 4
   });
 
   createGear(14, 19, 8, 3.5, {
-    x: 22, y: 14, opacity: 0.035, duration: 14, dir: 'reverse',
-    strokeWidth: 0.8, innerRing: 10, spokes: 3
+    x: 22, y: 14, opacity: 0.12, duration: 14, dir: 'reverse',
+    strokeWidth: 1.1, innerRing: 10, spokes: 3
   });
 
   createGear(9, 12, 6, 2, {
-    x: 48, y: 28, opacity: 0.03, duration: 9, dir: 'normal',
-    strokeWidth: 0.7, innerRing: 6, spokes: 3
+    x: 48, y: 28, opacity: 0.1, duration: 9, dir: 'normal',
+    strokeWidth: 1, innerRing: 6, spokes: 3
   });
 
   createGear(6, 8.5, 5, 1.5, {
-    x: 90, y: 18, opacity: 0.025, duration: 6, dir: 'reverse',
-    strokeWidth: 0.6, spokes: 2
+    x: 90, y: 18, opacity: 0.09, duration: 6, dir: 'reverse',
+    strokeWidth: 0.9, spokes: 2
+  });
+})();
+
+/* ═══════ SCROLL REVEAL OBSERVER ═══════ */
+(function(){
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(function(el) {
+    observer.observe(el);
   });
 })();
 </script>
