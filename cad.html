@@ -2,2481 +2,537 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CX‑3 CAD — Parametric 3D Modeler</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanmay Poddar — CAD Gallery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400,500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════════════ RESET */
+/* ═══════════════ RESET ═══════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:#121212}
-body{font-family:'Inter',sans-serif;color:#e0e0e0;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none}
-:root{
-  --bg:        #121212;
-  --bg-panel:  #1a1a1a;
-  --bg-card:   #1e1e1e;
-  --bg-hover:  #2a2a2a;
-  --bg-active: #2d2d2d;
-  --border:    #2a2a2a;
-  --border-lt: #333;
-  --text:      #e0e0e0;
-  --text-dim:  #888;
-  --text-deep: #555;
-  --accent:    #4fc3f7;
-  --accent-dim:#1a4a60;
-  --green:     #66bb6a;
-  --orange:    #ffa726;
-  --red:       #ef5350;
-  --gold:      #ffd54f;
-  --font-ui:   'Inter',sans-serif;
-  --font-mono: 'JetBrains Mono',monospace;
-  --font-head:'Bebas Neue',sans-serif;
-  --rad:       6px;
-  --shadow:    0 4px 24px rgba(0,0,0,0.5);
-}
-/* ═══════════════════════════════════════════════════════ LOADING */
-.loading-screen{
-  position:fixed;inset:0;z-index:9999;
-  background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity .5s;
-}
-.loading-screen.fade-out{opacity:0;pointer-events:none}
-.loading-screen h1{font-family:var(--font-head);font-size:3rem;color:var(--accent);letter-spacing:.15em;margin-bottom:1rem}
-.loading-screen p{color:var(--text-dim);font-size:.85rem}
-.bar{width:300px;height:3px;background:var(--bg-hover);border-radius:2px;overflow:hidden;margin-top:1.5rem}
-.bar::after{content:'';display:block;width:300px;height:100%;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:sweep 1.5s ease-in-out infinite}
-@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-
-/* ═══════════════════════════════════════════════════════════ NAV */
-.nav-bar{
-  display:flex;align-items:center;gap:.75rem;
-  padding:.5rem 1rem;
-  background:var(--bg-panel);
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-  z-index:100;
-}
-.nav-brand{font-family:var(--font-head);font-size:1.3rem;color:var(--accent);letter-spacing:.1em}
-.nav-brand small{font-family:var(--font-ui);font-size:.55rem;color:var(--text-deep);letter-spacing:0;margin-left:.3rem}
-.nav-sep{width:1px;height:1.2rem;background:var(--border);margin:0 .25rem}
-.nav-btn{
-  font-family:var(--font-ui);font-size:.72rem;
-  padding:.3rem .6rem;
-  background:transparent;border:1px solid var(--border);
-  color:var(--text-dim);border-radius:4px;
-  cursor:pointer;transition:all .12s;
-}
-.nav-btn:hover{color:var(--text);border-color:var(--text-deep);background:var(--bg-hover)}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
-.nav-status{font-size:.65rem;color:var(--text-deep)}
-
-/* ═════════════════════════════════════════════════════ MENU BAR */
-.menu-bar{
-  display:flex;align-items:stretch;gap:0;
-  background:var(--bg-card);
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-}
-.menu-item{
-  position:relative;
-  padding:.35rem .85rem;
-  font-size:.75rem;font-weight:500;
-  color:var(--text-dim);
-  cursor:pointer;
-  transition:all .08s;
-}
-.menu-item:hover,.menu-item.open{background:var(--bg-hover);color:var(--text)}
-.menu-dropdown{
-  position:absolute;top:100%;left:0;
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:0 0 var(--rad) var(--rad);
-  min-width:200px;
-  box-shadow:var(--shadow);
-  display:none;
-  z-index:200;
-}
-.menu-item.open .menu-dropdown{display:block}
-.menu-dropdown-item{
-  padding:.45rem .85rem;
-  font-size:.72rem;font-weight:400;
-  color:var(--text-dim);
-  cursor:pointer;
-  transition:all .06s;
-  display:flex;align-items:center;gap:.5rem;
-}
-.menu-dropdown-item:hover{background:var(--bg-hover);color:var(--text)}
-.menu-dropdown-item .shortcut{margin-left:auto;color:var(--text-deep);font-size:.62rem}
-.menu-dropdown-sep{height:1px;background:var(--border);margin:.2rem .5rem}
-
-/* ══════════════════════════════════════════════════ COMMAND BAR */
-.command-bar{
-  display:flex;align-items:center;gap:.35rem;
-  padding:.35rem .75rem;
-  background:var(--bg-panel);
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-  flex-wrap:wrap;
-}
-.cmd-group{display:flex;align-items:center;gap:.25rem}
-.cmd-sep{width:1px;height:1.3rem;background:var(--border);margin:0 .25rem}
-.cmd-btn{
-  font-family:var(--font-ui);font-size:.7rem;font-weight:500;
-  padding:.3rem .65rem;
-  background:transparent;
-  border:1px solid transparent;
-  color:var(--text-dim);
-  border-radius:4px;
-  cursor:pointer;
-  transition:all .08s;
-  white-space:nowrap;
-  display:flex;align-items:center;gap:.3rem;
-}
-.cmd-btn:hover{background:var(--bg-hover);color:var(--text)}
-.cmd-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
-.cmd-btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
-.cmd-btn.primary:hover{background:#1a6080;border-color:#6dd0fa;color:#6dd0fa}
-.cmd-btn.danger{color:var(--red)}
-.cmd-btn.danger:hover{background:rgba(239,83,80,.15);border-color:var(--red)}
-.cmd-btn:disabled{opacity:.35;cursor:default;pointer-events:none}
-
-/* ═══════════════════════════════════════════════════ LAYOUT */
-.layout{
-  flex:1;
-  display:flex;
-  overflow:hidden;
-}
-
-/* ── LEFT PANEL (Feature Tree) ── */
-.left-panel{
-  width:260px;
-  min-width:220px;
-  background:var(--bg-panel);
-  border-right:1px solid var(--border);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-.panel-header{
-  padding:.5rem .75rem;
-  font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
-  color:var(--text-deep);
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-  display:flex;align-items:center;gap:.4rem;
-}
-.panel-body{
-  flex:1;overflow-y:auto;
-  padding:.25rem 0;
-}
-.panel-body::-webkit-scrollbar{width:4px}
-.panel-body::-webkit-scrollbar-track{background:transparent}
-.panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-/* Feature tree items */
-.tree-root{padding:.3rem .5rem;font-size:.78rem;font-weight:600;color:var(--accent);cursor:pointer}
-.tree-root:hover{background:var(--bg-hover)}
-.tree-children{margin-left:.5rem}
-.tree-item{
-  display:flex;align-items:center;gap:.35rem;
-  padding:.25rem .5rem .25rem 1.2rem;
-  font-size:.72rem;
-  color:var(--text-dim);
-  cursor:pointer;
-  border-left:2px solid transparent;
-  transition:all .06s;
-}
-.tree-item:hover{background:var(--bg-hover);color:var(--text)}
-.tree-item.selected{background:var(--accent-dim);border-left-color:var(--accent);color:var(--accent)}
-.tree-item .icon{width:16px;text-align:center;flex-shrink:0;font-size:.7rem}
-.tree-item .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tree-item .badge{
-  margin-left:auto;
-  font-size:.55rem;font-weight:600;
-  padding:.08rem .35rem;
-  border-radius:3px;
-  background:var(--bg-hover);
-  color:var(--text-deep);
-}
-.tree-placeholder{
-  padding:1rem .75rem;
-  font-size:.7rem;color:var(--text-deep);
-  text-align:center;
+html{scroll-behavior:smooth}
+body{
+  background:#f7f4f0;
+  color:#1c1a18;
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:18px;
   line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:rgba(244,93,0,.25);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#f0ece5}
+::-webkit-scrollbar-thumb{background:#c5c0b8;border-radius:3px}
+
+/* ═══════════════ NAV ═══════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;
+  padding:1rem 2.5rem;
+  background:rgba(247,244,240,.92);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
+.nav-logo{
+  font-size:1rem;font-weight:600;
+  color:#1c1a18;text-decoration:none;
+  letter-spacing:-.01em;
+  transition:color .2s;
+}
+.nav-logo:hover{color:#f45d00}
+.nav-links{
+  margin-left:auto;
+  display:flex;list-style:none;gap:.25rem;
+}
+.nav-links a{
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:.78rem;font-weight:400;
+  color:rgba(28,26,24,.4);
+  text-decoration:none;
+  padding:.35rem .8rem;
+  border-radius:9999px;
+  transition:all .2s;
+}
+.nav-links a:hover{
+  color:#1c1a18;
+  background:rgba(0,0,0,.04);
 }
 
-/* ── CENTER (3D Viewport) ── */
-.center{
-  flex:1;
+/* ═══════════════ HERO ═══════════════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:7rem 2.5rem 5rem;
+  position:relative;
+}
+.hero-label{
+  font-size:.72rem;font-weight:400;
+  color:rgba(28,26,24,.35);
+  text-transform:uppercase;letter-spacing:.25em;
+  margin-bottom:2rem;
+  font-family:'JetBrains Mono',monospace;
+}
+.hero h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.2rem,6vw,4rem);
+  line-height:1.05;
+  color:#1c1a18;
+  margin-bottom:.5rem;
+  max-width:800px;
+}
+.hero h1 .big{
+  display:block;
+  font-size:clamp(3rem,10vw,7rem);
+  line-height:.92;
+  color:#f45d00;
+  margin-top:.15rem;
+}
+.hero-desc {
+  font-size:1.05rem;
+  color:rgba(28,26,24,.5);
+  max-width:580px;
+  line-height:1.7;
+  margin-bottom:2.5rem;
+}
+.hero-meta {
+  display:flex;flex-wrap:wrap;gap:1.5rem 2rem;
+  font-size:.85rem;
+  color:rgba(28,26,24,.4);
+  font-family:'JetBrains Mono',monospace;
+}
+.hero-meta a {
+  color:rgba(28,26,24,.4);
+  text-decoration:none;
+  transition:color .2s;
+}
+.hero-meta a:hover {color:#f45d00}
+
+.hero-glow {
+  position:absolute;
+  top:-20%;right:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(244,93,0,.05),transparent 70%);
+  pointer-events:none;
+  z-index:-1;
+}
+.hero-glow-2 {
+  position:absolute;
+  bottom:-10%;left:-5%;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(244,93,0,.03),transparent 70%);
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* ═══════════════ SECTIONS ═══════════════ */
+.section {
+  padding:5rem 2.5rem 6rem;
+  max-width:1100px;
+  margin:0 auto;
+}
+.section-header {
+  display:flex;align-items:baseline;gap:1rem;
+  margin-bottom:3rem;
+}
+.section-number {
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;font-weight:500;
+  color:#f45d00;
+  opacity:.5;
+}
+.section-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:3.5rem;
+  line-height:1;
+  color:#1c1a18;
+  letter-spacing:.01em;
+}
+
+/* ═══════════════ CAD GALLERY ═══════════════ */
+.cad-gallery {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:2rem;
+  margin-top:2rem;
+}
+.cad-card {
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:16px;
+  padding:1.5rem;
+  transition:all .3s;
   position:relative;
   overflow:hidden;
-  background:#0a0a0a;
+  box-shadow:0 1px 3px rgba(0,0,0,.02);
 }
-#cadCanvas{display:block;width:100%;height:100%}
-
-/* ── Viewport overlays ── */
-.vp-overlay{
-  position:absolute;
-  pointer-events:none;
-  z-index:10;
+.cad-card::before {
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:#f45d00;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .4s ease;
 }
-.vp-bottom-left{bottom:.75rem;left:.75rem}
-.vp-bottom-right{bottom:.75rem;right:.75rem}
-.vp-top-left{top:.75rem;left:.75rem}
-.vp-top-right{top:.75rem;right:.75rem}
-
-.coord-display{
-  font-family:var(--font-mono);
-  font-size:.6rem;
-  color:var(--text-deep);
-  background:rgba(0,0,0,.75);
-  padding:.25rem .5rem;
-  border-radius:4px;
+.cad-card:hover::before {transform:scaleX(1)}
+.cad-card:hover {
+  background:#faf8f5;
+  border-color:rgba(244,93,0,.2);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
 }
-.view-cube{
-  pointer-events:auto;
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-}
-.view-cube-row{display:flex;gap:2px}
-.vc-btn{
-  width:24px;height:24px;
-  font-size:.55rem;font-weight:600;
-  background:rgba(30,30,30,.85);
-  border:1px solid var(--border);
-  color:var(--text-dim);
-  border-radius:3px;
-  cursor:pointer;
-  transition:all .08s;
-  display:flex;align-items:center;justify-content:center;
-}
-.vc-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--text-deep)}
-.vc-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
-
-/* ── Sketch grid hint ── */
-.sketch-hint{
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  z-index:15;
-  text-align:center;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .3s;
-}
-.sketch-hint.show{opacity:1}
-.sketch-hint .title{font-size:1.2rem;font-weight:600;color:var(--accent);margin-bottom:.3rem}
-.sketch-hint .sub{font-size:.75rem;color:var(--text-deep)}
-
-/* ── RIGHT PANEL (Properties) ── */
-.right-panel{
-  width:280px;
-  min-width:240px;
-  background:var(--bg-panel);
-  border-left:1px solid var(--border);
+.cad-thumbnail {
+  width:100%;
+  height:180px;
+  background:linear-gradient(135deg, rgba(244,93,0,.1), rgba(28,26,18,.05));
+  border-radius:12px;
+  margin-bottom:1rem;
   display:flex;
-  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
   overflow:hidden;
 }
-.prop-row{
-  display:flex;align-items:center;gap:.5rem;
-  padding:.35rem .7rem;
-  font-size:.72rem;
+.cad-thumbnail::before {
+  content:'';
+  position:absolute;
+  width:60px;height:60px;
+  background:rgba(244,93,0,.2);
+  border-radius:50%;
+  animation:pulse 2s infinite;
 }
-.prop-row .lbl{color:var(--text-deep);min-width:60px;flex-shrink:0}
-.prop-row .val{color:var(--text);font-family:var(--font-mono);font-size:.68rem}
-.prop-row input[type=number]{
-  width:80px;
-  font-family:var(--font-mono);font-size:.68rem;
-  padding:.2rem .35rem;
-  background:var(--bg);
-  border:1px solid var(--border);
-  color:var(--text);
-  border-radius:3px;
-  outline:none;
-  transition:border-color .12s;
+.cad-thumbnail::after {
+  content:'';
+  position:absolute;
+  width:80px;height:80px;
+  background:rgba(244,93,0,.1);
+  border-radius:50%;
+  animation:pulse 2s infinite 0.5s;
 }
-.prop-row input[type=number]:focus{border-color:var(--accent)}
-.prop-row select{
-  font-family:var(--font-ui);font-size:.68rem;
-  padding:.2rem .35rem;
-  background:var(--bg);
-  border:1px solid var(--border);
-  color:var(--text);
-  border-radius:3px;
-  outline:none;
+@keyframes pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 0; }
 }
-.prop-row select:focus{border-color:var(--accent)}
-.prop-btn{
-  font-family:var(--font-ui);font-size:.7rem;
-  padding:.3rem .6rem;
-  background:var(--accent-dim);
-  border:1px solid var(--accent);
-  color:var(--accent);
-  border-radius:4px;
-  cursor:pointer;
-  transition:all .1s;
-  width:100%;text-align:center;
+.cad-icon {
+  position:relative;
+  z-index:1;
+  font-size:2.5rem;
+  color:#f45d00;
+  opacity:.8;
 }
-.prop-btn:hover{background:#1a6080}
-.prop-btn.danger{background:rgba(239,83,68,.12);border-color:var(--red);color:var(--red)}
-.prop-btn.danger:hover{background:rgba(239,83,68,.25)}
-
-/* ═══════════════════════════════════════════════ STATUS BAR */
-.status-bar{
-  display:flex;align-items:center;gap:1rem;
-  padding:.3rem .75rem;
-  background:var(--bg-card);
-  border-top:1px solid var(--border);
-  flex-shrink:0;
-  font-size:.62rem;
-  color:var(--text-deep);
-}
-.status-bar .mode{color:var(--accent);font-weight:600}
-.status-bar .coord{font-family:var(--font-mono);font-size:.58rem}
-
-/* ══════════════════════════════════════════════ MODAL DIALOG */
-.modal-overlay{
-  position:fixed;inset:0;z-index:500;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;justify-content:center;
-  animation:fadeIn .15s;
-}
-.modal-overlay.show{display:flex}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal-box{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--rad);
-  box-shadow:var(--shadow);
-  width:420px;
-  max-width:90vw;
-  max-height:80vh;
-  overflow-y:auto;
-  padding:1.25rem;
-}
-.modal-title{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:.75rem}
-.modal-body{font-size:.78rem;color:var(--text-dim);line-height:1.6}
-.modal-body label{display:block;font-size:.7rem;font-weight:500;color:var(--text-dim);margin:.5rem 0 .2rem}
-.modal-body input[type=number],.modal-body input[type=text]{
-  width:100%;
-  font-family:var(--font-mono);font-size:.78rem;
-  padding:.45rem .55rem;
-  background:var(--bg);
-  border:1px solid var(--border);
-  color:var(--text);
-  border-radius:4px;
-  outline:none;
-}
-.modal-body input:focus{border-color:var(--accent)}
-.modal-body .modal-row{display:flex;gap:.5rem}
-.modal-body .modal-row > *{flex:1}
-.modal-footer{
-  display:flex;gap:.5rem;
-  justify-content:flex-end;
+.cad-info {
   margin-top:1rem;
 }
-.modal-btn{
-  font-family:var(--font-ui);font-size:.75rem;font-weight:500;
-  padding:.45rem 1rem;
-  border-radius:4px;
-  cursor:pointer;
-  transition:all .1s;
-  border:1px solid var(--border);
-  background:transparent;
-  color:var(--text-dim);
+.cad-name {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.5rem;
+  line-height:1.1;
+  margin-bottom:.5rem;
+  color:#1c1a18;
 }
-.modal-btn:hover{background:var(--bg-hover);color:var(--text)}
-.modal-btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
-.modal-btn.primary:hover{background:#1a6080;color:#6dd0fa}
-.modal-btn.danger{background:rgba(239,83,68,.12);border-color:var(--red);color:var(--red)}
+.cad-category {
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;
+  font-weight:500;
+  color:rgba(28,26,24,.3);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:.5rem;
+}
+.cad-stats {
+  display:flex;
+  gap:1rem;
+  font-size:.72rem;
+  color:rgba(28,26,24,.4);
+  font-family:'JetBrains Mono',monospace;
+}
+.cad-stats span {
+  display:flex;
+  align-items:center;
+  gap:.3rem;
+}
+.cad-arrow {
+  position:absolute;bottom:1.5rem;right:1.5rem;
+  font-size:1.2rem;
+  color:rgba(28,26,24,.15);
+  transition:all .3s;
+}
+.cad-card:hover .cad-arrow {
+  transform:translateX(4px) scale(1.1);
+  color:#f45d00;
+}
 
-/* ═══════════════════════════════════════════════ RESPONSIVE */
-@media(max-width:800px){
-  .left-panel{width:200px;min-width:160px}
-  .right-panel{width:220px;min-width:180px}
-  .nav-btn{font-size:.65rem;padding:.25rem .5rem}
-  .cmd-btn{font-size:.65rem;padding:.25rem .5rem}
+/* ═══════════════ FOOTER ═══════════════ */
+footer {
+  text-align:center;
+  padding:2rem 2.5rem 3rem;
+  font-size:.7rem;
+  font-family:'JetBrains Mono',monospace;
+  color:rgba(28,26,24,.2);
+  border-top:1px solid rgba(0,0,0,.04);
 }
-@media(max-width:600px){
-  .left-panel,.right-panel{display:none}
-  .menu-item{padding:.3rem .6rem;font-size:.7rem}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(max-width:768px){
+  nav{padding:.8rem 1.25rem}
+  .nav-links a{font-size:.7rem;padding:.25rem .6rem}
+  .hero{padding:5rem 1.25rem 3rem}
+  .hero h1{font-size:clamp(1.5rem,8vw,2.5rem)}
+  .hero h1 .big{font-size:clamp(2rem,12vw,4rem)}
+  .hero-desc{font-size:.95rem}
+  .section{padding:3rem 1.25rem 4rem}
+  .section-title{font-size:2.5rem}
+  .cad-gallery{gri-template-columns:1fr}
+  .cad-card{padding:1rem}
+  .cad-name{font-size:1.2rem}
+  .cad-thumbnail{height:140px}
+  .cad-icon{font-size:2rem}
+  footer{padding:1.5rem 1.25rem 2rem}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ LOADING SCREEN ═══ -->
-<div class="loading-screen" id="loadingScreen">
-  <h1>◈ CX‑3 CAD</h1>
-  <p>Loading Three.js engine …</p>
-  <div class="bar"></div>
-</div>
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a class="nav-logo" href="portfolio2.html">◈ Tanmay Poddar</a>
+  <ul class="nav-links">
+    <li><a href="games.html">Games</a></li>
+    <li><a href="portfolio2.html#projects">Projects</a></li>
+    <li><a href="portfolio2.html#about">About</a></li>
+    <li><a href="portfolio2.html#contact">Contact</a></li>
+  </ul>
+</nav>
 
-<!-- ═══ NAV BAR ═══ -->
-<div class="nav-bar">
-  <span class="nav-brand">◈ CX‑3 CAD <small>alpha</small></span>
-  <div class="nav-sep"></div>
-  <button class="nav-btn" onclick="onNewPart()">📄 New</button>
-  <button class="nav-btn" onclick="onOpen()">📂 Open</button>
-  <button class="nav-btn" onclick="onSave()">💾 Save</button>
-  <button class="nav-btn" onclick="onExportSTL()">📦 Export STL</button>
-  <div class="nav-right">
-    <span class="nav-status" id="navStatus">Ready</span>
-    <a href="index.html" style="font-size:.7rem;color:var(--text-deep);text-decoration:none">↩ CX-3</a>
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-label">CAD Gallery</div>
+  <h1>
+    3D Models &<span class="big">Design Files</span>
+  </h1>
+  <p class="hero-desc">
+    Collection of CAD designs, STL files, and 3D printed components created for robotics,
+    mechanical systems, and engineering projects. Each model represents hours of design,
+    simulation, and physical testing.
+  </p>
+  <div class="hero-meta">
+    <span>📦 STL Files Available</span>
+    <a href="#gallery">↓ Browse Gallery</a>
   </div>
-</div>
+</section>
 
-<!-- ═══ MENU BAR ═══ -->
-<div class="menu-bar">
-  <div class="menu-item" data-menu="file">
-    File ▾
-    <div class="menu-dropdown">
-      <div class="menu-dropdown-item" onclick="onNewPart()"><span>📄</span> New Part<span class="shortcut">Ctrl+N</span></div>
-      <div class="menu-dropdown-item" onclick="onOpen()"><span>📂</span> Open...<span class="shortcut">Ctrl+O</span></div>
-      <div class="menu-dropdown-item" onclick="onSave()"><span>💾</span> Save<span class="shortcut">Ctrl+S</span></div>
-      <div class="menu-dropdown-item" onclick="onSaveAs()"><span>💾</span> Save As...<span class="shortcut">Ctrl+Shift+S</span></div>
-      <div class="menu-dropdown-sep"></div>
-      <div class="menu-dropdown-item" onclick="onExportSTL()"><span>📦</span> Export STL</div>
-      <div class="menu-dropdown-sep"></div>
-      <div class="menu-dropdown-item" onclick="onImportSTL()"><span>📥</span> Import STL...</div>
-    </div>
+<!-- ═══ CAD GALLERY ═══ -->
+<section class="section" id="gallery">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">Design Files</h2>
   </div>
-  <div class="menu-item" data-menu="sketch">
-    Sketch ▾
-    <div class="menu-dropdown">
-      <div class="menu-dropdown-item" onclick="startNewSketch('XY')"><span>▨</span> Sketch on XY</div>
-      <div class="menu-dropdown-item" onclick="startNewSketch('YZ')"><span>▨</span> Sketch on YZ</div>
-      <div class="menu-dropdown-item" onclick="startNewSketch('XZ')"><span>▨</span> Sketch on XZ</div>
-      <div class="menu-dropdown-sep"></div>
-      <div class="menu-dropdown-item" onclick="finishSketch()"><span>✓</span> Exit Sketch</div>
-      <div class="menu-dropdown-item" onclick="cancelSketch()"><span>✕</span> Discard Sketch</div>
-    </div>
-  </div>
-  <div class="menu-item" data-menu="features">
-    Features ▾
-    <div class="menu-dropdown">
-      <div class="menu-dropdown-item" onclick="onExtrudeBoss()"><span>⊕</span> Extrude Boss</div>
-      <div class="menu-dropdown-item" onclick="onExtrudeCut()"><span>⊖</span> Extrude Cut</div>
-      <div class="menu-dropdown-sep"></div>
-      <div class="menu-dropdown-item" onclick="editSelectedFeature()"><span>✎</span> Edit Feature</div>
-      <div class="menu-dropdown-item" onclick="deleteSelectedFeature()"><span>✕</span> Delete Feature</div>
-    </div>
-  </div>
-  <div class="menu-item" data-menu="view">
-    View ▾
-    <div class="menu-dropdown">
-      <div class="menu-dropdown-item" onclick="setView('front')"><span>▣</span> Front</div>
-      <div class="menu-dropdown-item" onclick="setView('top')"><span>▣</span> Top</div>
-      <div class="menu-dropdown-item" onclick="setView('right')"><span>▣</span> Right</div>
-      <div class="menu-dropdown-sep"></div>
-      <div class="menu-dropdown-item" onclick="setView('iso')"><span>▣</span> Isometric</div>
-      <div class="menu-dropdown-item" onclick="fitAll()"><span>⊞</span> Fit All</div>
-      <div class="menu-dropdown-item" onclick="toggleWireframe()"><span>◇</span> Wireframe Toggle</div>
-    </div>
-  </div>
-  <div class="menu-item" data-menu="help">
-    Help ▾
-    <div class="menu-dropdown">
-      <div class="menu-dropdown-item" onclick="showAbout()"><span>ⓘ</span> About CX‑3 CAD</div>
-      <div class="menu-dropdown-item" onclick="showShortcuts()"><span>⌨</span> Keyboard Shortcuts</div>
-    </div>
-  </div>
-</div>
 
-<!-- ═══ COMMAND BAR ═══ -->
-<div class="command-bar" id="cmdBar">
-  <div class="cmd-group">
-    <button class="cmd-btn" id="btnLine" onclick="setSketchTool('line')">╱ Line</button>
-    <button class="cmd-btn" id="btnRect" onclick="setSketchTool('rect')">▭ Rect</button>
-    <button class="cmd-btn" id="btnCircle" onclick="setSketchTool('circle')">◯ Circle</button>
-    <span class="cmd-sep"></span>
-    <button class="cmd-btn" id="btnSelect" onclick="setSketchTool('select')">⬚ Select</button>
-    <button class="cmd-btn danger" id="btnDelete" onclick="deleteSelectedSketchEntity()">✕ Delete</button>
-  </div>
-  <span class="cmd-sep"></span>
-  <div class="cmd-group">
-    <button class="cmd-btn primary" id="btnExtrude" onclick="onExtrudeBoss()" disabled>⊕ Extrude Boss</button>
-    <button class="cmd-btn" id="btnCut" onclick="onExtrudeCut()" disabled>⊖ Extrude Cut</button>
-  </div>
-  <span class="cmd-sep"></span>
-  <div class="cmd-group">
-    <button class="cmd-btn" onclick="fitAll()">⊞ Fit</button>
-    <button class="cmd-btn" onclick="toggleWireframe()">◇ Wire</button>
-  </div>
-</div>
-
-<!-- ═══ MAIN LAYOUT ═══ -->
-<div class="layout">
-
-  <!-- LEFT PANEL — Feature Tree -->
-  <div class="left-panel">
-    <div class="panel-header">
-      <span>🏗</span> Feature Tree
-    </div>
-    <div class="panel-body" id="featureTree">
-      <div class="tree-placeholder" id="treePlaceholder">
-        No features yet.<br>
-        Start by creating a sketch.
+  <div class="cad-gallery">
+    <!-- Robot Arm End-Effector -->
+    <a class="cad-card" href="#" onclick="return false;">
+      <div class="cad-thumbnail">
+        <div class="cad-icon">🤖</div>
       </div>
-      <div id="treeContainer" style="display:none">
-        <div class="tree-root" id="treeRoot">Part1</div>
-        <div class="tree-children" id="treeChildren"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CENTER — 3D Viewport -->
-  <div class="center" id="viewport">
-    <canvas id="cadCanvas"></canvas>
-
-    <!-- Sketch hint -->
-    <div class="sketch-hint" id="sketchHint">
-      <div class="title">✎ Sketch Mode</div>
-      <div class="sub">Draw a closed profile, then use Extrude</div>
-    </div>
-
-    <!-- View cube -->
-    <div class="vp-overlay vp-top-right">
-      <div class="view-cube">
-        <div class="view-cube-row">
-          <div class="vc-btn" onclick="setView('top')" title="Top">T</div>
-        </div>
-        <div class="view-cube-row">
-          <div class="vc-btn" onclick="setView('front')" title="Front">F</div>
-          <div class="vc-btn" onclick="setView('iso')" title="Iso">I</div>
-          <div class="vc-btn" onclick="setView('right')" title="Right">R</div>
-        </div>
-        <div class="view-cube-row">
-          <div class="vc-btn" onclick="fitAll()" title="Fit">⌂</div>
+      <div class="cad-info">
+        <div class="cad-category">First Year Project · Oct – Dec 2025</div>
+        <h3 class="cad-name">Robot Arm End-Effector</h3>
+        <div class="cad-stats">
+          <span>📦 STL Files: 12</span>
+          <span>📊 Components: 8</span>
         </div>
       </div>
-    </div>
+      <span class="cad-arrow">↗</span>
+    </a>
 
-    <!-- Coords -->
-    <div class="vp-overlay vp-bottom-left">
-      <div class="coord-display" id="coordDisplay">X: 0.00  Y: 0.00  Z: 0.00</div>
-    </div>
-  </div>
-
-  <!-- RIGHT PANEL — Properties -->
-  <div class="right-panel" id="propsPanel">
-    <div class="panel-header"><span>⚙</span> Properties</div>
-    <div class="panel-body" id="propsBody">
-      <div class="tree-placeholder">
-        Select a feature to edit its properties.
+    <!-- High School Projects -->
+    <a class="cad-card" href="#" onclick="return false;">
+      <div class="cad-thumbnail">
+        <div class="cad-icon">🔧</div>
       </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ═══ STATUS BAR ═══ -->
-<div class="status-bar">
-  <span class="mode" id="statusMode">IDLE</span>
-  <span id="statusText">Ready. New part → Sketch → Extrude.</span>
-  <span style="margin-left:auto">CX‑3 CAD α · Parametric Modeler</span>
-</div>
-
-<!-- ═══ EXTRUDE MODAL ═══ -->
-<div class="modal-overlay" id="extrudeModal">
-  <div class="modal-box">
-    <div class="modal-title" id="extrudeTitle">Extrude Boss</div>
-    <div class="modal-body">
-      <label>Depth</label>
-      <div class="modal-row">
-        <input type="number" id="extrudeDepth" value="20" step="1" min="0.1">
-        <select id="extrudeDir">
-          <option value="one">One Side</option>
-          <option value="mid">Mid Plane</option>
-        </select>
+      <div class="cad-info">
+        <div class="cad-category">High School Shop · Grade 12</div>
+        <h3 class="cad-name">High School Projects</h3>
+        <div class="cad-stats">
+          <span>📦 STL Files: 8</span>
+          <span>📊 Components: 5</span>
+        </div>
       </div>
-      <label>Sketch Profile</label>
-      <select id="extrudeSketch">
-        <option value="">— Select a sketch —</option>
-      </select>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-btn" onclick="closeModal('extrudeModal')">Cancel</button>
-      <button class="modal-btn primary" id="extrudeConfirmBtn" onclick="confirmExtrude()">Create</button>
-    </div>
+      <span class="cad-arrow">↗</span>
+    </a>
+
+    <!-- Mechanical Ball Launcher -->
+    <a class="cad-card" href="#" onclick="return false;">
+      <div class="cad-thumbnail">
+        <div class="cad-icon">🎱</div>
+      </div>
+      <div class="cad-info">
+        <div class="cad-category">Design Project 3 · Jan – Apr 2026</div>
+        <h3 class="cad-name">Mechanical Ball Launcher</h3>
+        <div class="cad-stats">
+          <span>📦 STL Files: 15</span>
+          <span>📊 Components: 12</span>
+        </div>
+      </div>
+      <span class="cad-arrow">↗</span>
+    </a>
+
+    <!-- CAD File Viewer -->
+    <a class="cad-card" href="cad.html" target="_blank">
+      <div class="cad-thumbnail">
+        <div class="cad-icon">👁️</div>
+      </div>
+      <div class="cad-info">
+        <div class="cad-category">CAD Viewer Tool</div>
+        <h3 class="cad-name">3D Model Viewer</h3>
+        <div class="cad-stats">
+          <span>🌐 Web-based</span>
+          <span>🔄 STL Support</span>
+        </div>
+      </div>
+      <span class="cad-arrow">↗</span>
+    </a>
   </div>
-</div>
-
-<!-- ═══ ABOUT MODAL ═══ -->
-<div class="modal-overlay" id="aboutModal">
-  <div class="modal-box">
-    <div class="modal-title">About CX‑3 CAD</div>
-    <div class="modal-body">
-      <p><strong>CX‑3 CAD</strong> — a browser-based parametric 3D modeler inspired by SolidWorks.</p>
-      <p style="margin-top:.5rem">Built with Three.js. Supports sketching on planes, extrude boss/cut, and STL export.</p>
-      <p style="margin-top:.5rem;color:var(--text-deep);font-size:.7rem">
-        Keyboard shortcuts:<br>
-        <kbd>Ctrl+N</kbd> New Part · <kbd>Ctrl+S</kbd> Save · <kbd>Ctrl+O</kbd> Open<br>
-        <kbd>L</kbd> Line · <kbd>R</kbd> Rect · <kbd>C</kbd> Circle · <kbd>Esc</kbd> Cancel<br>
-        <kbd>Delete</kbd> Remove · <kbd>F</kbd> Fit All
-      </p>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-btn primary" onclick="closeModal('aboutModal')">OK</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ SHORTCUTS MODAL ═══ -->
-<div class="modal-overlay" id="shortcutsModal">
-  <div class="modal-box">
-    <div class="modal-title">Keyboard Shortcuts</div>
-    <div class="modal-body" style="font-size:.72rem">
-      <table style="width:100%;border-collapse:collapse">
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">Ctrl+N</kbd></td><td>New Part</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">Ctrl+S</kbd></td><td>Save Part</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">Ctrl+O</kbd></td><td>Open Part</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">L</kbd></td><td>Line tool</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">R</kbd></td><td>Rectangle tool</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">C</kbd></td><td>Circle tool</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">Esc</kbd></td><td>Cancel / Deselect</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">Delete</kbd></td><td>Delete selected</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">F</kbd></td><td>Fit all</td></tr>
-        <tr><td style="padding:.3rem .5rem"><kbd style="background:var(--bg);padding:.1rem .35rem;border-radius:2px;font-family:var(--font-mono)">W</kbd></td><td>Toggle wireframe</td></tr>
-      </table>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-btn primary" onclick="closeModal('shortcutsModal')">OK</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- ═══  THREE.JS  ═══ -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
-</script><script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js">
-</script><script>
-/* ═══════════════════════════════════════════════════════════════════
- *  CX‑3 CAD — Browser Parametric 3D Modeler
- *  Inspired by SolidWorks. Single-file Three.js implementation.
- * ═══════════════════════════════════════════════════════════════════ */
-
-"use strict";
-
-/* ─── Check Three.js loaded ─── */
-if (typeof THREE === 'undefined') {
-  document.getElementById('loadingScreen').innerHTML = '<h1>⚠️</h1><p>Three.js failed to load. Check internet connection.</p>';
-  throw new Error('Three.js not loaded');
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  CONSTANTS
- * ═══════════════════════════════════════════════════════════════════ */
-
-const COLORS = {
-  SKETCH_LINE:    0x4fc3f7,
-  SKETCH_LINE_ACTIVE: 0x81d4fa,
-  SKETCH_SELECTED:0xffa726,
-  SKETCH_GRID:    0x2a2a2a,
-  SKETCH_PLANE:   0x1a2a3a,
-  BODY_DEFAULT:   0x78909c,
-  BODY_EDGE:      0x455a64,
-  CUT_VOLUME:     0xef5350,
-  SELECTION_HIGHLIGHT: 0x4fc3f7,
-  AXIS_X:         0xef5350,
-  AXIS_Y:         0x66bb6a,
-  AXIS_Z:         0x42a5f5,
-};
-
-/* ═══════════════════════════════════════════════════════════════════
- *  STATE
- * ═══════════════════════════════════════════════════════════════════ */
-
-let canvas, renderer, scene, camera, controls;
-let isInitialized = false;
-let autoRotateId = null;
-let wireframeMode = false;
-
-// Part state
-let part = {
-  name: 'Part1',
-  sketches: [],   // { id, plane, offset, entities: [{type, pts}], shape: THREE.Shape|null }
-  features: [],   // { id, type, sketchId, depth, direction, mesh: THREE.Mesh|null }
-  nextId: 1,
-};
-
-// Sketch mode state
-let sketchMode = false;
-let activeSketch = null;  // current sketch being drawn
-let activeTool = 'line';  // 'line'|'rect'|'circle'|'select'
-let sketchEntities = [];  // { id, type, pts, selected }
-let sketchTemp = null;    // temp point during drawing
-let sketchNextId = 1;
-let sketchGrid = null;
-let sketchPlaneMesh = null;
-let sketchLines = [];     // THREE.Line objects for rendering
-
-// Selection
-let selectedSketchEntity = null;
-let selectedFeatureId = null;
-
-// Temps for drawing
-let drawStart = null;      // {x,y} in sketch plane coords
-let currentSketchPlane = 'XY';
-let currentSketchOffset = 0;
-
-// Mouse
-let mouse = new THREE.Vector2();
-let raycaster = new THREE.Raycaster();
-let isDragging = false;
-let dragStartMouse = null;
-
-/* ═══════════════════════════════════════════════════════════════════
- *  THREE.JS INIT
- * ═══════════════════════════════════════════════════════════════════ */
-
-function initThree() {
-  canvas = document.getElementById('cadCanvas');
-  const vp = document.getElementById('viewport');
-  const w = vp.clientWidth, h = vp.clientHeight;
-
-  renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    alpha: false,
-    preserveDrawingBuffer: true,
-  });
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x121212);
-
-  camera = new THREE.PerspectiveCamera(40, w/h, 0.1, 1000);
-  camera.position.set(80, 60, 100);
-  camera.lookAt(0, 0, 0);
-
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.target.set(0, 0, 0);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.1;
-  controls.minDistance = 5;
-  controls.maxDistance = 500;
-  controls.update();
-
-  setupSceneLights();
-  setupGroundGrid();
-
-  window.addEventListener('resize', onResize);
-  setupInputHandlers();
-
-  animate();
-
-  isInitialized = true;
-  console.log('[CX3-CAD] Three.js initialized');
-}
-
-function setupSceneLights() {
-  const ambient = new THREE.AmbientLight(0x404060, 0.5);
-  scene.add(ambient);
-  const hemi = new THREE.HemisphereLight(0x6080c0, 0x303050, 0.6);
-  scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffeedd, 1.0);
-  key.position.set(60, 100, 80);
-  key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
-  scene.add(key);
-  const fill = new THREE.DirectionalLight(0x8888ff, 0.3);
-  fill.position.set(-40, 20, -60);
-  scene.add(fill);
-  const rim = new THREE.DirectionalLight(0xffffff, 0.2);
-  rim.position.set(0, -50, 0);
-  scene.add(rim);
-}
-
-function setupGroundGrid() {
-  // Reference grid on the ground plane
-  const grid = new THREE.GridHelper(200, 40, 0x333344, 0x222233);
-  grid.position.y = -0.1;
-  scene.add(grid);
-
-  // Axes
-  const axes = new THREE.AxesHelper(30);
-  scene.add(axes);
-
-  // Axis labels using sprites would be nice but too complex for single-file
-}
-
-function onResize() {
-  if (!renderer) return;
-  const vp = document.getElementById('viewport');
-  const w = vp.clientWidth, h = vp.clientHeight;
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  INPUT HANDLING
- * ═══════════════════════════════════════════════════════════════════ */
-
-function getMousePos(event) {
-  const rect = canvas.getBoundingClientRect();
-  return {
-    x: ((event.clientX - rect.left) / rect.width) * 2 - 1,
-    y: -((event.clientY - rect.top) / rect.height) * 2 + 1,
-  };
-}
-
-function getIntersectOnPlane(event) {
-  const pos = getMousePos(event);
-  mouse.set(pos.x, pos.y);
-  raycaster.setFromCamera(mouse, camera);
-
-  // Intersect with an invisible plane at the sketch offset
-  const planeNormal = getPlaneNormal(currentSketchPlane);
-  const planePoint = getPlaneOffsetPoint(currentSketchPlane, currentSketchOffset);
-  const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(planeNormal, planePoint);
-  const target = new THREE.Vector3();
-  const intersect = raycaster.ray.intersectPlane(plane, target);
-
-  if (intersect) {
-    // Convert 3D point to 2D sketch coords
-    return worldToSketchCoords(intersect);
-  }
-  return null;
-}
-
-function getPlaneNormal(plane) {
-  switch (plane) {
-    case 'XY': return new THREE.Vector3(0, 0, 1);
-    case 'YZ': return new THREE.Vector3(1, 0, 0);
-    case 'XZ': return new THREE.Vector3(0, 1, 0);
-    default: return new THREE.Vector3(0, 0, 1);
-  }
-}
-
-function getPlaneOffsetPoint(plane, offset) {
-  switch (plane) {
-    case 'XY': return new THREE.Vector3(0, 0, offset);
-    case 'YZ': return new THREE.Vector3(offset, 0, 0);
-    case 'XZ': return new THREE.Vector3(0, offset, 0);
-    default: return new THREE.Vector3(0, 0, offset);
-  }
-}
-
-function worldToSketchCoords(point) {
-  switch (currentSketchPlane) {
-    case 'XY': return { x: point.x, y: point.y };
-    case 'YZ': return { x: point.y, y: point.z };
-    case 'XZ': return { x: point.x, y: point.z };
-    default: return { x: point.x, y: point.y };
-  }
-}
-
-function sketchToWorldCoords(sx, sy) {
-  switch (currentSketchPlane) {
-    case 'XY': return new THREE.Vector3(sx, sy, currentSketchOffset);
-    case 'YZ': return new THREE.Vector3(currentSketchOffset, sx, sy);
-    case 'XZ': return new THREE.Vector3(sx, currentSketchOffset, sy);
-    default: return new THREE.Vector3(sx, sy, currentSketchOffset);
-  }
-}
-
-function setupInputHandlers() {
-  // Mouse events
-  canvas.addEventListener('mousedown', onMouseDown);
-  canvas.addEventListener('mousemove', onMouseMove);
-  canvas.addEventListener('mouseup', onMouseUp);
-  canvas.addEventListener('dblclick', onDoubleClick);
-
-  // Keyboard
-  document.addEventListener('keydown', onKeyDown);
-
-  // Prevent context menu on canvas
-  canvas.addEventListener('contextmenu', e => e.preventDefault());
-}
-
-function onMouseDown(event) {
-  if (event.button !== 0) return;
-  isDragging = false;
-  dragStartMouse = { x: event.clientX, y: event.clientY };
-
-  if (sketchMode && activeTool !== 'select') {
-    handleSketchDraw(event);
-  } else if (sketchMode && activeTool === 'select') {
-    handleSketchSelect(event);
-  } else {
-    // In 3D mode, orbit controls handle this
-  }
-}
-
-function onMouseMove(event) {
-  // Track if dragging
-  if (dragStartMouse) {
-    const dx = event.clientX - dragStartMouse.x;
-    const dy = event.clientY - dragStartMouse.y;
-    if (Math.sqrt(dx*dx + dy*dy) > 5) isDragging = true;
-  }
-
-  // Update coordinate display
-  if (sketchMode) {
-    const pt = getIntersectOnPlane(event);
-    if (pt) {
-      document.getElementById('coordDisplay').textContent =
-        `X: ${pt.x.toFixed(2)}  Y: ${pt.y.toFixed(2)}`;
-    }
-    // Update temp line for drawing
-    if (drawStart && activeTool === 'line') {
-      const pt = getIntersectOnPlane(event);
-      if (pt) {
-        sketchTemp = pt;
-        rebuildSketchPreview();
-      }
-    } else if (drawStart && activeTool === 'rect') {
-      const pt = getIntersectOnPlane(event);
-      if (pt) {
-        sketchTemp = pt;
-        rebuildSketchPreview();
-      }
-    } else if (drawStart && activeTool === 'circle') {
-      const pt = getIntersectOnPlane(event);
-      if (pt) {
-        sketchTemp = pt;
-        rebuildSketchPreview();
-      }
-    }
-  }
-}
-
-function onMouseUp(event) {
-  if (event.button !== 0) return;
-  dragStartMouse = null;
-
-  // If we were just clicking (not dragging), the sketch draw already happened on mousedown
-  // Orbit controls will handle 3D navigation
-
-  if (sketchMode && drawStart && activeTool === 'line') {
-    // Line is completed on mouse down, not mouse up
-  }
-}
-
-function onDoubleClick(event) {
-  // In sketch mode, double click finishes a polyline
-  if (sketchMode && activeTool === 'line' && drawStart) {
-    // Commit current line and end drawing
-    drawStart = null;
-    sketchTemp = null;
-    rebuildSketchPreview();
-    setStatus('Line complete. Click to start new line.');
-  }
-}
-
-function onKeyDown(event) {
-  const key = event.key.toLowerCase();
-
-  // Ctrl shortcuts
-  if (event.ctrlKey && key === 's') { event.preventDefault(); onSave(); return; }
-  if (event.ctrlKey && key === 'o') { event.preventDefault(); onOpen(); return; }
-  if (event.ctrlKey && key === 'n') { event.preventDefault(); onNewPart(); return; }
-
-  // Sketch tools
-  if (sketchMode) {
-    if (key === 'l') { setSketchTool('line'); return; }
-    if (key === 'r') { setSketchTool('rect'); return; }
-    if (key === 'c') { setSketchTool('circle'); return; }
-    if (key === 'escape') {
-      if (drawStart) {
-        drawStart = null;
-        sketchTemp = null;
-        rebuildSketchPreview();
-        setStatus('Drawing cancelled.');
-      } else if (sketchMode) {
-        // Exit sketch mode
-        cancelSketch();
-      }
-      return;
-    }
-    if (key === 'delete' || key === 'backspace') {
-      deleteSelectedSketchEntity();
-      return;
-    }
-  }
-
-  // Global shortcuts
-  if (key === 'f' && !event.ctrlKey) { fitAll(); return; }
-  if (key === 'w' && !event.ctrlKey) { toggleWireframe(); return; }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  SKETCH MODE
- * ═══════════════════════════════════════════════════════════════════ */
-
-function startNewSketch(plane) {
-  if (sketchMode) {
-    setStatus('Finish current sketch first.');
-    return;
-  }
-
-  sketchMode = true;
-  currentSketchPlane = plane || 'XY';
-  currentSketchOffset = 0;
-  sketchEntities = [];
-  sketchNextId = 1;
-  drawStart = null;
-  sketchTemp = null;
-  selectedSketchEntity = null;
-  activeTool = 'line';
-
-  // Show sketch hint
-  document.getElementById('sketchHint').classList.add('show');
-
-  // Create sketch plane visual
-  createSketchPlane();
-
-  // Update UI
-  document.getElementById('statusMode').textContent = 'SKETCH';
-  document.getElementById('statusText').textContent =
-    `Drawing on ${plane}. Use Line/Rect/Circle tools.`;
-  updateToolButtons();
-  setStatus('Click to start drawing.');
-
-  // Look at the plane
-  lookAtPlane(plane);
-
-  // Update extrude buttons
-  document.getElementById('btnExtrude').disabled = true;
-  document.getElementById('btnCut').disabled = true;
-}
-
-function finishSketch() {
-  if (!sketchMode) return;
-  if (sketchEntities.length === 0) {
-    setStatus('Sketch is empty. Draw some entities first.');
-    return;
-  }
-
-  // Build THREE.Shape from entities
-  const shape = buildShapeFromEntities();
-  if (!shape) {
-    setStatus('Could not build a closed profile from the sketch. Check connections.');
-    return;
-  }
-
-  // Create sketch record
-  const sketch = {
-    id: part.nextId++,
-    plane: currentSketchPlane,
-    offset: currentSketchOffset,
-    entities: JSON.parse(JSON.stringify(sketchEntities)),
-    shape: shape,
-  };
-  part.sketches.push(sketch);
-
-  // Exit sketch mode
-  exitSketchMode();
-
-  // Add to feature tree
-  rebuildFeatureTree();
-
-  // Enable extrude buttons
-  document.getElementById('btnExtrude').disabled = false;
-  document.getElementById('btnCut').disabled = false;
-
-  setStatus(`Sketch${sketch.id} created. Use Extrude Boss or Extrude Cut to create 3D.`);
-}
-
-function cancelSketch() {
-  if (!sketchMode) return;
-  exitSketchMode();
-  setStatus('Sketch discarded.');
-}
-
-function exitSketchMode() {
-  sketchMode = false;
-  activeSketch = null;
-  drawStart = null;
-  sketchTemp = null;
-  selectedSketchEntity = null;
-  sketchEntities = [];
-
-  // Remove sketch plane visuals
-  removeSketchPlane();
-
-  // Hide hint
-  document.getElementById('sketchHint').classList.remove('show');
-
-  // Update UI
-  document.getElementById('statusMode').textContent = 'IDLE';
-  updateToolButtons();
-  document.getElementById('btnExtrude').disabled = !hasSketches();
-  document.getElementById('btnCut').disabled = !hasSketches();
-
-  updateCoordDisplay(null);
-}
-
-function hasSketches() {
-  return part.sketches.length > 0;
-}
-
-function createSketchPlane() {
-  removeSketchPlane();
-
-  const size = 50;
-  const divisions = 20;
-
-  // Subdued grid for the sketch plane
-  const gridHelper = new THREE.GridHelper(size, divisions, 0x4fc3f7, 0x1a4a60);
-  gridHelper.material.transparent = true;
-  gridHelper.material.opacity = 0.3;
-
-  // Position grid on the sketch plane
-  const pos = getPlaneOffsetPoint(currentSketchPlane, currentSketchOffset);
-  gridHelper.position.copy(pos);
-
-  // Rotate grid to match plane
-  switch (currentSketchPlane) {
-    case 'XY': gridHelper.rotation.x = 0; break;
-    case 'YZ': gridHelper.rotation.z = Math.PI/2; break;
-    case 'XZ': gridHelper.rotation.x = Math.PI/2; break;
-  }
-
-  scene.add(gridHelper);
-  sketchGrid = gridHelper;
-
-  // Semi-transparent plane
-  const planeGeo = new THREE.PlaneGeometry(size, size);
-  const planeMat = new THREE.MeshBasicMaterial({
-    color: 0x1a2a3a,
-    transparent: true,
-    opacity: 0.15,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-  });
-  const planeMesh = new THREE.Mesh(planeGeo, planeMat);
-  planeMesh.position.copy(pos);
-  switch (currentSketchPlane) {
-    case 'XY': break;
-    case 'YZ': planeMesh.rotation.y = Math.PI/2; break;
-    case 'XZ': planeMesh.rotation.x = -Math.PI/2; break;
-  }
-  scene.add(planeMesh);
-  sketchPlaneMesh = planeMesh;
-}
-
-function removeSketchPlane() {
-  if (sketchGrid) { scene.remove(sketchGrid); sketchGrid = null; }
-  if (sketchPlaneMesh) { scene.remove(sketchPlaneMesh); sketchPlaneMesh = null; }
-  // Remove sketch lines
-  for (const l of sketchLines) { scene.remove(l); }
-  sketchLines = [];
-}
-
-function lookAtPlane(plane) {
-  const dist = 60;
-  switch (plane) {
-    case 'XY':
-      camera.position.set(0, 0, dist);
-      controls.target.set(0, 0, 0);
-      break;
-    case 'YZ':
-      camera.position.set(-dist, 0, 0);
-      controls.target.set(0, 0, 0);
-      break;
-    case 'XZ':
-      camera.position.set(0, dist, 0);
-      controls.target.set(0, 0, 0);
-      break;
-  }
-  controls.update();
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  SKETCH DRAWING
- * ═══════════════════════════════════════════════════════════════════ */
-
-function setSketchTool(tool) {
-  if (!sketchMode) {
-    setStatus('Enter sketch mode first (Sketch → Sketch on XY).');
-    return;
-  }
-  activeTool = tool;
-  drawStart = null;
-  sketchTemp = null;
-  selectedSketchEntity = null;
-  updateToolButtons();
-  setStatus(`Tool: ${tool}. Click on the sketch plane.`);
-}
-
-function handleSketchDraw(event) {
-  const pt = getIntersectOnPlane(event);
-  if (!pt) return;
-
-  const eps = 1.5; // snap threshold
-
-  switch (activeTool) {
-    case 'line':
-      if (!drawStart) {
-        // First click: start point
-        drawStart = { x: pt.x, y: pt.y };
-        setStatus(`Line from (${pt.x.toFixed(2)}, ${pt.y.toFixed(2)}). Click endpoint.`);
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  2026 Tanmay Poddar · Toronto, Canada
+</footer>
+
+<script>
+/* ═══════ GEAR GENERATOR ═══════ */
+(function(){
+  'use strict';
+  var container = document.getElementById('gear-container');
+  if (!container) return;
+  var ns = 'http://www.w3.org/2000/svg';
+
+  function gearPath(innerR, outerR, teeth, holeR) {
+    var step = 2 * Math.PI / teeth;
+    var hw = step * 0.2;
+    var parts = [];
+    for (var i = 0; i < teeth; i++) {
+      var a = i * step;
+      var p1x = innerR * Math.cos(a - hw);
+      var p1y = innerR * Math.sin(a - hw);
+      var p2x = outerR * Math.cos(a - hw * 0.45);
+      var p2y = outerR * Math.sin(a - hw * 0.45);
+      var p3x = outerR * Math.cos(a + hw * 0.45);
+      var p3y = outerR * Math.sin(a + hw * 0.45);
+      var p4x = innerR * Math.cos(a + hw);
+      var p4y = innerR * Math.sin(a + hw);
+      if (i === 0) parts.push('M' + p1x.toFixed(3) + ' ' + p1y.toFixed(3));
+      parts.push('L' + p2x.toFixed(3) + ' ' + p2y.toFixed(3));
+      parts.push('L' + p3x.toFixed(3) + ' ' + p3y.toFixed(3));
+      parts.push('L' + p4x.toFixed(3) + ' ' + p4y.toFixed(3));
+      var nextA = (i + 1) * step;
+      var npx = innerR * Math.cos(nextA - hw);
+      var npy = innerR * Math.sin(nextA - hw);
+      if (i < teeth - 1) {
+        parts.push('A' + innerR + ' ' + innerR + ' 0 0 1 ' + npx.toFixed(3) + ' ' + npy.toFixed(3));
       } else {
-        // Second click: end point → create line entity
-        const endPt = { x: pt.x, y: pt.y };
-        const entity = {
-          id: sketchNextId++,
-          type: 'line',
-          pts: [{ x: drawStart.x, y: drawStart.y }, { x: endPt.x, y: endPt.y }],
-          selected: false,
-        };
-        sketchEntities.push(entity);
-        drawStart = endPt; // Chain: next line starts here
-        setStatus(`Line to (${pt.x.toFixed(2)}, ${pt.y.toFixed(2)}). Next point or double-click to finish.`);
-        rebuildSketchPreview();
+        var fpx = innerR * Math.cos(0 - hw);
+        var fpy = innerR * Math.sin(0 - hw);
+        parts.push('A' + innerR + ' ' + innerR + ' 0 0 1 ' + fpx.toFixed(3) + ' ' + fpy.toFixed(3));
       }
-      break;
-
-    case 'rect':
-      if (!drawStart) {
-        drawStart = { x: pt.x, y: pt.y };
-        setStatus('Rectangle corner 1 set. Click opposite corner.');
-      } else {
-        const entity = {
-          id: sketchNextId++,
-          type: 'rect',
-          pts: [
-            { x: drawStart.x, y: drawStart.y },
-            { x: pt.x, y: pt.y },
-          ],
-          selected: false,
-        };
-        sketchEntities.push(entity);
-        drawStart = null;
-        sketchTemp = null;
-        rebuildSketchPreview();
-        setStatus('Rectangle created. Click to start another.');
-      }
-      break;
-
-    case 'circle':
-      if (!drawStart) {
-        drawStart = { x: pt.x, y: pt.y };
-        setStatus('Circle center set. Click for radius.');
-      } else {
-        const entity = {
-          id: sketchNextId++,
-          type: 'circle',
-          pts: [
-            { x: drawStart.x, y: drawStart.y },
-            { x: pt.x, y: pt.y },
-          ],
-          selected: false,
-        };
-        sketchEntities.push(entity);
-        drawStart = null;
-        sketchTemp = null;
-        rebuildSketchPreview();
-        setStatus('Circle created. Click to start another.');
-      }
-      break;
-  }
-}
-
-function handleSketchSelect(event) {
-  const pt = getIntersectOnPlane(event);
-  if (!pt) return;
-
-  // Find nearest entity within threshold
-  const threshold = 5;
-  let nearest = null, nearestDist = threshold;
-
-  for (const ent of sketchEntities) {
-    const d = distToEntity(ent, pt);
-    if (d < nearestDist) {
-      nearestDist = d;
-      nearest = ent;
     }
+    parts.push('Z');
+    if (holeR > 0) {
+      var h = holeR;
+      parts.push('M' + h + ' 0 A' + h + ' ' + h + ' 0 1 0 ' + (-h) + ' 0 A' + h + ' ' + h + ' 0 1 0 ' + h + ' 0 Z');
+    }
+    return parts.join('');
   }
 
-  // Deselect all
-  for (const ent of sketchEntities) ent.selected = false;
+  function createGear(innerR, outerR, teeth, holeR, opts) {
+    var size = (outerR + 4) * 2;
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', (-outerR - 2) + ' ' + (-outerR - 2) + ' ' + (outerR + 2) * 2 + ' ' + (outerR + 2) * 2);
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.style.cssText = 'left:' + opts.x + '%;top:' + opts.y + '%;opacity:1;pointer-events:none;z-index:-1;';
 
-  if (nearest) {
-    nearest.selected = true;
-    selectedSketchEntity = nearest.id;
-    setStatus(`Selected ${nearest.type} #${nearest.id}`);
-  } else {
-    selectedSketchEntity = null;
-    setStatus('Click an entity to select.');
-  }
-  rebuildSketchPreview();
-}
+    var g = document.createElementNS(ns, 'g');
+    g.style.transformOrigin = (outerR + 2) + 'px ' + (outerR + 2) + 'px';
 
-function deleteSelectedSketchEntity() {
-  if (selectedSketchEntity === null) return;
-  sketchEntities = sketchEntities.filter(e => e.id !== selectedSketchEntity);
-  selectedSketchEntity = null;
-  rebuildSketchPreview();
-  setStatus('Entity deleted.');
-}
+    var path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', gearPath(innerR, outerR, teeth, holeR));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#1C1A18');
+    path.setAttribute('stroke-width', opts.strokeWidth || 2.5);
+    path.setAttribute('opacity', opts.opacity || 0.06);
 
-function distToEntity(entity, pt) {
-  switch (entity.type) {
-    case 'line': {
-      const a = entity.pts[0], b = entity.pts[1];
-      return distToSegment(pt, a, b);
+    g.appendChild(path);
+
+    if (opts.innerRing) {
+      var ring = document.createElementNS(ns, 'circle');
+      ring.setAttribute('cx', '0');
+      ring.setAttribute('cy', '0');
+      ring.setAttribute('r', opts.innerRing);
+      ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', '#1C1A18');
+      ring.setAttribute('stroke-width', '2.0');
+      ring.setAttribute('opacity', (opts.opacity || 0.06) * 0.7);
+      g.appendChild(ring);
     }
-    case 'rect': {
-      const a = entity.pts[0], b = entity.pts[1];
-      const rectPts = [
-        a, {x:b.x, y:a.y}, b, {x:a.x, y:b.y}, a,
-      ];
-      let minD = Infinity;
-      for (let i = 0; i < 4; i++) {
-        const d = distToSegment(pt, rectPts[i], rectPts[i+1]);
-        if (d < minD) minD = d;
-      }
-      return minD;
-    }
-    case 'circle': {
-      const c = entity.pts[0];
-      const r = Math.sqrt((entity.pts[1].x - c.x)**2 + (entity.pts[1].y - c.y)**2);
-      return Math.abs(Math.sqrt((pt.x - c.x)**2 + (pt.y - c.y)**2) - r);
-    }
-    default: return Infinity;
-  }
-}
 
-function distToSegment(p, a, b) {
-  const dx = b.x - a.x, dy = b.y - a.y;
-  const lenSq = dx*dx + dy*dy;
-  if (lenSq === 0) return Math.sqrt((p.x - a.x)**2 + (p.y - a.y)**2);
-  let t = ((p.x - a.x)*dx + (p.y - a.y)*dy) / lenSq;
-  t = Math.max(0, Math.min(1, t));
-  const projX = a.x + t * dx, projY = a.y + t * dy;
-  return Math.sqrt((p.x - projX)**2 + (p.y - projY)**2);
-}
-
-function rebuildSketchPreview() {
-  // Remove old sketch lines
-  for (const l of sketchLines) scene.remove(l);
-  sketchLines = [];
-
-  const material = new THREE.LineBasicMaterial({ color: COLORS.SKETCH_LINE, linewidth: 2 });
-  const activeMat = new THREE.LineBasicMaterial({ color: COLORS.SKETCH_LINE_ACTIVE, linewidth: 2 });
-  const selectedMat = new THREE.LineBasicMaterial({ color: COLORS.SKETCH_SELECTED, linewidth: 3 });
-
-  // Draw each entity
-  for (const ent of sketchEntities) {
-    const mat = ent.selected ? selectedMat : material;
-    const pts = [];
-
-    switch (ent.type) {
-      case 'line': {
-        const p0 = sketchToWorldCoords(ent.pts[0].x, ent.pts[0].y);
-        const p1 = sketchToWorldCoords(ent.pts[1].x, ent.pts[1].y);
-        pts.push(p0, p1);
-        break;
-      }
-      case 'rect': {
-        const a = ent.pts[0], b = ent.pts[1];
-        const corners = [
-          sketchToWorldCoords(a.x, a.y),
-          sketchToWorldCoords(b.x, a.y),
-          sketchToWorldCoords(b.x, b.y),
-          sketchToWorldCoords(a.x, b.y),
-          sketchToWorldCoords(a.x, a.y),
-        ];
-        pts.push(...corners);
-        break;
-      }
-      case 'circle': {
-        const c = ent.pts[0];
-        const r = Math.sqrt((ent.pts[1].x - c.x)**2 + (ent.pts[1].y - c.y)**2);
-        const segments = 48;
-        for (let i = 0; i <= segments; i++) {
-          const angle = (i / segments) * Math.PI * 2;
-          const wx = c.x + Math.cos(angle) * r;
-          const wy = c.y + Math.sin(angle) * r;
-          pts.push(sketchToWorldCoords(wx, wy));
-        }
-        break;
+    if (opts.spokes) {
+      for (var s = 0; s < opts.spokes; s++) {
+        var ang = (s / opts.spokes) * 2 * Math.PI;
+        var r1 = holeR || innerR * 0.35;
+        var r2 = innerR * 0.85;
+        var line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', r1 * Math.cos(ang));
+        line.setAttribute('y1', r1 * Math.sin(ang));
+        line.setAttribute('x2', r2 * Math.cos(ang));
+        line.setAttribute('y2', r2 * Math.sin(ang));
+        line.setAttribute('stroke', '#1C1A18');
+        line.setAttribute('stroke-width', '1.5');
+        line.setAttribute('opacity', (opts.opacity || 0.06) * 0.6);
+        g.appendChild(line);
       }
     }
 
-    if (pts.length >= 2) {
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const line = new THREE.Line(geo, mat);
-      scene.add(line);
-      sketchLines.push(line);
-    }
+    svg.appendChild(g);
+    container.appendChild(svg);
+
+    var dur = opts.duration || 30;
+    g.style.animation = 'spin ' + dur + 's linear infinite';
+    g.style.animationDirection = opts.dir || 'normal';
+
+    return svg;
   }
 
-  // Draw temp preview (while drawing)
-  if (drawStart && sketchTemp) {
-    const tempMat = new THREE.LineBasicMaterial({ color: 0x81d4fa, linewidth: 2, transparent: true, opacity: 0.6, dashSize: 0.5, gapSize: 0.5 });
-    const pts = [];
-
-    switch (activeTool) {
-      case 'line': {
-        pts.push(
-          sketchToWorldCoords(drawStart.x, drawStart.y),
-          sketchToWorldCoords(sketchTemp.x, sketchTemp.y)
-        );
-        break;
-      }
-      case 'rect': {
-        pts.push(
-          sketchToWorldCoords(drawStart.x, drawStart.y),
-          sketchToWorldCoords(sketchTemp.x, drawStart.y),
-          sketchToWorldCoords(sketchTemp.x, sketchTemp.y),
-          sketchToWorldCoords(drawStart.x, sketchTemp.y),
-          sketchToWorldCoords(drawStart.x, drawStart.y)
-        );
-        break;
-      }
-      case 'circle': {
-        const r = Math.sqrt((sketchTemp.x - drawStart.x)**2 + (sketchTemp.y - drawStart.y)**2);
-        const segs = 48;
-        for (let i = 0; i <= segs; i++) {
-          const a = (i / segs) * Math.PI * 2;
-          pts.push(sketchToWorldCoords(drawStart.x + Math.cos(a) * r, drawStart.y + Math.sin(a) * r));
-        }
-        break;
-      }
-    }
-
-    if (pts.length >= 2) {
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const line = new THREE.Line(geo, tempMat);
-      // Use LineDashedMaterial for dash effect
-      scene.add(line);
-      sketchLines.push(line);
-    }
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  SHAPE BUILDING
- * ═══════════════════════════════════════════════════════════════════ */
-
-function buildShapeFromEntities(entities) {
-  const ents = entities || sketchEntities;
-  if (!ents || ents.length === 0) return null;
-
-  // Case 1: Single circle → create circular shape
-  if (ents.length === 1 && ents[0].type === 'circle') {
-    const c = ents[0].pts[0];
-    const r = Math.sqrt((ents[0].pts[1].x - c.x)**2 + (ents[0].pts[1].y - c.y)**2);
-    if (r < 0.01) return null;
-    const shape = new THREE.Shape();
-    const segs = 64;
-    for (let i = 0; i <= segs; i++) {
-      const a = (i / segs) * Math.PI * 2;
-      const x = c.x + Math.cos(a) * r;
-      const y = c.y + Math.sin(a) * r;
-      if (i === 0) shape.moveTo(x, y);
-      else shape.lineTo(x, y);
-    }
-    return shape;
-  }
-
-  // Case 2: Single rect → use its 4 decomposed segments (handled by chainEntitiesIntoPath)
-  // Case 3: Mixed entities → chain line/rect segments, add circles as holes
-
-  // Try to build a continuous closed path from line/rect segments
-  const pts = chainEntitiesIntoPath(ents);
-  if (pts && pts.length >= 3) {
-    // Create outer shape from chained path
-    const shape = new THREE.Shape();
-    shape.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      shape.lineTo(pts[i].x, pts[i].y);
-    }
-    shape.closePath();
-
-    // Add circles as holes
-    for (const ent of ents) {
-      if (ent.type === 'circle') {
-        const c = ent.pts[0];
-        const r = Math.sqrt((ent.pts[1].x - c.x)**2 + (ent.pts[1].y - c.y)**2);
-        if (r < 0.01) continue;
-        const hole = new THREE.Path();
-        const segs = 48;
-        for (let i = 0; i <= segs; i++) {
-          const a = (i / segs) * Math.PI * 2;
-          const x = c.x + Math.cos(a) * r;
-          const y = c.y + Math.sin(a) * r;
-          if (i === 0) hole.moveTo(x, y);
-          else hole.lineTo(x, y);
-        }
-        shape.holes.push(hole);
-      }
-    }
-    return shape;
-  }
-
-  // Case 4: Only circles (no outer boundary) — use the first circle as outer
-  const circles = ents.filter(e => e.type === 'circle');
-  if (circles.length >= 1) {
-    const c = circles[0].pts[0];
-    const r = Math.sqrt((circles[0].pts[1].x - c.x)**2 + (circles[0].pts[1].y - c.y)**2);
-    if (r < 0.01) return null;
-    const shape = new THREE.Shape();
-    const segs = 64;
-    for (let i = 0; i <= segs; i++) {
-      const a = (i / segs) * Math.PI * 2;
-      const x = c.x + Math.cos(a) * r;
-      const y = c.y + Math.sin(a) * r;
-      if (i === 0) shape.moveTo(x, y);
-      else shape.lineTo(x, y);
-    }
-    // Add remaining circles as holes
-    for (let j = 1; j < circles.length; j++) {
-      const cc = circles[j].pts[0];
-      const rr = Math.sqrt((circles[j].pts[1].x - cc.x)**2 + (circles[j].pts[1].y - cc.y)**2);
-      if (rr < 0.01) continue;
-      const hole = new THREE.Path();
-      const holeSegs = 48;
-      for (let i = 0; i <= holeSegs; i++) {
-        const a = (i / holeSegs) * Math.PI * 2;
-        const x = cc.x + Math.cos(a) * rr;
-        const y = cc.y + Math.sin(a) * rr;
-        if (i === 0) hole.moveTo(x, y);
-        else hole.lineTo(x, y);
-      }
-      shape.holes.push(hole);
-    }
-    return shape;
-  }
-
-  return null;
-}
-
-function chainEntitiesIntoPath(entities) {
-  // Simple approach: extract all endpoints from lines, then connect them
-  // Try to find a continuous chain
-
-  // First, collect all line segments (lines + rect edges + circle approximations)
-  const segments = [];
-  for (const ent of entities) {
-    switch (ent.type) {
-      case 'line': {
-        segments.push({
-          start: { x: ent.pts[0].x, y: ent.pts[0].y },
-          end:   { x: ent.pts[1].x, y: ent.pts[1].y },
-        });
-        break;
-      }
-      case 'rect': {
-        const a = ent.pts[0], b = ent.pts[1];
-        segments.push(
-          { start: {x:a.x, y:a.y}, end: {x:b.x, y:a.y} },
-          { start: {x:b.x, y:a.y}, end: {x:b.x, y:b.y} },
-          { start: {x:b.x, y:b.y}, end: {x:a.x, y:b.y} },
-          { start: {x:a.x, y:b.y}, end: {x:a.x, y:a.y} },
-        );
-        break;
-      }
-      case 'circle': {
-        // A circle can't be part of a chain - it's a separate loop
-        // We'll handle circles as holes in the shape
-        segments.push(...[]); // No segments for chain
-        break;
-      }
-    }
-  }
-
-  if (segments.length === 0) {
-    // Check if all entities are circles
-    const circles = entities.filter(e => e.type === 'circle');
-    if (circles.length > 0) {
-      // Return a dummy rect around the circles so the shape builds
-      // Actually, a shape with only circles has no outer boundary - invalid
-      return null;
-    }
-    return null;
-  }
-
-  // Chain segments together
-  const eps = 0.01;
-  const used = new Array(segments.length).fill(false);
-  const path = [];
-
-  // Start with first segment
-  let current = segments[0].start;
-  path.push({ x: current.x, y: current.y });
-  current = segments[0].end;
-  path.push({ x: current.x, y: current.y });
-  used[0] = true;
-
-  let madeProgress = true;
-  while (madeProgress) {
-    madeProgress = false;
-    for (let i = 1; i < segments.length; i++) {
-      if (used[i]) continue;
-      const seg = segments[i];
-
-      // Check if seg.start matches current
-      const d1 = Math.sqrt((seg.start.x - current.x)**2 + (seg.start.y - current.y)**2);
-      if (d1 < eps) {
-        current = seg.end;
-        path.push({ x: current.x, y: current.y });
-        used[i] = true;
-        madeProgress = true;
-        break;
-      }
-
-      // Check if seg.end matches current (reversed)
-      const d2 = Math.sqrt((seg.end.x - current.x)**2 + (seg.end.y - current.y)**2);
-      if (d2 < eps) {
-        current = seg.start;
-        path.push({ x: current.x, y: current.y });
-        used[i] = true;
-        madeProgress = true;
-        break;
-      }
-
-      // Check if seg closes the path back to start
-      const dStart = Math.sqrt((seg.start.x - path[0].x)**2 + (seg.start.y - path[0].y)**2);
-      const dEnd = Math.sqrt((seg.end.x - path[0].x)**2 + (seg.end.y - path[0].y)**2);
-      if (dStart < eps || dEnd < eps) {
-        used[i] = true;
-        madeProgress = true;
-        break;
-      }
-    }
-  }
-
-  // Check if all segments are used
-  const allUsed = used.every(u => u);
-  if (!allUsed) {
-    // Some segments weren't connected - could be separate loops
-    // For now, try to return what we have - let the user know
-    console.warn('[CAD] Some sketch entities not connected:', used.filter(u => !u).length, 'unused');
-  }
-
-  // Check if path is closed (last point ≈ first point)
-  const last = path[path.length - 1];
-  const first = path[0];
-  if (last && first && Math.sqrt((last.x - first.x)**2 + (last.y - first.y)**2) > eps) {
-    // Don't auto-close - let the user connect
-    return null; // Not closed
-  }
-
-  // Remove the last point if it's essentially the same as first (duplicated)
-  if (path.length > 2) {
-    const pLast = path[path.length - 1];
-    const pFirst = path[0];
-    if (Math.sqrt((pLast.x - pFirst.x)**2 + (pLast.y - pFirst.y)**2) < eps) {
-      path.pop();
-    }
-  }
-
-  if (path.length < 3) return null;
-
-  return path;
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  EXTRUDE FEATURES
- * ═══════════════════════════════════════════════════════════════════ */
-
-function onExtrudeBoss() {
-  if (!hasSketches()) {
-    setStatus('Create a sketch first.');
-    return;
-  }
-  if (sketchMode) {
-    setStatus('Exit sketch mode first.');
-    return;
-  }
-
-  // Populate modal with sketch list
-  const sel = document.getElementById('extrudeSketch');
-  sel.innerHTML = '';
-  for (const sk of part.sketches) {
-    const opt = document.createElement('option');
-    opt.value = sk.id;
-    opt.textContent = `Sketch${sk.id} (${sk.plane})`;
-    sel.appendChild(opt);
-  }
-  sel.value = part.sketches.length > 0 ? part.sketches[part.sketches.length-1].id : '';
-
-  document.getElementById('extrudeTitle').textContent = '⊕ Extrude Boss';
-  document.getElementById('extrudeConfirmBtn').textContent = 'Create Boss';
-  document.getElementById('extrudeModal').classList.add('show');
-  window._extrudeType = 'boss';
-}
-
-function onExtrudeCut() {
-  if (!hasSketches()) {
-    setStatus('Create a sketch first.');
-    return;
-  }
-  if (sketchMode) {
-    setStatus('Exit sketch mode first.');
-    return;
-  }
-
-  const sel = document.getElementById('extrudeSketch');
-  sel.innerHTML = '';
-  for (const sk of part.sketches) {
-    const opt = document.createElement('option');
-    opt.value = sk.id;
-    opt.textContent = `Sketch${sk.id} (${sk.plane})`;
-    sel.appendChild(opt);
-  }
-  sel.value = part.sketches.length > 0 ? part.sketches[part.sketches.length-1].id : '';
-
-  document.getElementById('extrudeTitle').textContent = '⊖ Extrude Cut';
-  document.getElementById('extrudeConfirmBtn').textContent = 'Create Cut';
-  document.getElementById('extrudeModal').classList.add('show');
-  window._extrudeType = 'cut';
-}
-
-function confirmExtrude() {
-  const depth = parseFloat(document.getElementById('extrudeDepth').value) || 10;
-  const dir = document.getElementById('extrudeDir').value;
-  const sketchId = parseInt(document.getElementById('extrudeSketch').value);
-  const type = window._extrudeType || 'boss';
-
-  if (!sketchId) {
-    setStatus('Select a sketch.');
-    return;
-  }
-
-  const sketch = part.sketches.find(s => s.id === sketchId);
-  if (!sketch || !sketch.shape) {
-    setStatus('Sketch has no valid profile.');
-    return;
-  }
-
-  // Create feature
-  const feature = {
-    id: part.nextId++,
-    type: type,
-    sketchId: sketchId,
-    depth: depth,
-    direction: dir,
-    mesh: null,
-  };
-  part.features.push(feature);
-
-  closeModal('extrudeModal');
-
-  // Rebuild 3D model
-  rebuildModel();
-  rebuildFeatureTree();
-
-  setStatus(`${type === 'boss' ? 'Boss' : 'Cut'} Extrude${feature.id} created (depth: ${depth}).`);
-}
-
-function deleteSelectedFeature() {
-  if (selectedFeatureId === null) {
-    setStatus('Select a feature in the tree to delete.');
-    return;
-  }
-  part.features = part.features.filter(f => f.id !== selectedFeatureId);
-  selectedFeatureId = null;
-  rebuildModel();
-  rebuildFeatureTree();
-  setStatus('Feature deleted.');
-}
-
-function editSelectedFeature() {
-  if (selectedFeatureId === null) {
-    setStatus('Select a feature to edit.');
-    return;
-  }
-  const feat = part.features.find(f => f.id === selectedFeatureId);
-  if (!feat) return;
-
-  document.getElementById('extrudeDepth').value = feat.depth;
-  document.getElementById('extrudeDir').value = feat.direction;
-
-  const sel = document.getElementById('extrudeSketch');
-  sel.innerHTML = '';
-  for (const sk of part.sketches) {
-    const opt = document.createElement('option');
-    opt.value = sk.id;
-    opt.textContent = `Sketch${sk.id} (${sk.plane})`;
-    if (sk.id === feat.sketchId) opt.selected = true;
-    sel.appendChild(opt);
-  }
-
-  document.getElementById('extrudeTitle').textContent =
-    `✎ Edit ${feat.type === 'boss' ? 'Boss' : 'Cut'} Extrude${feat.id}`;
-  document.getElementById('extrudeConfirmBtn').textContent = 'Update';
-  document.getElementById('extrudeModal').classList.add('show');
-  window._extrudeType = feat.type;
-  window._editFeatureId = feat.id;
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  3D MODEL REBUILD
- * ═══════════════════════════════════════════════════════════════════ */
-
-function rebuildModel() {
-  // Remove all previous body meshes
-  const toRemove = [];
-  for (const child of scene.children) {
-    if (child.userData && child.userData.isCadBody) {
-      toRemove.push(child);
-    }
-  }
-  for (const child of toRemove) {
-    scene.remove(child);
-    // dispose geometry and materials
-    if (child.geometry) child.geometry.dispose();
-    if (child.material) {
-      if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
-      else child.material.dispose();
-    }
-  }
-
-  if (part.features.length === 0) return;
-
-  // Process features in order
-  for (const feat of part.features) {
-    const sketch = part.sketches.find(s => s.id === feat.sketchId);
-    if (!sketch || !sketch.shape) continue;
-
-    const shape = sketch.shape;
-    const depth = feat.depth;
-    const plane = sketch.plane;
-    const offset = sketch.offset || 0;
-
-    if (feat.type === 'boss') {
-      // Create extruded mesh
-      const extSettings = {
-        depth: depth,
-        bevelEnabled: true,
-        bevelThickness: 0.5,
-        bevelSize: 0.3,
-        bevelSegments: 4,
-      };
-
-      const geo = new THREE.ExtrudeGeometry(shape, extSettings);
-      geo.computeVertexNormals();
-
-      const mat = new THREE.MeshStandardMaterial({
-        color: COLORS.BODY_DEFAULT,
-        roughness: 0.3,
-        metalness: 0.4,
-        flatShading: false,
-        side: THREE.DoubleSide,
-      });
-
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      mesh.userData.isCadBody = true;
-      mesh.userData.featureId = feat.id;
-
-      // Position the mesh
-      positionExtrusion(mesh, plane, offset, depth, feat.direction);
-
-      scene.add(mesh);
-      feat.mesh = mesh;
-
-      // Add edges overlay
-      const edges = new THREE.EdgesGeometry(geo);
-      const edgeMat = new THREE.LineBasicMaterial({
-        color: COLORS.BODY_EDGE,
-        transparent: true,
-        opacity: 0.15,
-      });
-      const edgeLine = new THREE.LineSegments(edges, edgeMat);
-      edgeLine.position.copy(mesh.position);
-      edgeLine.rotation.copy(mesh.rotation);
-      edgeLine.userData.isCadBody = true;
-      edgeLine.userData.isEdge = true;
-      scene.add(edgeLine);
-
-    } else if (feat.type === 'cut') {
-      // Cut: create a red cut-volume representation
-      // In a full CAD, this would perform boolean subtraction
-      // For alpha: show the cut volume as a red transparent shape
-
-      const extSettings = {
-        depth: depth,
-        bevelEnabled: false,
-      };
-
-      const geo = new THREE.ExtrudeGeometry(shape, extSettings);
-      geo.computeVertexNormals();
-
-      const mat = new THREE.MeshStandardMaterial({
-        color: COLORS.CUT_VOLUME,
-        roughness: 0.5,
-        metalness: 0.1,
-        transparent: true,
-        opacity: 0.3,
-        side: THREE.DoubleSide,
-        wireframe: false,
-      });
-
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.castShadow = false;
-      mesh.receiveShadow = false;
-      mesh.userData.isCadBody = true;
-      mesh.userData.featureId = feat.id;
-      mesh.userData.isCutVolume = true;
-
-      // Position cut volume
-      positionCutVolume(mesh, plane, offset, depth, feat.direction, part.features);
-
-      scene.add(mesh);
-      feat.mesh = mesh;
-    }
-  }
-}
-
-function positionExtrusion(mesh, plane, offset, depth, direction) {
-  const d = direction === 'mid' ? depth / 2 : depth;
-
-  switch (plane) {
-    case 'XY':
-      mesh.rotation.x = 0;
-      if (direction === 'mid') {
-        mesh.position.z = offset - d;
-      } else {
-        mesh.position.z = offset;
-      }
-      break;
-    case 'YZ':
-      mesh.rotation.y = Math.PI / 2;
-      if (direction === 'mid') {
-        mesh.position.x = offset - d;
-      } else {
-        mesh.position.x = offset;
-      }
-      break;
-    case 'XZ':
-      mesh.rotation.x = -Math.PI / 2;
-      if (direction === 'mid') {
-        mesh.position.y = offset - d;
-      } else {
-        mesh.position.y = offset;
-      }
-      break;
-  }
-}
-
-function positionCutVolume(mesh, plane, offset, depth, direction, features) {
-  // Try to position the cut volume at the same height as the boss it should cut through
-  // For alpha: position it like a boss extrusion but offset slightly
-  // In a real CAD, this would be a boolean subtraction
-
-  // Find the latest boss feature that matches
-  const boss = [...features].reverse().find(f => f.type === 'boss' && f.mesh);
-  if (boss && boss.mesh) {
-    mesh.position.copy(boss.mesh.position);
-    mesh.rotation.copy(boss.mesh.rotation);
-  } else {
-    positionExtrusion(mesh, plane, offset, depth, direction);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  FEATURE TREE
- * ═══════════════════════════════════════════════════════════════════ */
-
-function rebuildFeatureTree() {
-  const container = document.getElementById('treeChildren');
-  const placeholder = document.getElementById('treePlaceholder');
-  const treeRoot = document.getElementById('treeContainer');
-
-  container.innerHTML = '';
-
-  if (part.sketches.length === 0 && part.features.length === 0) {
-    placeholder.style.display = 'block';
-    treeRoot.style.display = 'none';
-    return;
-  }
-
-  placeholder.style.display = 'none';
-  treeRoot.style.display = 'block';
-
-  // List all features in order
-  const allItems = [];
-
-  // Add sketches
-  for (const sk of part.sketches) {
-    allItems.push({ type: 'sketch', id: sk.id, label: `Sketch${sk.id} (${sk.plane})`, icon: '▨' });
-  }
-
-  // Add features
-  for (const feat of part.features) {
-    const icon = feat.type === 'boss' ? '⊕' : '⊖';
-    const label = `${feat.type === 'boss' ? 'Boss' : 'Cut'} Extrude${feat.id}`;
-    allItems.push({ type: 'feature', id: feat.id, featureType: feat.type, label, icon,
-      detail: `d=${feat.depth}` });
-  }
-
-  for (const item of allItems) {
-    const div = document.createElement('div');
-    div.className = 'tree-item';
-    if (selectedFeatureId === item.id && item.type === 'feature') {
-      div.classList.add('selected');
-    }
-    div.innerHTML = `
-      <span class="icon">${item.icon}</span>
-      <span class="label">${item.label}</span>
-      ${item.detail ? `<span class="badge">${item.detail}</span>` : ''}
-    `;
-    div.dataset.id = item.id;
-    div.dataset.type = item.type;
-    div.addEventListener('click', () => {
-      // Deselect all
-      container.querySelectorAll('.tree-item.selected').forEach(el => el.classList.remove('selected'));
-      div.classList.add('selected');
-      if (item.type === 'feature') {
-        selectedFeatureId = item.id;
-        showFeatureProperties(item.id);
-      } else {
-        selectedFeatureId = null;
-      }
-    });
-    container.appendChild(div);
-  }
-
-  // Update props panel
-  if (!selectedFeatureId) {
-    updatePropertiesPanel();
-  }
-}
-
-function showFeatureProperties(featId) {
-  const feat = part.features.find(f => f.id === featId);
-  if (!feat) return;
-
-  const sketch = part.sketches.find(s => s.id === feat.sketchId);
-
-  document.getElementById('propsBody').innerHTML = `
-    <div class="prop-row"><span class="lbl">Type:</span><span class="val">${feat.type === 'boss' ? 'Extrude Boss' : 'Extrude Cut'}</span></div>
-    <div class="prop-row"><span class="lbl">ID:</span><span class="val">#${feat.id}</span></div>
-    <div class="prop-row"><span class="lbl">Depth:</span><span class="val">${feat.depth}</span></div>
-    <div class="prop-row"><span class="lbl">Dir:</span><span class="val">${feat.direction === 'mid' ? 'Mid Plane' : 'One Side'}</span></div>
-    <div class="prop-row"><span class="lbl">Sketch:</span><span class="val">Sketch${feat.sketchId}</span></div>
-    <div class="prop-row"><span class="lbl">Plane:</span><span class="val">${sketch ? sketch.plane : '?'}</span></div>
-    <div style="padding:.5rem .7rem;display:flex;flex-direction:column;gap:.35rem">
-      <button class="prop-btn" onclick="editSelectedFeature()">✎ Edit Feature</button>
-      <button class="prop-btn danger" onclick="deleteSelectedFeature()">✕ Delete Feature</button>
-    </div>
-  `;
-}
-
-function updatePropertiesPanel(html) {
-  if (!html) {
-    document.getElementById('propsBody').innerHTML =
-      `<div class="tree-placeholder">Select a feature to edit its properties.</div>`;
-  } else {
-    document.getElementById('propsBody').innerHTML = html;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  UI HELPERS
- * ═══════════════════════════════════════════════════════════════════ */
-
-function updateToolButtons() {
-  const btns = ['btnLine', 'btnRect', 'btnCircle', 'btnSelect'];
-  btns.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('active');
+  // ── Gears (BIG — 1.6× larger) ──
+  createGear(95, 114, 24, 20, {
+    x: 82, y: -6, opacity: 0.2, duration: 50, dir: 'normal',
+    strokeWidth: 4.5, innerRing: 68, spokes: 8
   });
-  const activeBtn = document.getElementById('btn' +
-    activeTool.charAt(0).toUpperCase() + activeTool.slice(1));
-  if (activeBtn) activeBtn.classList.add('active');
-}
-
-function setStatus(msg) {
-  document.getElementById('statusText').textContent = msg;
-}
-
-function updateCoordDisplay(pt) {
-  if (!pt) {
-    document.getElementById('coordDisplay').textContent = 'X: 0.00  Y: 0.00  Z: 0.00';
-  } else {
-    document.getElementById('coordDisplay').textContent =
-      `X: ${pt.x.toFixed(2)}  Y: ${pt.y.toFixed(2)}  Z: ${pt.z.toFixed(2)}`;
-  }
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('show');
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  VIEW CONTROLS
- * ═══════════════════════════════════════════════════════════════════ */
-
-function setView(view) {
-  const d = 80;
-  switch (view) {
-    case 'front': camera.position.set(0, 0, d); controls.target.set(0, 0, 0); break;
-    case 'top':   camera.position.set(0, d, 0); controls.target.set(0, 0, 0); break;
-    case 'right': camera.position.set(d, 0, 0); controls.target.set(0, 0, 0); break;
-    case 'iso':   camera.position.set(80, 60, 100); controls.target.set(0, 0, 0); break;
-  }
-  controls.update();
-}
-
-function fitAll() {
-  // Find all meshes and fit camera
-  const box = new THREE.Box3();
-  let hasGeo = false;
-
-  scene.traverse(child => {
-    if (child.isMesh && child.geometry) {
-      child.geometry.computeBoundingBox();
-      if (child.geometry.boundingBox) {
-        const worldBox = child.geometry.boundingBox.clone().applyMatrix4(child.matrixWorld);
-        box.expandByPoint(worldBox.min);
-        box.expandByPoint(worldBox.max);
-        hasGeo = true;
-      }
-    }
+  createGear(62, 80, 18, 16, {
+    x: 2, y: -10, opacity: 0.17, duration: 35, dir: 'reverse',
+    strokeWidth: 4.0, innerRing: 46, spokes: 6
   });
-
-  if (!hasGeo) {
-    // Default extents
-    box.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), new THREE.Vector3(40, 40, 40));
-  }
-
-  const size = box.getSize(new THREE.Vector3()).length();
-  const center = box.getCenter(new THREE.Vector3());
-  const dist = Math.max(size * 1.5, 20);
-
-  controls.target.copy(center);
-  camera.position.set(center.x + dist * 0.7, center.y + dist * 0.5, center.z + dist);
-  controls.update();
-}
-
-function toggleWireframe() {
-  wireframeMode = !wireframeMode;
-  scene.traverse(child => {
-    if (child.isMesh && child.material && child.userData.isCadBody) {
-      if (!child.userData.isCutVolume) {
-        child.material.wireframe = wireframeMode;
-      }
-    }
+  createGear(44, 56, 14, 10, {
+    x: 54, y: -4, opacity: 0.18, duration: 22, dir: 'normal',
+    strokeWidth: 4.0, innerRing: 30, spokes: 4
   });
-  setStatus(wireframeMode ? 'Wireframe ON' : 'Wireframe OFF');
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  FILE OPERATIONS
- * ═══════════════════════════════════════════════════════════════════ */
-
-function onNewPart() {
-  // Remove all body meshes
-  const toRemove = [];
-  for (const child of scene.children) {
-    if (child.userData && child.userData.isCadBody) {
-      toRemove.push(child);
-    }
-  }
-  for (const child of toRemove) {
-    scene.remove(child);
-    if (child.geometry) child.geometry.dispose();
-    if (child.material) {
-      if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
-      else child.material.dispose();
-    }
-  }
-
-  part = {
-    name: 'Part1',
-    sketches: [],
-    features: [],
-    nextId: 1,
-  };
-  sketchMode = false;
-  activeSketch = null;
-  selectedFeatureId = null;
-  sketchEntities = [];
-  removeSketchPlane();
-  document.getElementById('sketchHint').classList.remove('show');
-
-  rebuildFeatureTree();
-  updatePropertiesPanel();
-  document.getElementById('btnExtrude').disabled = true;
-  document.getElementById('btnCut').disabled = true;
-  document.getElementById('statusMode').textContent = 'IDLE';
-  setStatus('New part created.');
-}
-
-function onSave() {
-  const data = {
-    version: '1.0',
-    name: part.name,
-    sketches: part.sketches.map(sk => ({
-      id: sk.id,
-      plane: sk.plane,
-      offset: sk.offset,
-      entities: sk.entities,
-    })),
-    features: part.features.map(f => ({
-      id: f.id,
-      type: f.type,
-      sketchId: f.sketchId,
-      depth: f.depth,
-      direction: f.direction,
-    })),
-  };
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${part.name}.cad.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  setStatus(`Part saved as ${part.name}.cad.json`);
-}
-
-function onSaveAs() {
-  onSave(); // Same behavior for now
-}
-
-function onOpen() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target.result);
-        loadPartData(data);
-      } catch (err) {
-        setStatus(`Error loading part: ${err.message}`);
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-function loadPartData(data) {
-  onNewPart();
-
-  part.name = data.name || 'Imported';
-  part.nextId = data.sketches.length + data.features.length + 1;
-
-  // Restore sketches
-  for (const sk of data.sketches) {
-    const shape = buildShapeFromEntities(sk.entities);
-    part.sketches.push({
-      id: sk.id,
-      plane: sk.plane,
-      offset: sk.offset,
-      entities: sk.entities,
-      shape: shape,
-    });
-  }
-
-  // Restore features
-  for (const f of data.features) {
-    part.features.push({
-      id: f.id,
-      type: f.type,
-      sketchId: f.sketchId,
-      depth: f.depth,
-      direction: f.direction,
-      mesh: null,
-    });
-  }
-
-  rebuildModel();
-  rebuildFeatureTree();
-  document.getElementById('btnExtrude').disabled = !hasSketches();
-  document.getElementById('btnCut').disabled = !hasSketches();
-  setStatus(`Loaded: ${part.name}`);
-}
-
-function onExportSTL() {
-  if (part.features.length === 0) {
-    setStatus('No 3D geometry to export. Create a Boss Extrude first.');
-    return;
-  }
-
-  // Collect all non-cut meshes
-  const meshes = [];
-  scene.traverse(child => {
-    if (child.isMesh && child.userData.isCadBody && !child.userData.isCutVolume) {
-      meshes.push(child);
-    }
+  createGear(30, 38, 10, 7, {
+    x: 18, y: 10, opacity: 0.16, duration: 14, dir: 'reverse',
+    strokeWidth: 3.5, innerRing: 20, spokes: 3
   });
-
-  if (meshes.length === 0) {
-    setStatus('No exportable geometry found.');
-    return;
-  }
-
-  // Merge geometries
-  const merged = mergeGeometries(meshes);
-  if (!merged) {
-    setStatus('Error merging geometry for export.');
-    return;
-  }
-
-  // Generate STL (ASCII)
-  const stl = generateSTL(merged);
-  const blob = new Blob([stl], { type: 'application/sla' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${part.name}.stl`;
-  a.click();
-  URL.revokeObjectURL(url);
-  setStatus(`STL exported: ${part.name}.stl`);
-}
-
-function mergeGeometries(meshes) {
-  // Simplified geometry merger
-  const positions = [];
-  const normals = [];
-
-  for (const mesh of meshes) {
-    if (!mesh.geometry) continue;
-    const geo = mesh.geometry.clone();
-
-    // Apply world transform
-    geo.applyMatrix4(mesh.matrixWorld);
-
-    const pos = geo.attributes.position;
-    const norm = geo.attributes.normal;
-
-    if (!pos) continue;
-
-    for (let i = 0; i < pos.count; i++) {
-      positions.push(pos.getX(i), pos.getY(i), pos.getZ(i));
-      if (norm) {
-        normals.push(norm.getX(i), norm.getY(i), norm.getZ(i));
-      }
-    }
-  }
-
-  if (positions.length < 9) return null;
-
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  if (normals.length === positions.length) {
-    geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-  }
-  geo.computeVertexNormals();
-
-  return geo;
-}
-
-function generateSTL(geometry) {
-  const pos = geometry.attributes.position;
-  const norm = geometry.attributes.normal;
-  if (!pos || pos.count < 3) return '';
-
-  let stl = `solid ${part.name}\n`;
-
-  for (let i = 0; i < pos.count; i += 3) {
-    const nx = norm ? norm.getX(i) : 0;
-    const ny = norm ? norm.getY(i+1) : 0;
-    const nz = norm ? norm.getZ(i+2) : 0;
-
-    stl += `  facet normal ${nx.toFixed(6)} ${ny.toFixed(6)} ${nz.toFixed(6)}\n`;
-    stl += `    outer loop\n`;
-    for (let j = 0; j < 3; j++) {
-      const vx = pos.getX(i + j);
-      const vy = pos.getY(i + j);
-      const vz = pos.getZ(i + j);
-      stl += `      vertex ${vx.toFixed(6)} ${vy.toFixed(6)} ${vz.toFixed(6)}\n`;
-    }
-    stl += `    endloop\n`;
-    stl += `  endfacet\n`;
-  }
-
-  stl += `endsolid ${part.name}\n`;
-  return stl;
-}
-
-function onImportSTL() {
-  setStatus('STL import not yet implemented in alpha.');
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  MENU DROPDOWNS
- * ═══════════════════════════════════════════════════════════════════ */
-
-document.addEventListener('click', (e) => {
-  const menus = document.querySelectorAll('.menu-item');
-  for (const m of menus) {
-    if (!m.contains(e.target)) {
-      m.classList.remove('open');
-    }
-  }
-});
-
-document.querySelectorAll('.menu-item').forEach(item => {
-  item.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const wasOpen = item.classList.contains('open');
-    document.querySelectorAll('.menu-item.open').forEach(m => m.classList.remove('open'));
-    if (!wasOpen) item.classList.add('open');
+  createGear(18, 24, 8, 4, {
+    x: 46, y: 28, opacity: 0.14, duration: 9, dir: 'normal',
+    strokeWidth: 3.5, innerRing: 12, spokes: 3
   });
-});
-
-/* ═══════════════════════════════════════════════════════════════════
- *  ABOUT / HELP
- * ═══════════════════════════════════════════════════════════════════ */
-
-function showAbout() {
-  document.getElementById('aboutModal').classList.add('show');
-}
-
-function showShortcuts() {
-  document.getElementById('shortcutsModal').classList.add('show');
-}
-
-/* ═══════════════════════════════════════════════════════════════════
- *  BOOT
- * ═══════════════════════════════════════════════════════════════════ */
-
-function boot() {
-  console.log('[CX3-CAD] Booting...');
-  initThree();
-  rebuildFeatureTree();
-  document.getElementById('btnExtrude').disabled = true;
-  document.getElementById('btnCut').disabled = true;
-
-  // Fade out loading screen
-  setTimeout(() => {
-    document.getElementById('loadingScreen').classList.add('fade-out');
-    setTimeout(() => { document.getElementById('loadingScreen').style.display = 'none'; }, 500);
-  }, 800);
-
-  setStatus('Ready. Create a sketch to begin (Sketch → Sketch on XY).');
-  document.getElementById('statusMode').textContent = 'IDLE';
-
-  // Set up default on the props panel
-  updatePropertiesPanel();
-}
-
-// Kick off
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot);
-} else {
-  boot();
-}
+  createGear(14, 18, 6, 3, {
+    x: 90, y: 20, opacity: 0.12, duration: 6, dir: 'reverse',
+    strokeWidth: 3.0, spokes: 2
+  });
+})();
 </script>
 </body>
 </html>
