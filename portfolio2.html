@@ -12,13 +12,13 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  --bg: #100E0C;
-  --fg: #EDE9E4;
-  --card-bg: #1A1714;
-  --border-color: rgba(237,233,228,.1);
-  --ink-2: rgba(237,233,228,.66);
-  --ink-3: rgba(237,233,228,.42);
-  --gold: #D9BC6A;
+  --bg: #FAF8F5;
+  --fg: #1C1A18;
+  --card-bg: #F0EDE9;
+  --border-color: rgba(28,26,24,.08);
+  --ink-2: rgba(28,26,24,.55);
+  --ink-3: rgba(28,26,24,.35);
+  --gold: #C8A84E;
   --font-canela: "Canela", Georgia, "Times New Roman", serif;
   --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background:var(--bg);
@@ -29,7 +29,7 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-::selection{background:rgba(237,233,228,.25);color:var(--bg)}
+::selection{background:rgba(28,26,24,.15);color:var(--fg)}
 
 /* ═══════ HEADER ═══════ */
 header{
@@ -37,7 +37,7 @@ header{
   height:3.5rem;
   display:flex;align-items:center;
   padding:0 1.5rem;
-  background:rgba(16,14,12,.8);
+  background:rgba(250,248,245,.9);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   border-bottom:1px solid var(--border-color);
@@ -60,7 +60,7 @@ header nav a{
   border-radius:9999px;
   transition:all .15s;
 }
-header nav a:hover{background:rgba(255,255,255,.08);color:var(--fg)}
+header nav a:hover{background:rgba(0,0,0,.05);color:var(--fg)}
 .cta-link{
   font-family:var(--font-ui);
   font-size:.8125rem;font-weight:500;
@@ -70,7 +70,7 @@ header nav a:hover{background:rgba(255,255,255,.08);color:var(--fg)}
   border-radius:9999px;
   transition:all .15s;
 }
-.cta-link:hover{background:#fff !important;color:var(--bg) !important}
+.cta-link:hover{background:#333 !important;color:var(--bg) !important}
 
 /* ═══════ HERO ═══════ */
 .hero{
@@ -116,7 +116,7 @@ header nav a:hover{background:rgba(255,255,255,.08);color:var(--fg)}
   margin-top:2rem;
   transition:all .15s;
 }
-.hero-cta:hover{background:#fff;transform:translateY(-1px)}
+.hero-cta:hover{background:#333;transform:translateY(-1px)}
 .hero-footnote{
   font-family:var(--font-ui);
   font-size:.8125rem;
@@ -325,7 +325,7 @@ section + section{border-top:1px solid var(--border-color)}
   transition:all .15s;
 }
 .cta-banner .contact-links a:hover{
-  background:rgba(255,255,255,.08);
+  background:rgba(0,0,0,.05);
   border-color:var(--ink-2);
 }
 
