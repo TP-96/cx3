@@ -636,7 +636,7 @@ footer nav a:hover{color:var(--orange)}
 </footer>
 
 <script>
-/* ═══════ GEAR GENERATOR ═══════ */
+/* ═══════ GEAR GENERATOR + SCROLL EFFECTS ═══════ */
 (function(){
   'use strict';
   var container = document.getElementById('gear-container');
@@ -680,6 +680,9 @@ footer nav a:hover{color:var(--orange)}
     return parts.join('');
   }
 
+  // Store gears for scroll modulation
+  var gears = [];
+
   function createGear(innerR, outerR, teeth, holeR, opts) {
     var size = (outerR + 4) * 2;
     var svg = document.createElementNS(ns, 'svg');
@@ -690,17 +693,18 @@ footer nav a:hover{color:var(--orange)}
 
     var g = document.createElementNS(ns, 'g');
     g.style.transformOrigin = (outerR + 2) + 'px ' + (outerR + 2) + 'px';
+    g.dataset.baseY = opts.y;
 
     var path = document.createElementNS(ns, 'path');
     path.setAttribute('d', gearPath(innerR, outerR, teeth, holeR));
     path.setAttribute('fill', 'none');
     path.setAttribute('stroke', '#1C1A18');
     path.setAttribute('stroke-width', opts.strokeWidth || 1);
-    path.setAttribute('opacity', opts.opacity || 0.04);
+    path.setAttribute('opacity', opts.opacity || 0.06);
 
     g.appendChild(path);
 
-    // Add a subtle inner ring for detail
+    // Inner ring for detail
     if (opts.innerRing) {
       var ring = document.createElementNS(ns, 'circle');
       ring.setAttribute('cx', '0');
@@ -709,11 +713,11 @@ footer nav a:hover{color:var(--orange)}
       ring.setAttribute('fill', 'none');
       ring.setAttribute('stroke', '#1C1A18');
       ring.setAttribute('stroke-width', '0.5');
-      ring.setAttribute('opacity', (opts.opacity || 0.04) * 0.7);
+      ring.setAttribute('opacity', (opts.opacity || 0.06) * 0.7);
       g.appendChild(ring);
     }
 
-    // Add spoke lines for mechanical feel
+    // Spoke lines
     if (opts.spokes) {
       for (var s = 0; s < opts.spokes; s++) {
         var ang = (s / opts.spokes) * 2 * Math.PI;
@@ -726,7 +730,7 @@ footer nav a:hover{color:var(--orange)}
         line.setAttribute('y2', r2 * Math.sin(ang));
         line.setAttribute('stroke', '#1C1A18');
         line.setAttribute('stroke-width', '0.5');
-        line.setAttribute('opacity', (opts.opacity || 0.04) * 0.6);
+        line.setAttribute('opacity', (opts.opacity || 0.06) * 0.6);
         g.appendChild(line);
       }
     }
@@ -738,11 +742,21 @@ footer nav a:hover{color:var(--orange)}
     g.style.animation = 'spin ' + dur + 's linear infinite';
     g.style.animationDirection = opts.dir || 'normal';
 
+    // Store reference for scroll modulation
+    gears.push({
+      g: g,
+      svg: svg,
+      baseDuration: dur,
+      baseOpacity: opts.opacity || 0.06,
+      baseY: opts.y,
+      dir: opts.dir || 'normal',
+      yOff: 0
+    });
+
     return svg;
   }
 
   // ── Define gears ──
-  // Each gear: innerR, outerR, teeth, holeR, options
   createGear(50, 60, 20, 10, {
     x: 78, y: 2, opacity: 0.12, duration: 50, dir: 'normal',
     strokeWidth: 1.5, innerRing: 35, spokes: 8
@@ -772,6 +786,50 @@ footer nav a:hover{color:var(--orange)}
     x: 90, y: 18, opacity: 0.09, duration: 6, dir: 'reverse',
     strokeWidth: 0.9, spokes: 2
   });
+
+  // ── Scroll-driven gear modulation ──
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        var scrollY = window.pageYOffset;
+        var wh = window.innerHeight;
+        // progress: 0 at top, 1 after scrolling 3.5 viewport heights
+        var p = Math.min(scrollY / (wh * 3.5), 1);
+        // gentle curve: gears stay visible longer
+        var ease = p;
+
+        gears.forEach(function(gear) {
+          // Slowing down: multiply duration by 1 + ease*5
+          var slowed = gear.baseDuration * (1 + ease * 5);
+          gear.g.style.animationDuration = slowed + 's';
+
+          // Fading out: opacity goes from base → near-zero
+          var paths = gear.g.querySelectorAll('path, circle, line');
+          for (var i = 0; i < paths.length; i++) {
+            var baseOp = parseFloat(paths[i].getAttribute('data-base-opacity'));
+            paths[i].setAttribute('opacity', baseOp * (1 - ease));
+          }
+
+          // Parallax lift: gears drift upward subtly
+          gear.svg.style.top = (gear.baseY - ease * 5) + '%';
+        });
+
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // Store base opacities on elements for scroll fading
+  gears.forEach(function(gear) {
+    var paths = gear.g.querySelectorAll('path, circle, line');
+    for (var i = 0; i < paths.length; i++) {
+      var op = parseFloat(paths[i].getAttribute('opacity')) || 0.06;
+      paths[i].setAttribute('data-base-opacity', op);
+    }
+  });
+
 })();
 
 /* ═══════ SCROLL REVEAL OBSERVER ═══════ */
