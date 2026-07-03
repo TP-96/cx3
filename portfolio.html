@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanmay Poddar — Portfolio 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════ RESET ═══════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:#0d0d0d;
+  color:#f0ede8;
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:18px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:rgba(244,93,0,.35);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0d0d0d}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:3px}
+
+/* ═══════════════ NAV ═══════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;
+  padding:1rem 2.5rem;
+  background:rgba(13,13,13,.88);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(240,237,232,.06);
+}
+.nav-logo{
+  font-size:1rem;font-weight:600;
+  color:#f0ede8;text-decoration:none;
+  letter-spacing:-.01em;
+  transition:color .2s;
+}
+.nav-logo:hover{color:#f45d00}
+.nav-links{
+  margin-left:auto;
+  display:flex;list-style:none;gap:.25rem;
+}
+.nav-links a{
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:.78rem;font-weight:400;
+  color:rgba(240,237,232,.5);
+  text-decoration:none;
+  padding:.35rem .8rem;
+  border-radius:9999px;
+  transition:all .2s;
+}
+.nav-links a:hover{
+  color:#f0ede8;
+  background:rgba(240,237,232,.06);
+}
+
+/* ═══════════════ HERO ═══════════════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:7rem 2.5rem 5rem;
+  position:relative;
+}
+.hero-label{
+  font-size:.72rem;font-weight:400;
+  color:rgba(240,237,232,.35);
+  text-transform:uppercase;letter-spacing:.25em;
+  margin-bottom:2rem;
+  font-family:'JetBrains Mono',monospace;
+}
+.hero-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,12vw,9rem);
+  line-height:.9;
+  color:#f0ede8;
+  margin-bottom:1.2rem;
+}
+.hero-name .accent{color:#f45d00}
+.hero-desc{
+  font-size:1.05rem;
+  color:rgba(240,237,232,.55);
+  max-width:580px;
+  line-height:1.7;
+  margin-bottom:2.5rem;
+}
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:1.5rem 2rem;
+  font-size:.85rem;
+  color:rgba(240,237,232,.4);
+  font-family:'JetBrains Mono',monospace;
+}
+.hero-meta a{
+  color:rgba(240,237,232,.4);
+  text-decoration:none;
+  transition:color .2s;
+}
+.hero-meta a:hover{color:#f45d00}
+
+/* ═══════════════ SECTIONS ═══════════════ */
+.section{
+  padding:5rem 2.5rem 6rem;
+  max-width:1100px;
+  margin:0 auto;
+}
+.section-header{
+  display:flex;align-items:baseline;gap:1rem;
+  margin-bottom:3rem;
+}
+.section-number{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;font-weight:500;
+  color:#f45d00;
+  opacity:.5;
+}
+.section-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:3.5rem;
+  line-height:1;
+  color:#f0ede8;
+  letter-spacing:.01em;
+}
+
+/* ═══════════════ PROJECT CARDS ═══════════════ */
+.project-card{
+  display:block;
+  background:#141414;
+  border:1px solid rgba(240,237,232,.06);
+  border-radius:16px;
+  padding:2.5rem;
+  margin-bottom:1.5rem;
+  text-decoration:none;
+  color:#f0ede8;
+  transition:all .3s;
+  position:relative;
+  overflow:hidden;
+}
+.project-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:#f45d00;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .4s ease;
+}
+.project-card:hover::before{transform:scaleX(1)}
+.project-card:hover{
+  background:#1a1a1a;
+  border-color:rgba(244,93,0,.2);
+  transform:translateY(-2px);
+}
+.project-card:hover .project-arrow{transform:translateX(4px) scale(1.15);color:#f45d00}
+.project-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;font-weight:500;
+  color:rgba(240,237,232,.3);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:.6rem;
+}
+.project-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2rem;
+  line-height:1.1;
+  margin-bottom:.6rem;
+}
+.project-desc{
+  font-size:.92rem;
+  color:rgba(240,237,232,.5);
+  line-height:1.65;
+  max-width:700px;
+  margin-bottom:1.2rem;
+}
+.project-pills{
+  display:flex;flex-wrap:wrap;gap:.4rem;
+}
+.project-pill{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;font-weight:500;
+  color:rgba(244,93,0,.8);
+  background:rgba(244,93,0,.08);
+  padding:.25rem .65rem;
+  border-radius:9999px;
+  border:1px solid rgba(244,93,0,.12);
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.project-arrow{
+  position:absolute;bottom:2.5rem;right:2.5rem;
+  font-size:1.5rem;
+  color:rgba(240,237,232,.2);
+  transition:all .3s;
+}
+
+/* ═══════════════ ABOUT ═══════════════ */
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:3rem;
+}
+.about-text{
+  font-size:1rem;
+  color:rgba(240,237,232,.55);
+  line-height:1.75;
+}
+.about-text p{margin-bottom:1rem}
+.about-details{
+  display:flex;flex-direction:column;gap:1.25rem;
+  padding:2rem;
+  background:#141414;
+  border:1px solid rgba(240,237,232,.06);
+  border-radius:16px;
+}
+.about-row{
+  display:flex;gap:1rem;
+}
+.about-row .lbl{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;font-weight:500;
+  color:rgba(240,237,232,.3);
+  text-transform:uppercase;letter-spacing:.08em;
+  min-width:80px;
+  flex-shrink:0;
+}
+.about-row .val{
+  font-size:.9rem;
+  color:rgba(240,237,232,.6);
+}
+
+/* ═══════════════ CONTACT ═══════════════ */
+.contact-section{
+  padding:6rem 2.5rem;
+  text-align:center;
+}
+.contact-headline{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3rem,7vw,5rem);
+  line-height:1;
+  color:#f0ede8;
+  margin-bottom:.5rem;
+}
+.contact-headline .accent{color:#f45d00}
+.contact-email{
+  display:inline-block;
+  font-size:1.1rem;
+  color:rgba(240,237,232,.4);
+  text-decoration:none;
+  border-bottom:1px solid rgba(240,237,232,.1);
+  padding-bottom:.2rem;
+  transition:all .3s;
+  margin-bottom:1.5rem;
+  font-family:'Crimson Pro',Georgia,serif;
+}
+.contact-email:hover{color:#f45d00;border-color:#f45d00}
+.contact-links{
+  display:flex;justify-content:center;gap:1rem;
+}
+.contact-links a{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  color:rgba(240,237,232,.4);
+  text-decoration:none;
+  padding:.5rem 1rem;
+  border-radius:9999px;
+  border:1px solid rgba(240,237,232,.08);
+  transition:all .2s;
+}
+.contact-links a:hover{
+  color:#f45d00;
+  border-color:rgba(244,93,0,.2);
+  background:rgba(244,93,0,.06);
+}
+
+/* ═══════════════ FOOTER ═══════════════ */
+footer{
+  text-align:center;
+  padding:2rem 2.5rem 3rem;
+  font-size:.7rem;
+  font-family:'JetBrains Mono',monospace;
+  color:rgba(240,237,232,.2);
+  border-top:1px solid rgba(240,237,232,.04);
+}
+
+/* ═══════════════ ORANGE GLOW ═══════════════ */
+.hero-glow{
+  position:absolute;
+  top:-20%;right:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(244,93,0,.08),transparent 70%);
+  pointer-events:none;
+  z-index:-1;
+}
+.hero-glow-2{
+  position:absolute;
+  bottom:-10%;left:-5%;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(244,93,0,.04),transparent 70%);
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(max-width:768px){
+  nav{padding:.8rem 1.25rem}
+  .nav-links a{font-size:.7rem;padding:.25rem .6rem}
+  .hero{padding:5rem 1.25rem 3rem}
+  .hero-name{font-size:clamp(2.8rem,14vw,4.5rem)}
+  .hero-desc{font-size:.95rem}
+  .section{padding:3rem 1.25rem 4rem}
+  .section-title{font-size:2.5rem}
+  .project-card{padding:1.5rem;border-radius:12px}
+  .project-title{font-size:1.5rem}
+  .project-arrow{display:none}
+  .about-grid{grid-template-columns:1fr}
+  .contact-section{padding:4rem 1.25rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a class="nav-logo" href="#">◈ Tanmay Poddar</a>
+  <ul class="nav-links">
+    <li><a href="games.html">Games</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-label">Engineering Portfolio</div>
+  <h1 class="hero-name">
+    Tanmay<br>
+    <span class="accent">Poddar</span>
+  </h1>
+  <p class="hero-desc">
+    Second Year Mechanical Engineering Student at McMaster University with a
+    strong interest in aerospace systems and applied physics.
+  </p>
+  <div class="hero-meta">
+    <span>📍 Toronto, Canada</span>
+    <a href="mailto:tanmay@poddar.net">✉ tanmay@poddar.net</a>
+    <a href="#projects">↓ View My Work</a>
+  </div>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<div class="section" style="padding-top:0;padding-bottom:3rem">
+  <div style="display:flex;gap:3rem;flex-wrap:wrap;border-top:1px solid rgba(240,237,232,.06);padding-top:2.5rem">
+    <div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;color:#f45d00">4+</div>
+      <div style="font-size:.72rem;color:rgba(240,237,232,.35);font-family:'JetBrains Mono',monospace;margin-top:.2rem">Engineering Projects Completed</div>
+    </div>
+    <div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;color:#f45d00">2+</div>
+      <div style="font-size:.72rem;color:rgba(240,237,232,.35);font-family:'JetBrains Mono',monospace;margin-top:.2rem">Programming Languages</div>
+    </div>
+    <div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;color:#f45d00">∞</div>
+      <div style="font-size:.72rem;color:rgba(240,237,232,.35);font-family:'JetBrains Mono',monospace;margin-top:.2rem">Curiosity for Aerospace &amp; Physics</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROJECTS ═══ -->
+<section class="section" id="projects">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">Projects</h2>
+  </div>
+
+  <!-- Project 1 -->
+  <a class="project-card" href="https://tp-96.github.io/robot-arm.html">
+    <div class="project-tag">First Year Engineering Design Project 1 · Oct – Dec 2025</div>
+    <h3 class="project-title">Robot Arm End-Effector</h3>
+    <p class="project-desc">
+      Designed and built a universal end-effector for a Q-Arm robotic system capable of
+      grabbing, lifting, and moving objects of varying shapes. Led a team as project manager,
+      overseeing CAD design, prototyping, and a full Python codebase for automated item retrieval.
+    </p>
+    <div class="project-pills">
+      <span class="project-pill">CAD Design</span>
+      <span class="project-pill">Python</span>
+      <span class="project-pill">3D Printing</span>
+      <span class="project-pill">Project Management</span>
+      <span class="project-pill">Rack &amp; Pinion</span>
+    </div>
+    <span class="project-arrow">↗</span>
+  </a>
+
+  <!-- Project 2 -->
+  <a class="project-card" href="https://tp-96.github.io/">
+    <div class="project-tag">High School Shop · Grade 12</div>
+    <h3 class="project-title">High School Projects</h3>
+    <p class="project-desc">
+      Semester-long machining and woodworking projects including a precision aluminum mallet
+      turned on a manual lathe, and a maple finger lap joint box built using dado stack blades —
+      learning measurement, tolerancing, and machine error firsthand.
+    </p>
+    <div class="project-pills">
+      <span class="project-pill">Manual Lathe</span>
+      <span class="project-pill">Metal Machining</span>
+      <span class="project-pill">Woodworking</span>
+      <span class="project-pill">Table Saw</span>
+      <span class="project-pill">Documentation &amp; Technical Drawing</span>
+    </div>
+    <span class="project-arrow">↗</span>
+  </a>
+
+  <!-- Project 3 -->
+  <a class="project-card" href="https://tp-96.github.io/">
+    <div class="project-tag">First Year Engineering Design Project 3 · Jan – Apr 2026</div>
+    <h3 class="project-title">Mechanical Ball Launcher</h3>
+    <p class="project-desc">
+      Designed and built a ball launcher to address a real world issue for a client.
+      Our client had specific mobility restrictions which we based the design around. 1P13 Project 3.
+    </p>
+    <div class="project-pills">
+      <span class="project-pill">CAD Design</span>
+      <span class="project-pill">Client-Facing Design</span>
+      <span class="project-pill">3D Printing</span>
+      <span class="project-pill">Design Process &amp; Thinking</span>
+    </div>
+    <span class="project-arrow">↗</span>
+  </a>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="section" id="about">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <h2 class="section-title">About</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        I'm a mechanical engineering student based in the Greater Toronto Area,
+        passionate about aerospace systems and applied physics. My goal is to
+        contribute meaningfully to the future of airline transportation.
+      </p>
+      <p>
+        My engineering work spans physical fabrication — machining metal on a lathe,
+        building wooden joints — to software and robotics, where I've led teams
+        building automated systems with Python and CAD-designed hardware.
+      </p>
+      <p>
+        I believe the simplest solution is often the best solution, a principle
+        reinforced through every prototype iteration and project setback I've learned from.
+      </p>
+      <a href="mailto:tanmay@poddar.net" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;font-size:.85rem;color:#f45d00;text-decoration:none;font-family:'JetBrains Mono',monospace;border-bottom:1px solid rgba(244,93,0,.2);padding-bottom:.15rem;transition:border-color .2s">
+        Full About Page ↗
+      </a>
+    </div>
+    <div class="about-details">
+      <div class="about-row">
+        <span class="lbl">Location</span>
+        <span class="val">Greater Toronto Area</span>
+      </div>
+      <div class="about-row">
+        <span class="lbl">Email</span>
+        <span class="val">tanmay@poddar.net</span>
+      </div>
+      <div class="about-row">
+        <span class="lbl">Field</span>
+        <span class="val">Engineering — Aerospace</span>
+      </div>
+      <div class="about-row">
+        <span class="lbl">Skills</span>
+        <span class="val">CAD, Python, Machining</span>
+      </div>
+      <div class="about-row">
+        <span class="lbl">Interest</span>
+        <span class="val">Aerospace, Aviation &amp; Applied Physics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="contact-section" id="contact">
+  <h2 class="contact-headline">
+    Let's<br>
+    Build <span class="accent">Something.</span>
+  </h2>
+  <a class="contact-email" href="mailto:tanmay@poddar.net">tanmay@poddar.net</a>
+  <div class="contact-links">
+    <a href="mailto:tanmay@poddar.net">✉ Email ↗</a>
+    <a href="https://github.com/TP-96">⌂ GitHub ↗</a>
+    <a href="https://linkedin.com/in/tanmay-poddar">⊞ LinkedIn ↗</a>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  2026 Tanmay Poddar · Toronto, Canada
+</footer>
+
+</body>
+</html>
