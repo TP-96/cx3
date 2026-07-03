@@ -19,9 +19,8 @@ body{
   --ink-2: rgba(28,26,18,.55);
   --ink-3: rgba(28,26,18,.3);
   --gold: #BF8B2A;
-  --orange: #E85D04;
-  --orange-soft: rgba(232,93,4,.08);
-  --gear-color: rgba(28,26,18,.04);
+  --red: #C41E3A;
+  --red-soft: rgba(196,30,58,.08);
   --gear-stroke: rgba(28,26,18,.07);
   --font-canela: "Canela", Georgia, "Times New Roman", serif;
   --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -34,7 +33,7 @@ body{
   overflow-x:hidden;
   position:relative;
 }
-::selection{background:rgba(232,93,4,.15);color:var(--fg)}
+::selection{background:rgba(196,30,58,.15);color:var(--fg)}
 
 /* ═══════ GEAR CONTAINER ═══════ */
 #gear-container{
@@ -66,7 +65,7 @@ header .logo{
   color:var(--fg);text-decoration:none;
   letter-spacing:-.01em;
 }
-header .logo:hover{color:var(--orange)}
+header .logo:hover{color:var(--red)}
 header nav{
   margin-left:auto;
   display:flex;align-items:center;gap:.25rem;
@@ -80,7 +79,7 @@ header nav a{
   border-radius:9999px;
   transition:all .15s;
 }
-header nav a:hover{background:rgba(0,0,0,.04);color:var(--orange)}
+header nav a:hover{background:rgba(0,0,0,.04);color:var(--red)}
 .cta-link{
   font-family:var(--font-ui);
   font-size:.75rem;font-weight:500;
@@ -90,7 +89,7 @@ header nav a:hover{background:rgba(0,0,0,.04);color:var(--orange)}
   border-radius:9999px;
   transition:all .15s;
 }
-.cta-link:hover{background:var(--orange) !important;color:#fff !important}
+.cta-link:hover{background:var(--red) !important;color:#fff !important}
 
 /* ═══════ HERO ═══════ */
 .hero{
@@ -160,7 +159,7 @@ header nav a:hover{background:rgba(0,0,0,.04);color:var(--orange)}
   margin-top:2.25rem;
   transition:all .2s;
 }
-.hero-cta:hover{background:var(--orange);color:#fff;transform:translateY(-2px);box-shadow:0 4px 20px rgba(232,93,4,.2)}
+.hero-cta:hover{background:var(--red);color:#fff;transform:translateY(-2px);box-shadow:0 4px 20px rgba(196,30,58,.2)}
 .hero-footnote{
   font-family:var(--font-ui);
   font-size:.6875rem;
@@ -183,7 +182,7 @@ section + section{border-top:1px solid var(--border-color)}
 .section-label{
   font-family:var(--font-ui);
   font-size:.625rem;font-weight:500;
-  color:var(--orange);
+  color:var(--red);
   opacity:.65;
   text-transform:uppercase;letter-spacing:.22em;
   margin-bottom:.75rem;
@@ -195,7 +194,7 @@ section + section{border-top:1px solid var(--border-color)}
   display:block;
   width:1.5rem;
   height:1.5px;
-  background:var(--orange);
+  background:var(--red);
   opacity:.3;
   margin-top:.5rem;
 }
@@ -226,7 +225,7 @@ section + section{border-top:1px solid var(--border-color)}
   content:'';
   position:absolute;left:0;top:0;bottom:0;
   width:2px;
-  background:var(--orange);
+  background:var(--red);
   opacity:0;
   transition:opacity .25s;
   border-radius:0 2px 2px 0;
@@ -264,7 +263,7 @@ section + section{border-top:1px solid var(--border-color)}
 }
 .project-row .arrow{
   font-size:1.1rem;
-  color:var(--orange);
+  color:var(--red);
   opacity:.35;
   flex-shrink:0;
   transition:all .25s;
@@ -284,13 +283,13 @@ section + section{border-top:1px solid var(--border-color)}
   transition:all .2s;
 }
 .step-card:hover{
-  border-color:rgba(232,93,4,.15);
+  border-color:rgba(196,30,58,.15);
   box-shadow:0 2px 12px rgba(28,26,18,.04);
 }
 .step-card .step-num{
   font-family:var(--font-ui);
   font-size:.6875rem;font-weight:500;
-  color:var(--orange);
+  color:var(--red);
   opacity:.6;
   letter-spacing:.04em;
   margin-bottom:.4rem;
@@ -324,7 +323,7 @@ section + section{border-top:1px solid var(--border-color)}
   max-width:38rem;
   position:relative;
   padding-left:1.5rem;
-  border-left:2px solid var(--orange);
+  border-left:2px solid var(--red);
   opacity:.75;
 }
 .note-block .attribution{
@@ -414,11 +413,11 @@ section + section{border-top:1px solid var(--border-color)}
   transition:all .2s;
 }
 .cta-banner .contact-links a:hover{
-  background:var(--orange-soft);
-  border-color:var(--orange);
-  color:var(--orange);
+  background:var(--red-soft);
+  border-color:var(--red);
+  color:var(--red);
   transform:translateY(-1px);
-  box-shadow:0 2px 8px rgba(232,93,4,.08);
+  box-shadow:0 2px 8px rgba(196,30,58,.08);
 }
 
 /* ═══════ FOOTER ═══════ */
@@ -433,7 +432,7 @@ footer{
 }
 footer nav{display:flex;gap:1.5rem}
 footer nav a{color:var(--ink-3);text-decoration:none;transition:color .15s}
-footer nav a:hover{color:var(--orange)}
+footer nav a:hover{color:var(--red)}
 
 /* ═══════ RESPONSIVE ═══════ */
 @media(max-width:768px){
@@ -600,7 +599,7 @@ footer nav a:hover{color:var(--orange)}
       <div class="reveal reveal-d1">
         <p>I'm a mechanical engineering student based in the Greater Toronto Area, passionate about aerospace systems and applied physics. My goal is to contribute meaningfully to the future of airline transportation.</p>
         <p>My work spans physical fabrication — machining metal on a lathe, building wooden joints — to software and robotics, where I've led teams building automated systems with Python and CAD-designed hardware.</p>
-        <p style="margin-top:1rem"><a href="mailto:tanmay@poddar.net" style="color:var(--orange);font-size:.8125rem;text-decoration:none;border-bottom:1px solid rgba(232,93,4,.15);padding-bottom:.1rem;transition:border-color .15s" onmouseover="this.style.borderBottomColor='rgba(232,93,4,.4)'" onmouseout="this.style.borderBottomColor='rgba(232,93,4,.15)'">tanmay@poddar.net ↗</a></p>
+        <p style="margin-top:1rem"><a href="mailto:tanmay@poddar.net" style="color:var(--red);font-size:.8125rem;text-decoration:none;border-bottom:1px solid rgba(196,30,58,.15);padding-bottom:.1rem;transition:border-color .15s" onmouseover="this.style.borderBottomColor='rgba(196,30,58,.4)'" onmouseout="this.style.borderBottomColor='rgba(196,30,58,.15)'">tanmay@poddar.net ↗</a></p>
       </div>
       <div class="details reveal reveal-d2">
         <div class="detail-row"><span class="lbl">Location</span><span class="val">Greater Toronto Area</span></div>
@@ -615,7 +614,7 @@ footer nav a:hover{color:var(--orange)}
 
 <!-- ═══ CONTACT ═══ -->
 <section class="cta-banner reveal" id="contact">
-  <h2>Ready to build something&thinsp;<em style="font-style:normal;color:var(--orange)">together?</em></h2>
+  <h2>Ready to build something&thinsp;<em style="font-style:normal;color:var(--red)">together?</em></h2>
   <p>It takes 60 seconds to reach out. No obligation.</p>
   <div class="contact-links">
     <a href="mailto:tanmay@poddar.net">✉ tanmay@poddar.net ↗</a>
@@ -814,6 +813,61 @@ footer nav a:hover{color:var(--orange)}
     return svg;
   }
 
+  /* ═══════ McMASTER CREST ═══════ */
+  function mcMasterPath() {
+    return 'M -22,-24 L 22,-24 L 25,15 Q 0,38 -25,15 Z' +
+      ' M -14,-24 C -14,-30 -8,-33 0,-33 C 8,-33 14,-30 14,-24' +
+      ' M -12,-24 C -12,-29 -7,-32 0,-32 C 7,-32 12,-29 12,-24' +
+      ' M 0,-24 L 0,-33' +
+      ' M -22,-14 L 22,-14' +
+      ' M -22,5 L 22,5' +
+      ' M -12,-2 L -8,-9 L -4,-2 L -8,-5 Z' +
+      ' M -4,-2 L 0,-9 L 4,-2 L 0,-5 Z' +
+      ' M 4,-2 L 8,-9 L 12,-2 L 8,-5 Z' +
+      ' M -20,34 L 20,34 Q 0,37 -20,34' +
+      ' M -18,34 L 19,40 L -19,40 Z';
+  }
+
+  function createCrest(scale, opts) {
+    var s = scale || 1;
+    var margin = 45 * s;
+    var size = margin * 2;
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', (-margin) + ' ' + (-margin) + ' ' + size + ' ' + size);
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.style.cssText = 'left:' + opts.x + '%;top:' + opts.y + '%;opacity:1;pointer-events:none;z-index:-1;';
+
+    var g = document.createElementNS(ns, 'g');
+    g.style.transformOrigin = margin + 'px ' + margin + 'px';
+
+    var path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', mcMasterPath());
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#1C1A18');
+    path.setAttribute('stroke-width', opts.strokeWidth || 1.5);
+    path.setAttribute('opacity', opts.opacity || 0.07);
+
+    g.appendChild(path);
+    svg.appendChild(g);
+    container.appendChild(svg);
+
+    var dur = opts.duration || 120;
+    g.style.animation = 'spin ' + dur + 's linear infinite';
+    g.style.animationDirection = opts.dir || 'normal';
+
+    gears.push({
+      g: g,
+      svg: svg,
+      baseDuration: dur,
+      baseOpacity: opts.opacity || 0.07,
+      baseY: opts.y,
+      dir: opts.dir || 'normal',
+      yOff: 0
+    });
+    return svg;
+  }
+
   // ── Define gears ──
   createGear(50, 60, 20, 10, {
     x: 78, y: 2, opacity: 0.12, duration: 50, dir: 'normal',
@@ -865,6 +919,12 @@ footer nav a:hover{color:var(--orange)}
   createAirplane(0.3, {
     x: 8, y: 65, opacity: 0.05, duration: 40, dir: 'reverse',
     strokeWidth: 1.0
+  });
+
+  // ── McMaster crest ──
+  createCrest(0.4, {
+    x: 45, y: 6, opacity: 0.06, duration: 140, dir: 'reverse',
+    strokeWidth: 1.6
   });
 
   // ── Scroll-driven gear modulation ──
