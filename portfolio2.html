@@ -699,7 +699,7 @@ footer nav a:hover{color:var(--orange)}
     path.setAttribute('d', gearPath(innerR, outerR, teeth, holeR));
     path.setAttribute('fill', 'none');
     path.setAttribute('stroke', '#1C1A18');
-    path.setAttribute('stroke-width', opts.strokeWidth || 1);
+    path.setAttribute('stroke-width', opts.strokeWidth || 2.5);
     path.setAttribute('opacity', opts.opacity || 0.06);
 
     g.appendChild(path);
@@ -712,7 +712,7 @@ footer nav a:hover{color:var(--orange)}
       ring.setAttribute('r', opts.innerRing);
       ring.setAttribute('fill', 'none');
       ring.setAttribute('stroke', '#1C1A18');
-      ring.setAttribute('stroke-width', '0.5');
+      ring.setAttribute('stroke-width', '1.2');
       ring.setAttribute('opacity', (opts.opacity || 0.06) * 0.7);
       g.appendChild(ring);
     }
@@ -729,7 +729,7 @@ footer nav a:hover{color:var(--orange)}
         line.setAttribute('x2', r2 * Math.cos(ang));
         line.setAttribute('y2', r2 * Math.sin(ang));
         line.setAttribute('stroke', '#1C1A18');
-        line.setAttribute('stroke-width', '0.5');
+        line.setAttribute('stroke-width', '1.0');
         line.setAttribute('opacity', (opts.opacity || 0.06) * 0.6);
         g.appendChild(line);
       }
@@ -756,35 +756,115 @@ footer nav a:hover{color:var(--orange)}
     return svg;
   }
 
+  /* ═══════ AIRPLANE SILHOUETTES ═══════ */
+  function airplanePath(scale) {
+    if (!scale) scale = 1;
+    return 'M 0,' + (-8*scale) +
+      ' L ' + (2*scale) + ',' + (-3*scale) +
+      ' L ' + (16*scale) + ',' + (2*scale) +
+      ' L ' + (10*scale) + ',' + (5*scale) +
+      ' L ' + (3.5*scale) + ',' + (7*scale) +
+      ' L ' + (1.5*scale) + ',' + (9*scale) +
+      ' L 0,' + (8*scale) +
+      ' L ' + (-1.5*scale) + ',' + (9*scale) +
+      ' L ' + (-3.5*scale) + ',' + (7*scale) +
+      ' L ' + (-10*scale) + ',' + (5*scale) +
+      ' L ' + (-16*scale) + ',' + (2*scale) +
+      ' L ' + (-2*scale) + ',' + (-3*scale) +
+      'Z';
+  }
+
+  function createAirplane(scale, opts) {
+    var pScale = scale || 1;
+    var margin = pScale * 20;
+    var svgSize = margin * 2;
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', (-margin) + ' ' + (-margin) + ' ' + svgSize + ' ' + svgSize);
+    svg.setAttribute('width', svgSize);
+    svg.setAttribute('height', svgSize);
+    svg.style.cssText = 'left:' + opts.x + '%;top:' + opts.y + '%;opacity:1;pointer-events:none;z-index:-1;';
+
+    var g = document.createElementNS(ns, 'g');
+    g.style.transformOrigin = margin + 'px ' + margin + 'px';
+
+    var path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', airplanePath(pScale));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#1C1A18');
+    path.setAttribute('stroke-width', opts.strokeWidth || 1.2);
+    path.setAttribute('opacity', opts.opacity || 0.05);
+
+    g.appendChild(path);
+    svg.appendChild(g);
+    container.appendChild(svg);
+
+    var dur = opts.duration || 90;
+    g.style.animation = 'spin ' + dur + 's linear infinite';
+    g.style.animationDirection = opts.dir || 'normal';
+
+    gears.push({
+      g: g,
+      svg: svg,
+      baseDuration: dur,
+      baseOpacity: opts.opacity || 0.05,
+      baseY: opts.y,
+      dir: opts.dir || 'normal',
+      yOff: 0
+    });
+    return svg;
+  }
+
   // ── Define gears ──
   createGear(50, 60, 20, 10, {
     x: 78, y: 2, opacity: 0.12, duration: 50, dir: 'normal',
-    strokeWidth: 1.5, innerRing: 35, spokes: 8
+    strokeWidth: 3.5, innerRing: 35, spokes: 8
   });
 
   createGear(32, 40, 14, 7, {
     x: 6, y: -4, opacity: 0.11, duration: 35, dir: 'reverse',
-    strokeWidth: 1.3, innerRing: 22, spokes: 6
+    strokeWidth: 3.0, innerRing: 22, spokes: 6
   });
 
   createGear(22, 28, 12, 5, {
     x: 55, y: 0, opacity: 0.12, duration: 22, dir: 'normal',
-    strokeWidth: 1.2, innerRing: 15, spokes: 4
+    strokeWidth: 3.0, innerRing: 15, spokes: 4
   });
 
   createGear(14, 19, 8, 3.5, {
     x: 22, y: 14, opacity: 0.12, duration: 14, dir: 'reverse',
-    strokeWidth: 1.1, innerRing: 10, spokes: 3
+    strokeWidth: 2.5, innerRing: 10, spokes: 3
   });
 
   createGear(9, 12, 6, 2, {
     x: 48, y: 28, opacity: 0.1, duration: 9, dir: 'normal',
-    strokeWidth: 1, innerRing: 6, spokes: 3
+    strokeWidth: 2.5, innerRing: 6, spokes: 3
   });
 
   createGear(6, 8.5, 5, 1.5, {
     x: 90, y: 18, opacity: 0.09, duration: 6, dir: 'reverse',
-    strokeWidth: 0.9, spokes: 2
+    strokeWidth: 2.0, spokes: 2
+  });
+
+  // ── Define airplanes ──
+  createAirplane(0.55, {
+    x: 15, y: 30, opacity: 0.06, duration: 70, dir: 'reverse',
+    strokeWidth: 1.4
+  });
+  createAirplane(0.7, {
+    x: 65, y: 42, opacity: 0.05, duration: 100, dir: 'normal',
+    strokeWidth: 1.3
+  });
+  createAirplane(0.4, {
+    x: 82, y: 60, opacity: 0.055, duration: 55, dir: 'reverse',
+    strokeWidth: 1.2
+  });
+  createAirplane(0.6, {
+    x: 35, y: 55, opacity: 0.045, duration: 85, dir: 'normal',
+    strokeWidth: 1.3
+  });
+  createAirplane(0.3, {
+    x: 8, y: 65, opacity: 0.05, duration: 40, dir: 'reverse',
+    strokeWidth: 1.0
   });
 
   // ── Scroll-driven gear modulation ──
