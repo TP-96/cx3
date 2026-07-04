@@ -7,530 +7,388 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400,500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════ RESET ═══════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:#f7f4f0;
-  color:#1c1a18;
-  font-family:'Crimson Pro',Georgia,serif;
-  font-size:18px;
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  background:#faf8f0;color:#1c1a18;
+  font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.6;overflow-x:hidden;
 }
 ::selection{background:rgba(244,93,0,.25);color:#fff}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:#f0ece5}
 ::-webkit-scrollbar-thumb{background:#c5c0b8;border-radius:3px}
 
-/* ═══════════════ NAV ═══════════════ */
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.15);opacity:.5}}
+
+#gear-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#gear-container svg{position:fixed;pointer-events:none}
+
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
-  display:flex;align-items:center;
-  padding:1rem 2.5rem;
-  background:rgba(247,244,240,.92);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(0,0,0,.06);
+  display:flex;align-items:center;padding:1rem 2.5rem;
+  background:rgba(250,248,240,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(28,26,18,.07);
 }
-.nav-logo{
-  font-size:1rem;font-weight:600;
-  color:#1c1a18;text-decoration:none;
-  letter-spacing:-.01em;
-  transition:color .2s;
-}
+.nav-logo{font-size:1rem;font-weight:600;color:#1c1a18;text-decoration:none;letter-spacing:-.01em;transition:color .2s}
 .nav-logo:hover{color:#f45d00}
-.nav-links{
-  margin-left:auto;
-  display:flex;list-style:none;gap:.25rem;
-}
+.nav-links{margin-left:auto;display:flex;list-style:none;gap:.25rem}
 .nav-links a{
-  font-family:'Crimson Pro',Georgia,serif;
-  font-size:.78rem;font-weight:400;
-  color:rgba(28,26,24,.4);
-  text-decoration:none;
-  padding:.35rem .8rem;
-  border-radius:9999px;
-  transition:all .2s;
+  font-family:'Crimson Pro',Georgia,serif;font-size:.78rem;font-weight:400;
+  color:rgba(28,26,24,.4);text-decoration:none;
+  padding:.35rem .8rem;border-radius:9999px;transition:all .2s;
 }
-.nav-links a:hover{
-  color:#1c1a18;
-  background:rgba(0,0,0,.04);
+.nav-links a:hover{color:#1c1a18;background:rgba(0,0,0,.04)}
+.cta-nav{
+  color:#f45d00 !important;border:1px solid rgba(244,93,0,.25);
 }
+.cta-nav:hover{background:rgba(244,93,0,.08) !important;border-color:rgba(244,93,0,.4) !important}
 
-/* ═══════════════ HERO ═══════════════ */
 .hero{
-  min-height:100vh;
-  display:flex;flex-direction:column;
-  justify-content:center;
-  padding:7rem 2.5rem 5rem;
-  position:relative;
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:7rem 2.5rem 4rem;position:relative;
+}
+.hero-glow{
+  position:absolute;top:-20%;right:-10%;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(244,93,0,.04),transparent 70%);
+  pointer-events:none;z-index:-1;animation:pulse 8s ease-in-out infinite;
+}
+.hero-glow-2{
+  position:absolute;bottom:-10%;left:-5%;width:450px;height:450px;
+  background:radial-gradient(circle,rgba(244,93,0,.03),transparent 70%);
+  pointer-events:none;z-index:-1;animation:pulse 10s ease-in-out infinite;animation-delay:2s;
 }
 .hero-label{
-  font-size:.72rem;font-weight:400;
-  color:rgba(28,26,24,.35);
-  text-transform:uppercase;letter-spacing:.25em;
-  margin-bottom:2rem;
-  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;font-weight:400;color:rgba(28,26,24,.3);
+  text-transform:uppercase;letter-spacing:.3em;
+  margin-bottom:1rem;font-family:'JetBrains Mono',monospace;
+  animation:fadeUp .8s .1s both;
 }
 .hero h1{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(2.2rem,6vw,4rem);
-  line-height:1.05;
-  color:#1c1a18;
-  margin-bottom:.5rem;
-  max-width:800px;
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.5rem);
+  line-height:1.05;color:#1c1a18;margin-bottom:.5rem;max-width:750px;
+  animation:fadeUp .8s .2s both;
 }
 .hero h1 .big{
-  display:block;
-  font-size:clamp(3rem,10vw,7rem);
-  line-height:.92;
-  color:#f45d00;
-  margin-top:.15rem;
+  display:block;font-size:clamp(2.5rem,8vw,5.5rem);line-height:.92;
+  color:#f45d00;margin-top:.15rem;
 }
-.hero-desc {
-  font-size:1.05rem;
-  color:rgba(28,26,24,.5);
-  max-width:580px;
-  line-height:1.7;
-  margin-bottom:2.5rem;
+.hero-desc{
+  font-size:1rem;color:rgba(28,26,24,.5);max-width:560px;line-height:1.7;
+  margin-bottom:2rem;animation:fadeUp .8s .35s both;
 }
-.hero-meta {
+.hero-meta{
   display:flex;flex-wrap:wrap;gap:1.5rem 2rem;
-  font-size:.85rem;
-  color:rgba(28,26,24,.4);
+  font-size:.85rem;color:rgba(28,26,24,.4);
   font-family:'JetBrains Mono',monospace;
+  animation:fadeUp .8s .5s both;
 }
-.hero-meta a {
-  color:rgba(28,26,24,.4);
-  text-decoration:none;
-  transition:color .2s;
+.hero-meta a{color:rgba(28,26,24,.4);text-decoration:none;transition:color .2s}
+.hero-meta a:hover{color:#f45d00}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:.5rem;
+  margin-top:.5rem;font-family:'JetBrains Mono',monospace;
+  font-size:.82rem;color:#f45d00;text-decoration:none;
+  padding:.5rem 1.2rem;border-radius:9999px;
+  border:1px solid rgba(244,93,0,.25);
+  transition:all .3s;animation:fadeUp .8s .6s both;
 }
-.hero-meta a:hover {color:#f45d00}
+.hero-cta:hover{background:rgba(244,93,0,.07);border-color:rgba(244,93,0,.4);gap:.8rem}
+.hero-cta .arr{display:inline-block;transition:transform .3s}
+.hero-cta:hover .arr{transform:translateX(5px)}
 
-.hero-glow {
-  position:absolute;
-  top:-20%;right:-10%;
-  width:500px;height:500px;
-  background:radial-gradient(circle,rgba(244,93,0,.05),transparent 70%);
-  pointer-events:none;
-  z-index:-1;
+.section{padding:5.5rem 2.5rem 6rem;max-width:1100px;margin:0 auto}
+.section-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.5rem}
+.section-number{
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:500;
+  color:#f45d00;opacity:.5;
 }
-.hero-glow-2 {
-  position:absolute;
-  bottom:-10%;left:-5%;
-  width:400px;height:400px;
-  background:radial-gradient(circle,rgba(244,93,0,.03),transparent 70%);
-  pointer-events:none;
-  z-index:-1;
-}
-
-/* ═══════════════ SECTIONS ═══════════════ */
-.section {
-  padding:5rem 2.5rem 6rem;
-  max-width:1100px;
-  margin:0 auto;
-}
-.section-header {
-  display:flex;align-items:baseline;gap:1rem;
-  margin-bottom:3rem;
-}
-.section-number {
-  font-family:'JetBrains Mono',monospace;
-  font-size:.72rem;font-weight:500;
-  color:#f45d00;
-  opacity:.5;
-}
-.section-title {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:3.5rem;
-  line-height:1;
-  color:#1c1a18;
-  letter-spacing:.01em;
+.section-title{
+  font-family:'Bebas Neue',sans-serif;font-size:3.5rem;line-height:1;color:#1c1a18;
 }
 
-/* ═══════════════ CAD GALLERY ═══════════════ */
-.cad-gallery {
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-  gap:2rem;
-  margin-top:2rem;
+/* ═══ CAD GALLERY GRID ═══ */
+.cad-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:1.5rem;margin-top:1rem;
 }
-.cad-card {
-  background:#ffffff;
-  border:1px solid rgba(0,0,0,.06);
-  border-radius:16px;
-  padding:1.5rem;
-  transition:all .3s;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 1px 3px rgba(0,0,0,.02);
+.cad-card{
+  background:#fff;border:1px solid rgba(28,26,18,.07);
+  border-radius:14px;overflow:hidden;text-decoration:none;color:#1c1a18;
+  transition:all .35s;position:relative;
+  box-shadow:0 1px 4px rgba(0,0,0,.02);
+  animation:fadeUp .7s both;
 }
-.cad-card::before {
-  content:'';
-  position:absolute;top:0;left:0;right:0;height:3px;
-  background:#f45d00;
-  transform:scaleX(0);
-  transform-origin:left;
-  transition:transform .4s ease;
+.cad-card:nth-child(1){animation-delay:.1s}
+.cad-card:nth-child(2){animation-delay:.2s}
+.cad-card:nth-child(3){animation-delay:.3s}
+.cad-card:nth-child(4){animation-delay:.4s}
+.cad-card:hover{
+  border-color:rgba(244,93,0,.2);transform:translateY(-3px);
+  box-shadow:0 6px 20px rgba(0,0,0,.05);
 }
-.cad-card:hover::before {transform:scaleX(1)}
-.cad-card:hover {
-  background:#faf8f5;
-  border-color:rgba(244,93,0,.2);
-  transform:translateY(-2px);
-  box-shadow:0 4px 12px rgba(0,0,0,.04);
+.cad-card:hover .cad-arrow{transform:translateX(5px);color:#f45d00}
+.cad-preview{
+  height:180px;background:linear-gradient(135deg,rgba(244,93,0,.08),rgba(244,93,0,.02));
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
 }
-.cad-thumbnail {
-  width:100%;
-  height:180px;
-  background:linear-gradient(135deg, rgba(244,93,0,.1), rgba(28,26,18,.05));
-  border-radius:12px;
-  margin-bottom:1rem;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
+.cad-preview .icon{font-size:3rem;position:relative;z-index:1;filter:grayscale(.3)}
+.cad-preview .ring{
+  position:absolute;width:80px;height:80px;
+  border:2px solid rgba(244,93,0,.15);border-radius:50%;
+  animation:pulse 3s ease-in-out infinite;
 }
-.cad-thumbnail::before {
-  content:'';
-  position:absolute;
-  width:60px;height:60px;
-  background:rgba(244,93,0,.2);
-  border-radius:50%;
-  animation:pulse 2s infinite;
+.cad-preview .ring:nth-child(2){width:55px;height:55px;animation-delay:.5s}
+.cad-preview .ring:nth-child(3){width:110px;height:110px;animation-delay:1s;border-color:rgba(244,93,0,.08)}
+.cad-info{padding:1.2rem 1.5rem 1.5rem}
+.cad-category{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:500;
+  color:rgba(28,26,24,.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem;
 }
-.cad-thumbnail::after {
-  content:'';
-  position:absolute;
-  width:80px;height:80px;
-  background:rgba(244,93,0,.1);
-  border-radius:50%;
-  animation:pulse 2s infinite 0.5s;
+.cad-name{
+  font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1.1;margin-bottom:.5rem;
 }
-@keyframes pulse {
-  0%, 100% { transform: scale(0.8); opacity: 0.8; }
-  50% { transform: scale(1.2); opacity: 0; }
+.cad-desc{
+  font-size:.82rem;color:rgba(28,26,24,.45);line-height:1.55;margin-bottom:.8rem;
 }
-.cad-icon {
-  position:relative;
-  z-index:1;
-  font-size:2.5rem;
-  color:#f45d00;
-  opacity:.8;
+.cad-stats{
+  display:flex;gap:1rem;font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;color:rgba(28,26,24,.3);
 }
-.cad-info {
-  margin-top:1rem;
+.cad-tags{
+  display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem;
 }
-.cad-name {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1.5rem;
-  line-height:1.1;
-  margin-bottom:.5rem;
-  color:#1c1a18;
+.cad-tag{
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:500;
+  color:rgba(244,93,0,.8);background:rgba(244,93,0,.06);
+  padding:.15rem .5rem;border-radius:9999px;text-transform:uppercase;
 }
-.cad-category {
-  font-family:'JetBrains Mono',monospace;
-  font-size:.62rem;
-  font-weight:500;
-  color:rgba(28,26,24,.3);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  margin-bottom:.5rem;
-}
-.cad-stats {
-  display:flex;
-  gap:1rem;
-  font-size:.72rem;
-  color:rgba(28,26,24,.4);
-  font-family:'JetBrains Mono',monospace;
-}
-.cad-stats span {
-  display:flex;
-  align-items:center;
-  gap:.3rem;
-}
-.cad-arrow {
-  position:absolute;bottom:1.5rem;right:1.5rem;
-  font-size:1.2rem;
-  color:rgba(28,26,24,.15);
-  transition:all .3s;
-}
-.cad-card:hover .cad-arrow {
-  transform:translateX(4px) scale(1.1);
-  color:#f45d00;
+.cad-arrow{
+  position:absolute;bottom:1rem;right:1.2rem;
+  font-size:1.1rem;color:rgba(28,26,24,.1);transition:all .3s;
 }
 
-/* ═══════════════ FOOTER ═══════════════ */
-footer {
-  text-align:center;
-  padding:2rem 2.5rem 3rem;
-  font-size:.7rem;
-  font-family:'JetBrains Mono',monospace;
-  color:rgba(28,26,24,.2);
-  border-top:1px solid rgba(0,0,0,.04);
+footer{
+  text-align:center;padding:2rem 2.5rem;
+  font-size:.68rem;font-family:'JetBrains Mono',monospace;
+  color:rgba(28,26,24,.18);border-top:1px solid rgba(28,26,18,.06);
+  max-width:1100px;margin:0 auto;
 }
 
-/* ═══════════════ RESPONSIVE ═══════════════ */
 @media(max-width:768px){
   nav{padding:.8rem 1.25rem}
-  .nav-links a{font-size:.7rem;padding:.25rem .6rem}
+  .nav-links a{font-size:.7rem;padding:.25rem .55rem}
   .hero{padding:5rem 1.25rem 3rem}
   .hero h1{font-size:clamp(1.5rem,8vw,2.5rem)}
   .hero h1 .big{font-size:clamp(2rem,12vw,4rem)}
-  .hero-desc{font-size:.95rem}
+  .hero-desc{font-size:.92rem}
   .section{padding:3rem 1.25rem 4rem}
   .section-title{font-size:2.5rem}
-  .cad-gallery{gri-template-columns:1fr}
-  .cad-card{padding:1rem}
-  .cad-name{font-size:1.2rem}
-  .cad-thumbnail{height:140px}
-  .cad-icon{font-size:2rem}
-  footer{padding:1.5rem 1.25rem 2rem}
+  .cad-grid{grid-template-columns:1fr}
+  .cad-card{border-radius:12px}
+  .cad-preview{height:150px}
+  .cad-preview .icon{font-size:2.5rem}
+  .cad-info{padding:1rem 1.25rem 1.25rem}
+  .cad-name{font-size:1.3rem}
+  .cad-arrow{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
+<div id="gear-container"></div>
+
 <nav>
   <a class="nav-logo" href="portfolio2.html">◈ Tanmay Poddar</a>
   <ul class="nav-links">
-    <li><a href="games.html">Games</a></li>
     <li><a href="portfolio2.html#projects">Projects</a></li>
     <li><a href="portfolio2.html#about">About</a></li>
-    <li><a href="portfolio2.html#contact">Contact</a></li>
+    <li><a href="portfolio2.html#contact" class="cta-nav">Contact</a></li>
   </ul>
 </nav>
 
-<!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="hero-glow-2"></div>
   <div class="hero-label">CAD Gallery</div>
   <h1>
-    3D Models &<span class="big">Design Files</span>
+    3D Models &<span class="big">Design Archive</span>
   </h1>
   <p class="hero-desc">
-    Collection of CAD designs, STL files, and 3D printed components created for robotics,
-    mechanical systems, and engineering projects. Each model represents hours of design,
-    simulation, and physical testing.
+    Collection of CAD models, STL files, and 3D-printed components from robotics,
+    mechanical systems, and fabrication projects.
   </p>
   <div class="hero-meta">
-    <span>📦 STL Files Available</span>
-    <a href="#gallery">↓ Browse Gallery</a>
+    <span>📦 35+ Design Files</span>
+    <span>🖨️ 3D Printed Prototypes</span>
   </div>
+  <a class="hero-cta" href="#gallery">Browse Designs <span class="arr">→</span></a>
 </section>
 
-<!-- ═══ CAD GALLERY ═══ -->
 <section class="section" id="gallery">
   <div class="section-header">
     <span class="section-number">01</span>
     <h2 class="section-title">Design Files</h2>
   </div>
-
-  <div class="cad-gallery">
-    <!-- Robot Arm End-Effector -->
-    <a class="cad-card" href="#" onclick="return false;">
-      <div class="cad-thumbnail">
-        <div class="cad-icon">🤖</div>
+  <div class="cad-grid">
+    <div class="cad-card">
+      <div class="cad-preview">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="icon">🤖</div>
       </div>
       <div class="cad-info">
-        <div class="cad-category">First Year Project · Oct – Dec 2025</div>
-        <h3 class="cad-name">Robot Arm End-Effector</h3>
-        <div class="cad-stats">
-          <span>📦 STL Files: 12</span>
-          <span>📊 Components: 8</span>
-        </div>
+        <div class="cad-category">Robot Arm · Project 1</div>
+        <h3 class="cad-name">Gripper Assembly</h3>
+        <p class="cad-desc">End-effector claw mechanism with rack-and-pinion actuation. Designed for grasping irregular objects.</p>
+        <div class="cad-stats"><span>📐 12 parts</span><span>🔧 STL</span></div>
+        <div class="cad-tags"><span class="cad-tag">Mechanical</span><span class="cad-tag">Assembly</span></div>
       </div>
       <span class="cad-arrow">↗</span>
-    </a>
-
-    <!-- High School Projects -->
-    <a class="cad-card" href="#" onclick="return false;">
-      <div class="cad-thumbnail">
-        <div class="cad-icon">🔧</div>
+    </div>
+    <div class="cad-card">
+      <div class="cad-preview">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="icon">🔧</div>
       </div>
       <div class="cad-info">
-        <div class="cad-category">High School Shop · Grade 12</div>
-        <h3 class="cad-name">High School Projects</h3>
-        <div class="cad-stats">
-          <span>📦 STL Files: 8</span>
-          <span>📊 Components: 5</span>
-        </div>
+        <div class="cad-category">Machining · Grade 12</div>
+        <h3 class="cad-name">Aluminum Mallet</h3>
+        <p class="cad-desc">Precision-turned aluminum mallet head with handle. Manual lathe work — tolerancing and surface finish.</p>
+        <div class="cad-stats"><span>📐 2 parts</span><span>🔧 Manual Lathe</span></div>
+        <div class="cad-tags"><span class="cad-tag">Machining</span><span class="cad-tag">Metal</span></div>
       </div>
       <span class="cad-arrow">↗</span>
-    </a>
-
-    <!-- Mechanical Ball Launcher -->
-    <a class="cad-card" href="#" onclick="return false;">
-      <div class="cad-thumbnail">
-        <div class="cad-icon">🎱</div>
+    </div>
+    <div class="cad-card">
+      <div class="cad-preview">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="icon">🎱</div>
       </div>
       <div class="cad-info">
-        <div class="cad-category">Design Project 3 · Jan – Apr 2026</div>
-        <h3 class="cad-name">Mechanical Ball Launcher</h3>
-        <div class="cad-stats">
-          <span>📦 STL Files: 15</span>
-          <span>📊 Components: 12</span>
-        </div>
+        <div class="cad-category">Ball Launcher · Project 3</div>
+        <h3 class="cad-name">Launch Mechanism</h3>
+        <p class="cad-desc">Catapult-style launcher with adjustable tension arm. CAD designed for accessibility-focused client requirements.</p>
+        <div class="cad-stats"><span>📐 8 parts</span><span>🔧 STL</span></div>
+        <div class="cad-tags"><span class="cad-tag">Mechanical</span><span class="cad-tag">Prototype</span></div>
       </div>
       <span class="cad-arrow">↗</span>
-    </a>
-
-    <!-- CAD File Viewer -->
-    <a class="cad-card" href="cad.html" target="_blank">
-      <div class="cad-thumbnail">
-        <div class="cad-icon">👁️</div>
+    </div>
+    <div class="cad-card">
+      <div class="cad-preview">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="icon">📐</div>
       </div>
       <div class="cad-info">
-        <div class="cad-category">CAD Viewer Tool</div>
-        <h3 class="cad-name">3D Model Viewer</h3>
-        <div class="cad-stats">
-          <span>🌐 Web-based</span>
-          <span>🔄 STL Support</span>
-        </div>
+        <div class="cad-category">Joinery · Grade 12</div>
+        <h3 class="cad-name">Finger Lap Box</h3>
+        <p class="cad-desc">Maple finger-joint box built with dado stack blades. Precision woodworking with focus on measurement accuracy.</p>
+        <div class="cad-stats"><span>📐 6 parts</span><span>🔧 Wood</span></div>
+        <div class="cad-tags"><span class="cad-tag">Woodworking</span><span class="cad-tag">Joinery</span></div>
       </div>
       <span class="cad-arrow">↗</span>
-    </a>
+    </div>
   </div>
 </section>
 
-<!-- ═══ FOOTER ═══ -->
-<footer>
-  2026 Tanmay Poddar · Toronto, Canada
-</footer>
+<footer>2026 Tanmay Poddar · Toronto, Canada</footer>
 
 <script>
-/* ═══════ GEAR GENERATOR ═══════ */
 (function(){
   'use strict';
-  var container = document.getElementById('gear-container');
-  if (!container) return;
+  var c = document.getElementById('gear-container');
+  if (!c) return;
   var ns = 'http://www.w3.org/2000/svg';
 
-  function gearPath(innerR, outerR, teeth, holeR) {
-    var step = 2 * Math.PI / teeth;
-    var hw = step * 0.2;
-    var parts = [];
-    for (var i = 0; i < teeth; i++) {
-      var a = i * step;
-      var p1x = innerR * Math.cos(a - hw);
-      var p1y = innerR * Math.sin(a - hw);
-      var p2x = outerR * Math.cos(a - hw * 0.45);
-      var p2y = outerR * Math.sin(a - hw * 0.45);
-      var p3x = outerR * Math.cos(a + hw * 0.45);
-      var p3y = outerR * Math.sin(a + hw * 0.45);
-      var p4x = innerR * Math.cos(a + hw);
-      var p4y = innerR * Math.sin(a + hw);
+  function gp(ir, or, t, hr) {
+    var step = 2 * Math.PI / t, hw = step * 0.2, parts = [];
+    for (var i = 0; i < t; i++) {
+      var a = i * step, p1x = ir * Math.cos(a - hw), p1y = ir * Math.sin(a - hw);
+      var p2x = or * Math.cos(a - hw * 0.45), p2y = or * Math.sin(a - hw * 0.45);
+      var p3x = or * Math.cos(a + hw * 0.45), p3y = or * Math.sin(a + hw * 0.45);
+      var p4x = ir * Math.cos(a + hw), p4y = ir * Math.sin(a + hw);
       if (i === 0) parts.push('M' + p1x.toFixed(3) + ' ' + p1y.toFixed(3));
-      parts.push('L' + p2x.toFixed(3) + ' ' + p2y.toFixed(3));
-      parts.push('L' + p3x.toFixed(3) + ' ' + p3y.toFixed(3));
-      parts.push('L' + p4x.toFixed(3) + ' ' + p4y.toFixed(3));
-      var nextA = (i + 1) * step;
-      var npx = innerR * Math.cos(nextA - hw);
-      var npy = innerR * Math.sin(nextA - hw);
-      if (i < teeth - 1) {
-        parts.push('A' + innerR + ' ' + innerR + ' 0 0 1 ' + npx.toFixed(3) + ' ' + npy.toFixed(3));
-      } else {
-        var fpx = innerR * Math.cos(0 - hw);
-        var fpy = innerR * Math.sin(0 - hw);
-        parts.push('A' + innerR + ' ' + innerR + ' 0 0 1 ' + fpx.toFixed(3) + ' ' + fpy.toFixed(3));
-      }
+      parts.push('L' + p2x.toFixed(3) + ' ' + p2y.toFixed(3), 'L' + p3x.toFixed(3) + ' ' + p3y.toFixed(3), 'L' + p4x.toFixed(3) + ' ' + p4y.toFixed(3));
+      var na = (i + 1) * step, nx = ir * Math.cos(na - hw), ny = ir * Math.sin(na - hw);
+      if (i < t - 1) parts.push('A' + ir + ' ' + ir + ' 0 0 1 ' + nx.toFixed(3) + ' ' + ny.toFixed(3));
+      else { var fx = ir * Math.cos(0 - hw), fy = ir * Math.sin(0 - hw); parts.push('A' + ir + ' ' + ir + ' 0 0 1 ' + fx.toFixed(3) + ' ' + fy.toFixed(3)); }
     }
     parts.push('Z');
-    if (holeR > 0) {
-      var h = holeR;
-      parts.push('M' + h + ' 0 A' + h + ' ' + h + ' 0 1 0 ' + (-h) + ' 0 A' + h + ' ' + h + ' 0 1 0 ' + h + ' 0 Z');
-    }
+    if (hr > 0) { var h = hr; parts.push('M' + h + ' 0 A' + h + ' ' + h + ' 0 1 0 ' + (-h) + ' 0 A' + h + ' ' + h + ' 0 1 0 ' + h + ' 0 Z'); }
     return parts.join('');
   }
 
-  function createGear(innerR, outerR, teeth, holeR, opts) {
-    var size = (outerR + 4) * 2;
-    var svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('viewBox', (-outerR - 2) + ' ' + (-outerR - 2) + ' ' + (outerR + 2) * 2 + ' ' + (outerR + 2) * 2);
-    svg.setAttribute('width', size);
-    svg.setAttribute('height', size);
-    svg.style.cssText = 'left:' + opts.x + '%;top:' + opts.y + '%;opacity:1;pointer-events:none;z-index:-1;';
-
+  function cg(ir, or, t, hr, o) {
+    var size = (or + 4) * 2, svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', (-or - 2) + ' ' + (-or - 2) + ' ' + (or + 2) * 2 + ' ' + (or + 2) * 2);
+    svg.setAttribute('width', size); svg.setAttribute('height', size);
+    svg.style.cssText = 'left:' + o.x + '%;top:' + o.y + '%;pointer-events:none;z-index:-1;';
     var g = document.createElementNS(ns, 'g');
-    g.style.transformOrigin = (outerR + 2) + 'px ' + (outerR + 2) + 'px';
-
     var path = document.createElementNS(ns, 'path');
-    path.setAttribute('d', gearPath(innerR, outerR, teeth, holeR));
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', '#1C1A18');
-    path.setAttribute('stroke-width', opts.strokeWidth || 2.5);
-    path.setAttribute('opacity', opts.opacity || 0.06);
-
+    path.setAttribute('d', gp(ir, or, t, hr));
+    path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#1C1A18');
+    path.setAttribute('stroke-width', o.strokeWidth || 2.5);
+    path.setAttribute('opacity', o.opacity || 0.06);
     g.appendChild(path);
-
-    if (opts.innerRing) {
+    if (o.innerRing) {
       var ring = document.createElementNS(ns, 'circle');
-      ring.setAttribute('cx', '0');
-      ring.setAttribute('cy', '0');
-      ring.setAttribute('r', opts.innerRing);
-      ring.setAttribute('fill', 'none');
-      ring.setAttribute('stroke', '#1C1A18');
-      ring.setAttribute('stroke-width', '2.0');
-      ring.setAttribute('opacity', (opts.opacity || 0.06) * 0.7);
+      ring.setAttribute('cx', '0'); ring.setAttribute('cy', '0');
+      ring.setAttribute('r', o.innerRing); ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', '#1C1A18'); ring.setAttribute('stroke-width', '1.8');
+      ring.setAttribute('opacity', (o.opacity || 0.06) * 0.6);
       g.appendChild(ring);
     }
-
-    if (opts.spokes) {
-      for (var s = 0; s < opts.spokes; s++) {
-        var ang = (s / opts.spokes) * 2 * Math.PI;
-        var r1 = holeR || innerR * 0.35;
-        var r2 = innerR * 0.85;
-        var line = document.createElementNS(ns, 'line');
-        line.setAttribute('x1', r1 * Math.cos(ang));
-        line.setAttribute('y1', r1 * Math.sin(ang));
-        line.setAttribute('x2', r2 * Math.cos(ang));
-        line.setAttribute('y2', r2 * Math.sin(ang));
-        line.setAttribute('stroke', '#1C1A18');
-        line.setAttribute('stroke-width', '1.5');
-        line.setAttribute('opacity', (opts.opacity || 0.06) * 0.6);
-        g.appendChild(line);
-      }
+    if (o.spokes) for (var s = 0; s < o.spokes; s++) {
+      var ang = (s / o.spokes) * 2 * Math.PI, r1 = hr || ir * 0.35, r2 = ir * 0.82;
+      var line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', r1 * Math.cos(ang)); line.setAttribute('y1', r1 * Math.sin(ang));
+      line.setAttribute('x2', r2 * Math.cos(ang)); line.setAttribute('y2', r2 * Math.sin(ang));
+      line.setAttribute('stroke', '#1C1A18'); line.setAttribute('stroke-width', '1.3');
+      line.setAttribute('opacity', (o.opacity || 0.06) * 0.5);
+      g.appendChild(line);
     }
-
-    svg.appendChild(g);
-    container.appendChild(svg);
-
-    var dur = opts.duration || 30;
-    g.style.animation = 'spin ' + dur + 's linear infinite';
-    g.style.animationDirection = opts.dir || 'normal';
-
-    return svg;
+    for (var d = 0; d < t; d++) {
+      var da = (d / t) * 2 * Math.PI - Math.PI / 2;
+      var dot = document.createElementNS(ns, 'circle');
+      dot.setAttribute('cx', (or * 0.78) * Math.cos(da)); dot.setAttribute('cy', (or * 0.78) * Math.sin(da));
+      dot.setAttribute('r', or * 0.08); dot.setAttribute('fill', '#1C1A18');
+      dot.setAttribute('opacity', (o.opacity || 0.06) * 0.5);
+      g.appendChild(dot);
+    }
+    svg.appendChild(g); c.appendChild(svg);
+    g.style.animation = 'spin ' + (o.duration || 30) + 's linear infinite';
+    g.style.animationDirection = o.dir || 'normal';
+    g.style.transformOrigin = (or + 2) + 'px ' + (or + 2) + 'px';
   }
 
-  // ── Gears (BIG — 1.6× larger) ──
-  createGear(95, 114, 24, 20, {
-    x: 82, y: -6, opacity: 0.2, duration: 50, dir: 'normal',
-    strokeWidth: 4.5, innerRing: 68, spokes: 8
-  });
-  createGear(62, 80, 18, 16, {
-    x: 2, y: -10, opacity: 0.17, duration: 35, dir: 'reverse',
-    strokeWidth: 4.0, innerRing: 46, spokes: 6
-  });
-  createGear(44, 56, 14, 10, {
-    x: 54, y: -4, opacity: 0.18, duration: 22, dir: 'normal',
-    strokeWidth: 4.0, innerRing: 30, spokes: 4
-  });
-  createGear(30, 38, 10, 7, {
-    x: 18, y: 10, opacity: 0.16, duration: 14, dir: 'reverse',
-    strokeWidth: 3.5, innerRing: 20, spokes: 3
-  });
-  createGear(18, 24, 8, 4, {
-    x: 46, y: 28, opacity: 0.14, duration: 9, dir: 'normal',
-    strokeWidth: 3.5, innerRing: 12, spokes: 3
-  });
-  createGear(14, 18, 6, 3, {
-    x: 90, y: 20, opacity: 0.12, duration: 6, dir: 'reverse',
-    strokeWidth: 3.0, spokes: 2
+  cg(95,114,24,20,{x:84,y:-6,opacity:.2,duration:50,dir:'normal',strokeWidth:4.5,innerRing:68,spokes:8});
+  cg(62,80,18,16,{x:2,y:-10,opacity:.17,duration:35,dir:'reverse',strokeWidth:4.0,innerRing:46,spokes:6});
+  cg(44,56,14,10,{x:56,y:-4,opacity:.18,duration:22,dir:'normal',strokeWidth:4.0,innerRing:30,spokes:4});
+  cg(30,38,10,7,{x:16,y:12,opacity:.16,duration:14,dir:'reverse',strokeWidth:3.5,innerRing:20,spokes:3});
+  cg(18,24,8,4,{x:48,y:30,opacity:.14,duration:9,dir:'normal',strokeWidth:3.5,innerRing:12,spokes:3});
+  cg(14,18,6,3,{x:90,y:22,opacity:.12,duration:6,dir:'reverse',strokeWidth:3.0,spokes:2});
+
+  // parallax
+  var gears = []; var gs = document.querySelectorAll('#gear-container g');
+  for (var i = 0; i < gs.length; i++) {
+    gears.push({el: gs[i], baseY: parseFloat(gs[i].parentElement.style.top)});
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(function() {
+        var sy = window.pageYOffset;
+        for (var j = 0; j < gears.length; j++) {
+          gears[j].el.parentElement.style.transform = 'translateY(' + (sy * 0.03) + 'px)';
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
   });
 })();
 </script>
