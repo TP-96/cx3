@@ -11,7 +11,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:#f5f0e1;
+  background:#fdfaf6;
   color:#1c1a18;
   font-family:'Crimson Pro',Georgia,serif;
   font-size:18px;
@@ -21,15 +21,15 @@ body{
 }
 ::selection{background:rgba(244,93,0,.25);color:#fff}
 ::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:#efe3d4}
-::-webkit-scrollbar-thumb{background:#d1c5b5;border-radius:3px}
+::-webkit-scrollbar-track{background:#f5f0e8}
+::-webkit-scrollbar-thumb{background:#d4cfc3;border-radius:3px}
 
 /* ═══════════════ NAV ═══════════════ */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;
   padding:1rem 2.5rem;
-  background:rgba(247,244,240,.92);
+  background:rgba(247,244,240,.95);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(0,0,0,.06);
@@ -64,7 +64,7 @@ nav{
   min-height:100vh;
   display:flex;flex-direction:column;
   justify-content:center;
-  padding:7rem 2.5rem 5rem;
+  padding:8rem 2.5rem 5rem;
   position:relative;
 }
 .hero-label{
@@ -109,45 +109,17 @@ nav{
 }
 .hero-meta a:hover{color:#f45d00}
 
-.hero-glow{
-  position:absolute;
-  top:-20%;right:-10%;
-  width:500px;height:500px;
-  background:radial-gradient(circle,rgba(244,93,0,.05),transparent 70%);
-  pointer-events:none;
-  z-index:-1;
-}
-.hero-glow-2{
-  position:absolute;
-  bottom:-10%;left:-5%;
-  width:400px;height:400px;
-  background:radial-gradient(circle,rgba(244,93,0,.03),transparent 70%);
-  pointer-events:none;
-  z-index:-1;
+/* ═══════════════ PAGE BREAKS ═══════════════ */
+.section-break{
+  height:2rem;
 }
 
 /* ═══════════════ SECTIONS ═══════════════ */
 .section{
-  padding:5rem 2.5rem 6rem;
+  padding:6rem 2.5rem 6rem;
   max-width:1100px;
   margin:0 auto;
-}
-.section-header{
-  display:flex;align-items:baseline;gap:1rem;
-  margin-bottom:3rem;
-}
-.section-number{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.72rem;font-weight:500;
-  color:#f45d00;
-  opacity:.5;
-}
-.section-title{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:3.5rem;
-  line-height:1;
-  color:#1c1a18;
-  letter-spacing:.01em;
+  position:relative;
 }
 
 /* ═══════════════ STATS BAR ═══════════════ */
@@ -170,16 +142,19 @@ nav{
   margin-top:.2rem;
 }
 
-/* ═══════════════ PROJECT CARDS ═══════════════ */
+/* ═══════════════ PROJECTS ═══════════════ */
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+  gap:2rem;
+  margin-top:2rem;
+}
 .project-card{
   display:block;
   background:#ffffff;
   border:1px solid rgba(0,0,0,.06);
   border-radius:16px;
-  padding:2.5rem;
-  margin-bottom:1.5rem;
-  text-decoration:none;
-  color:#1c1a18;
+  padding:2rem;
   transition:all .3s;
   position:relative;
   overflow:hidden;
@@ -210,7 +185,7 @@ nav{
 }
 .project-title{
   font-family:'Bebas Neue',sans-serif;
-  font-size:2rem;
+  font-size:1.8rem;
   line-height:1.1;
   margin-bottom:.6rem;
 }
@@ -235,24 +210,28 @@ nav{
   text-transform:uppercase;letter-spacing:.04em;
 }
 .project-arrow{
-  position:absolute;bottom:2.5rem;right:2.5rem;
+  position:absolute;bottom:2rem;right:2rem;
   font-size:1.5rem;
   color:rgba(28,26,24,.15);
   transition:all .3s;
 }
 
 /* ═══════════════ ABOUT ═══════════════ */
-.about-grid{
-  display:grid;grid-template-columns:1fr 1fr;
+.about-container{
+  display:flex;
   gap:3rem;
+  margin-top:2rem;
+  align-items:flex-start;
 }
 .about-text{
+  flex:1;
   font-size:1rem;
   color:rgba(28,26,24,.5);
   line-height:1.75;
 }
 .about-text p{margin-bottom:1rem}
 .about-details{
+  flex:1;
   display:flex;flex-direction:column;gap:1.25rem;
   padding:2rem;
   background:#ffffff;
@@ -280,6 +259,8 @@ nav{
 .contact-section{
   padding:6rem 2.5rem;
   text-align:center;
+  max-width:800px;
+  margin:0 auto;
 }
 .contact-headline{
   font-family:'Bebas Neue',sans-serif;
@@ -345,22 +326,24 @@ footer{
   .hero h1{font-size:clamp(1.5rem,8vw,2.5rem)}
   .hero h1 .big{font-size:clamp(2rem,12vw,4rem)}
   .hero-desc{font-size:.95rem}
+  .section{padding:3rem 1.25rem 4rem}
   .stats-bar{padding:1.5rem 1.25rem 2rem;gap:1.5rem}
   .stat-num{font-size:2rem}
-  .section{padding:3rem 1.25rem 4rem}
-  .section-title{font-size:2.5rem}
+  .projects-grid{grid-template-columns:1fr}
   .project-card{padding:1.5rem;border-radius:12px}
   .project-title{font-size:1.5rem}
   .project-arrow{display:none}
-  .about-grid{grid-template-columns:1fr}
+  .about-container{flex-direction:column}
+  .about-details{padding:1.5rem}
+  .about-row .lbl{min-width:70px}
   .contact-section{padding:4rem 1.25rem}
+  .contact-links{flex-direction:column}
+  .contact-links a{width:100%;justify-content:center}
+  footer{padding:1.5rem 1.25rem 2rem}
 }
 </style>
 </head>
 <body>
-
-<!-- ═══ GEAR BACKGROUND ═══ -->
-<div id="gear-container"></div>
 
 <!-- ═══ NAV ═══ -->
 <nav>
@@ -375,8 +358,6 @@ footer{
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-glow-2"></div>
   <div class="hero-label">Engineering Portfolio</div>
   <h1>
     Do I have the skills to build your next system?
@@ -405,7 +386,7 @@ footer{
   </div>
   <div>
     <div class="stat-num">∞</div>
-    <div class="stat-label">Curiosity for Aerospace &amp; Physics</div>
+    <div class="stat-label">Curiosity for Aerospace & Physics</div>
   </div>
 </div>
 
@@ -416,61 +397,65 @@ footer{
     <h2 class="section-title">Projects</h2>
   </div>
 
-  <!-- Project 1 -->
-  <a class="project-card" href="https://tp-96.github.io/robot-arm.html">
-    <div class="project-tag">First Year Engineering Design Project 1 · Oct – Dec 2025</div>
-    <h3 class="project-title">Robot Arm End-Effector</h3>
-    <p class="project-desc">
-      Designed and built a universal end-effector for a Q-Arm robotic system capable of
-      grabbing, lifting, and moving objects of varying shapes. Led a team as project manager,
-      overseeing CAD design, prototyping, and a full Python codebase for automated item retrieval.
-    </p>
-    <div class="project-pills">
-      <span class="project-pill">CAD Design</span>
-      <span class="project-pill">Python</span>
-      <span class="project-pill">3D Printing</span>
-      <span class="project-pill">Project Management</span>
-      <span class="project-pill">Rack & Pinion</span>
-    </div>
-    <span class="project-arrow">↗</span>
-  </a>
+  <div class="projects-grid">
+    <!-- Project 1 -->
+    <a class="project-card" href="https://tp-96.github.io/robot-arm.html">
+      <div class="project-tag">First Year Engineering Design Project 1 · Oct – Dec 2025</div>
+      <h3 class="project-title">Robot Arm End-Effector</h3>
+      <p class="project-desc">
+        Designed and built a universal end-effector for a Q-Arm robotic system capable of
+        grabbing, lifting, and moving objects of varying shapes. Led a team as project manager,
+        overseeing CAD design, prototyping, and a full Python codebase for automated item retrieval.
+      </p>
+      <div class="project-pills">
+        <span class="project-pill">CAD Design</span>
+        <span class="project-pill">Python</span>
+        <span class="project-pill">3D Printing</span>
+        <span class="project-pill">Project Management</span>
+        <span class="project-pill">Rack & Pinion</span>
+      </div>
+      <span class="project-arrow">↗</span>
+    </a>
 
-  <!-- Project 2 -->
-  <a class="project-card" href="#">
-    <div class="project-tag">High School Shop · Grade 12</div>
-    <h3 class="project-title">High School Projects</h3>
-    <p class="project-desc">
-      Semester-long machining and woodworking projects including a precision aluminum mallet
-      turned on a manual lathe, and a maple finger lap joint box built using dado stack blades —
-      learning measurement, tolerancing, and machine error firsthand.
-    </p>
-    <div class="project-pills">
-      <span class="project-pill">Manual Lathe</span>
-      <span class="project-pill">Metal Machining</span>
-      <span class="project-pill">Woodworking</span>
-      <span class="project-pill">Table Saw</span>
-      <span class="project-pill">Documentation & Technical Drawing</span>
-    </div>
-    <span class="project-arrow">↗</span>
-  </a>
+    <!-- Project 2 -->
+    <a class="project-card" href="#">
+      <div class="project-tag">High School Shop · Grade 12</div>
+      <h3 class="project-title">High School Projects</h3>
+      <p class="project-desc">
+        Semester-long machining and woodworking projects including a precision aluminum mallet
+        turned on a manual lathe, and a maple finger lap joint box built using dado stack blades —
+        learning measurement, tolerancing, and machine error firsthand.
+      </p>
+      <div class="project-pills">
+        <span class="project-pill">Manual Lathe</span>
+        <span class="project-pill">Metal Machining</span>
+        <span class="project-pill">Woodworking</span>
+        <span class="project-pill">Table Saw</span>
+        <span class="project-pill">Documentation & Technical Drawing</span>
+      </div>
+      <span class="project-arrow">↗</span>
+    </a>
 
-  <!-- Project 3 -->
-  <a class="project-card" href="#">
-    <div class="project-tag">First Year Engineering Design Project 3 · Jan – Apr 2026</div>
-    <h3 class="project-title">Mechanical Ball Launcher</h3>
-    <p class="project-desc">
-      Designed and built a ball launcher to address a real world issue for a client.
-      Our client had specific mobility restrictions which we based the design around. 1P13 Project 3.
-    </p>
-    <div class="project-pills">
-      <span class="project-pill">CAD Design</span>
-      <span class="project-pill">Client-Facing Design</span>
-      <span class="project-pill">3D Printing</span>
-      <span class="project-pill">Design Process & Thinking</span>
-    </div>
-    <span class="project-arrow">↗</span>
-  </a>
+    <!-- Project 3 -->
+    <a class="project-card" href="#">
+      <div class="project-tag">First Year Engineering Design Project 3 · Jan – Apr 2026</div>
+      <h3 class="project-title">Mechanical Ball Launcher</h3>
+      <p class="project-desc">
+        Designed and built a ball launcher to address a real world issue for a client.
+        Our client had specific mobility restrictions which we based the design around. 1P13 Project 3.
+      </p>
+      <div class="project-pills">
+        <span class="project-pill">CAD Design</span>
+        <span class="project-pill">Client-Facing Design</span>
+        <span class="project-pill">3D Printing</span>
+        <span class="project-pill">Design Process & Thinking</span>
+      </div>
+      <span class="project-arrow">↗</span>
+    </a>
+  </div>
 </section>
+
+<div class="section-break"></div>
 
 <!-- ═══ ABOUT ═══ -->
 <section class="section" id="about">
@@ -478,7 +463,8 @@ footer{
     <span class="section-number">02</span>
     <h2 class="section-title">About</h2>
   </div>
-  <div class="about-grid">
+
+  <div class="about-container">
     <div class="about-text">
       <p>
         I'm a mechanical engineering student based in the Greater Toronto Area,
