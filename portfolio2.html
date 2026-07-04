@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tanmay Poddar — Engineering Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400,500&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════ RESET ═══════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:#f7f4f0;
+  background:#f5f0e1;
   color:#1c1a18;
   font-family:'Crimson Pro',Georgia,serif;
   font-size:18px;
@@ -21,21 +21,8 @@ body{
 }
 ::selection{background:rgba(244,93,0,.25);color:#fff}
 ::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:#f0ece5}
-::-webkit-scrollbar-thumb{background:#c5c0b8;border-radius:3px}
-
-/* ═══════════════ GEAR CONTAINER ═══════════════ */
-#gear-container{
-  position:fixed;inset:0;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-}
-#gear-container svg{
-  position:fixed;
-  pointer-events:none;
-}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+::-webkit-scrollbar-track{background:#efe3d4}
+::-webkit-scrollbar-thumb{background:#d1c5b5;border-radius:3px}
 
 /* ═══════════════ NAV ═══════════════ */
 nav{
@@ -84,7 +71,7 @@ nav{
   font-size:.72rem;font-weight:400;
   color:rgba(28,26,24,.35);
   text-transform:uppercase;letter-spacing:.25em;
-  margin-bottom:1.5rem;
+  margin-bottom:2rem;
   font-family:'JetBrains Mono',monospace;
 }
 .hero h1{
@@ -379,7 +366,7 @@ footer{
 <nav>
   <a class="nav-logo" href="#">◈ Tanmay Poddar</a>
   <ul class="nav-links">
-    <li><a href="games.html">Games</a></li>
+    <li><a href="#games">Games</a></li>
     <li><a href="#projects">Projects</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -443,7 +430,7 @@ footer{
       <span class="project-pill">Python</span>
       <span class="project-pill">3D Printing</span>
       <span class="project-pill">Project Management</span>
-      <span class="project-pill">Rack &amp; Pinion</span>
+      <span class="project-pill">Rack & Pinion</span>
     </div>
     <span class="project-arrow">↗</span>
   </a>
@@ -462,7 +449,7 @@ footer{
       <span class="project-pill">Metal Machining</span>
       <span class="project-pill">Woodworking</span>
       <span class="project-pill">Table Saw</span>
-      <span class="project-pill">Documentation &amp; Technical Drawing</span>
+      <span class="project-pill">Documentation & Technical Drawing</span>
     </div>
     <span class="project-arrow">↗</span>
   </a>
@@ -479,7 +466,7 @@ footer{
       <span class="project-pill">CAD Design</span>
       <span class="project-pill">Client-Facing Design</span>
       <span class="project-pill">3D Printing</span>
-      <span class="project-pill">Design Process &amp; Thinking</span>
+      <span class="project-pill">Design Process & Thinking</span>
     </div>
     <span class="project-arrow">↗</span>
   </a>
@@ -526,7 +513,7 @@ footer{
       </div>
       <div class="about-row">
         <span class="lbl">Interest</span>
-        <span class="val">Aerospace, Aviation &amp; Applied Physics</span>
+        <span class="val">Aerospace, Aviation & Applied Physics</span>
       </div>
       <div class="about-row">
         <span class="lbl">Education</span>
@@ -545,7 +532,7 @@ footer{
   <p class="contact-meta">It takes 60 seconds to reach out. No obligation.</p>
   <a class="contact-email" href="mailto:tanmay@poddar.net">tanmay@poddar.net</a>
   <div class="contact-links">
-    <a href="mailto:tanmay@poddar.net">✉ Email ↗</a>
+    <a href="mailto:tanmay@poddar.net">✉ tanmay@poddar.net ↗</a>
     <a href="https://github.com/TP-96">⌂ GitHub ↗</a>
     <a href="https://linkedin.com/in/tanmay-poddar">⊞ LinkedIn ↗</a>
   </div>
@@ -621,7 +608,6 @@ footer{
 
     g.appendChild(path);
 
-    // Inner ring detail
     if (opts.innerRing) {
       var ring = document.createElementNS(ns, 'circle');
       ring.setAttribute('cx', '0');
@@ -634,7 +620,6 @@ footer{
       g.appendChild(ring);
     }
 
-    // Spoke lines
     if (opts.spokes) {
       for (var s = 0; s < opts.spokes; s++) {
         var ang = (s / opts.spokes) * 2 * Math.PI;
@@ -689,6 +674,5 @@ footer{
   });
 })();
 </script>
-
 </body>
 </html>
