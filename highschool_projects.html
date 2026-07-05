@@ -10,27 +10,34 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:#faf8f0;color:#1c1a18;
-  font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.7;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background:#faf8f0;
+  color:#1c1a18;
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:18px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 ::selection{background:rgba(244,93,0,.25);color:#fff}
 ::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:#f5f0e8}
-::-webkit-scrollbar-thumb{background:#d4cfc3;border-radius:3px}
+::-webkit-scrollbar-track{background:#f0ece5}
+::-webkit-scrollbar-thumb{background:#c5c0b8;border-radius:3px}
+
 #gear-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 #gear-container svg{position:fixed;pointer-events:none}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
-  display:flex;align-items:center;padding:1rem 2.5rem;
-  background:rgba(250,248,240,.95);backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);
+  display:flex;align-items:center;
+  padding:1rem 2.5rem;
+  background:rgba(250,248,240,.95);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(0,0,0,.06);
 }
-.nav-logo{
-  font-size:1rem;font-weight:600;color:#1c1a18;text-decoration:none;
-  letter-spacing:-.01em;transition:color .2s;font-family:'Crimson Pro',Georgia,serif;
-}
+.nav-logo{font-size:1rem;font-weight:600;color:#1c1a18;text-decoration:none;letter-spacing:-.01em;transition:color .2s}
 .nav-logo:hover{color:#f45d00}
 .nav-links{margin-left:auto;display:flex;list-style:none;gap:.25rem}
 .nav-links a{
@@ -39,87 +46,212 @@ nav{
   padding:.35rem .8rem;border-radius:9999px;transition:all .2s;
 }
 .nav-links a:hover{color:#1c1a18;background:rgba(0,0,0,.04)}
-.nav-links a.active{color:#f45d00;background:rgba(244,93,0,.07)}
-.cta-nav{
-  font-family:'Crimson Pro',Georgia,serif;font-size:.78rem;font-weight:500;
-  color:#faf8f0 !important;background:#1c1a18;
-  padding:.35rem .85rem !important;border-radius:9999px;transition:all .2s;
+.cta-nav{color:#f45d00!important;border:1px solid rgba(244,93,0,.25)}
+.cta-nav:hover{background:rgba(244,93,0,.08)!important;border-color:rgba(244,93,0,.4)!important}
+
+.page{padding:6rem 2.5rem 4rem;max-width:900px;margin:0 auto;position:relative;z-index:1}
+.back-link{
+  display:inline-flex;align-items:center;gap:.35rem;
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;
+  color:rgba(28,26,24,.4);text-decoration:none;
+  padding:.35rem 0;margin-bottom:2rem;transition:color .2s;
 }
-.cta-nav:hover{background:#f45d00 !important;color:#fff !important}
-.hero{
-  min-height:70vh;display:flex;flex-direction:column;justify-content:center;
-  padding:8rem 2.5rem 4rem;position:relative;
+.back-link:hover{color:#f45d00}
+.back-link:hover .back-arrow{transform:translateX(-3px)}
+.back-arrow{display:inline-block;transition:transform .2s}
+
+.section{animation:fadeUp .6s ease forwards;opacity:0}
+.section-d1{animation-delay:.1s}
+.section-d2{animation-delay:.2s}
+.section-d3{animation-delay:.3s}
+.section-d4{animation-delay:.4s}
+.section-d5{animation-delay:.5s}
+.section-d6{animation-delay:.6s}
+
+.project-hero{
+  padding:8rem 0 3rem;
+  animation:fadeUp .6s ease forwards;animation-delay:.05s;
 }
-.hero-glow{position:absolute;top:-20%;right:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(244,93,0,.06),transparent 70%);pointer-events:none;z-index:-1}
-.hero-glow-2{position:absolute;bottom:-10%;left:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(244,93,0,.04),transparent 70%);pointer-events:none;z-index:-1}
-.hero-badge{
-  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:500;
+.project-hero .breadcrumb{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;color:rgba(28,26,24,.3);
+  text-transform:uppercase;letter-spacing:.15em;
+  margin-bottom:1.25rem;
+}
+.project-hero h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.5rem,8vw,5rem);
+  line-height:1;
+  color:#1c1a18;
+  letter-spacing:-.01em;
+}
+.project-hero .accent{color:#f45d00}
+.project-hero .hero-meta{
+  display:flex;flex-wrap:wrap;gap:1rem 2rem;
+  margin-top:1.25rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;color:rgba(28,26,24,.4);
+}
+.project-hero .hero-meta span{display:flex;align-items:center;gap:.35rem}
+.project-hero .hero-desc{
+  font-size:1rem;color:rgba(28,26,24,.55);
+  max-width:650px;line-height:1.7;margin-top:1.5rem;
+}
+.project-pills{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:1.25rem}
+.pill{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:500;
   color:rgba(244,93,0,.9);background:rgba(244,93,0,.07);
   padding:.25rem .65rem;border-radius:9999px;
-  border:1px solid rgba(244,93,0,.12);text-transform:uppercase;letter-spacing:.08em;
-  margin-bottom:2rem;width:fit-content;
+  border:1px solid rgba(244,93,0,.12);
+  text-transform:uppercase;letter-spacing:.04em;
 }
-.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,8vw,5rem);line-height:.92;color:#1c1a18;margin-bottom:.75rem;max-width:700px}
-.hero h1 .accent{color:#f45d00}
-.hero-sub{font-size:1.05rem;color:rgba(28,26,24,.5);max-width:540px;line-height:1.7}
-.hero-meta{display:flex;flex-wrap:wrap;gap:1.5rem 2rem;margin-top:2rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:rgba(28,26,24,.4)}
-.hero-meta span{display:flex;align-items:center;gap:.35rem}
-.section{padding:5rem 2.5rem;max-width:900px;margin:0 auto}
-.section-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.5rem}
-.section-number{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:500;color:#f45d00;opacity:.5}
-.section-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;color:#1c1a18;letter-spacing:.01em}
-.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
-.overview-desc{font-size:.95rem;color:rgba(28,26,24,.5);line-height:1.75}
-.overview-desc p{margin-bottom:1rem}
-.overview-card{background:#fff;border-radius:16px;padding:2rem;border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 3px rgba(0,0,0,.02)}
-.overview-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:#1c1a18;margin-bottom:1rem}
-.overview-card .detail-row{display:flex;gap:.75rem;margin-bottom:.6rem;font-size:.82rem;font-family:'JetBrains Mono',monospace}
-.overview-card .detail-row .lbl{color:rgba(28,26,24,.3);min-width:80px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em;font-size:.6rem}
-.overview-card .detail-row .val{color:rgba(28,26,24,.5)}
+
+.project-glow{
+  position:absolute;top:-15%;right:-5%;
+  width:450px;height:450px;
+  background:radial-gradient(circle,rgba(244,93,0,.06),transparent 70%);
+  pointer-events:none;z-index:-1;
+}
+.project-glow-2{
+  position:absolute;bottom:-10%;left:-5%;
+  width:350px;height:350px;
+  background:radial-gradient(circle,rgba(244,93,0,.04),transparent 70%);
+  pointer-events:none;z-index:-1;
+}
+
+.content-section{
+  padding:3rem 0;border-top:1px solid rgba(0,0,0,.06);
+}
+.content-section:first-of-type{border-top:none}
+.content-section .label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;font-weight:500;
+  color:#f45d00;opacity:.6;
+  text-transform:uppercase;letter-spacing:.15em;
+  margin-bottom:.75rem;
+}
+.content-section h2{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2.5rem;line-height:1.08;
+  color:#1c1a18;margin-bottom:1.25rem;
+}
+.content-section p{
+  font-size:.95rem;color:rgba(28,26,24,.55);
+  line-height:1.7;margin-bottom:.85rem;max-width:700px;
+}
+.content-section ul{
+  list-style:none;padding:0;margin-bottom:1rem;
+}
+.content-section ul li{
+  font-size:.9rem;color:rgba(28,26,24,.55);
+  padding:.35rem 0 .35rem 1.2rem;
+  position:relative;line-height:1.5;
+}
+.content-section ul li::before{
+  content:'▸';
+  position:absolute;left:0;
+  color:#f45d00;opacity:.5;
+}
+
+.detail-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.25rem;
+  margin:1.5rem 0;
+}
 .detail-card{
-  background:#fff;border-radius:16px;padding:2rem;
-  border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 3px rgba(0,0,0,.02);
-  margin-bottom:1.5rem;position:relative;overflow:hidden;
+  background:#fff;border:1px solid rgba(0,0,0,.06);
+  border-radius:12px;padding:1.5rem;
+  transition:all .25s;position:relative;overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.02);
 }
-.detail-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#f45d00;opacity:0;transition:opacity .3s}
-.detail-card:hover::before{opacity:.4}
-.detail-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#1c1a18;margin-bottom:.75rem}
-.detail-card p,.detail-card li{font-size:.88rem;color:rgba(28,26,24,.5);line-height:1.7}
-.detail-card ul{padding-left:1.25rem}
-.detail-card ul li{margin-bottom:.35rem}
-.pills-row{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1rem}
-.pill{
+.detail-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:#f45d00;transform:scaleX(0);transform-origin:left;
+  transition:transform .35s ease;
+}
+.detail-card:hover::before{transform:scaleX(1)}
+.detail-card:hover{
+  border-color:rgba(244,93,0,.15);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+.detail-card h3{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.25rem;line-height:1.1;margin-bottom:.5rem;
+}
+.detail-card p{
+  font-size:.82rem;color:rgba(28,26,24,.5);line-height:1.6;
+  margin-bottom:0;
+}
+.detail-card ul{list-style:none;padding:0;margin:.5rem 0 0}
+.detail-card ul li{
+  font-size:.78rem;color:rgba(28,26,24,.5);
+  padding:.15rem 0 .15rem 1rem;
+  position:relative;
+}
+.detail-card ul li::before{content:'—';position:absolute;left:0;color:#f45d00;opacity:.4}
+
+.project-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;
+  margin:1.5rem 0;
+}
+.project-card-full{
+  background:#fff;border:1px solid rgba(0,0,0,.06);
+  border-radius:12px;padding:1.5rem;
+  transition:all .25s;position:relative;overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.02);
+}
+.project-card-full::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:#f45d00;transform:scaleX(0);transform-origin:left;
+  transition:transform .35s ease;
+}
+.project-card-full:hover::before{transform:scaleX(1)}
+.project-card-full:hover{
+  border-color:rgba(244,93,0,.15);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+.project-card-full h3{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.3rem;line-height:1.1;margin-bottom:.5rem;
+}
+.project-card-full .subtitle{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;color:rgba(28,26,24,.3);
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.5rem;
+}
+.project-card-full p{
+  font-size:.82rem;color:rgba(28,26,24,.5);line-height:1.65;
+}
+
+.skill-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.75rem}
+.skill-tag{
   font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:500;
-  color:rgba(244,93,0,.9);background:rgba(244,93,0,.07);
-  padding:.25rem .6rem;border-radius:9999px;
-  border:1px solid rgba(244,93,0,.12);text-transform:uppercase;letter-spacing:.06em;
+  color:rgba(244,93,0,.8);background:rgba(244,93,0,.06);
+  padding:.2rem .5rem;border-radius:9999px;text-transform:uppercase;letter-spacing:.04em;
 }
-.back-link{display:inline-flex;align-items:center;gap:.35rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:rgba(28,26,24,.4);text-decoration:none;padding:.35rem 0;margin-bottom:2rem;transition:color .2s}
-.back-link:hover{color:#f45d00}
-.back-arrow{display:inline-block;transition:transform .2s}
-.back-link:hover .back-arrow{transform:translateX(-3px)}
-footer{text-align:center;padding:3rem 2.5rem;border-top:1px solid rgba(0,0,0,.04);font-family:'JetBrains Mono',monospace;font-size:.7rem;color:rgba(28,26,24,.2)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{opacity:0;animation:fadeUp .65s cubic-bezier(.22,1,.36,1) forwards}
-.fade-up-d1{animation-delay:.08s}
-.fade-up-d2{animation-delay:.16s}
-.fade-up-d3{animation-delay:.24s}
-.fade-up-d4{animation-delay:.32s}
-.fade-up-d5{animation-delay:.4s}
+
+footer{
+  text-align:center;padding:2rem 2.5rem 3rem;
+  font-size:.7rem;font-family:'JetBrains Mono',monospace;
+  color:rgba(28,26,24,.2);
+  border-top:1px solid rgba(0,0,0,.04);margin-top:2rem;
+}
+
 @media(max-width:768px){
   nav{padding:.8rem 1.25rem}
   .nav-links a{font-size:.7rem;padding:.25rem .6rem}
-  .hero{padding:6rem 1.25rem 3rem}
-  .hero h1{font-size:clamp(2rem,10vw,3.5rem)}
-  .hero-sub{font-size:.95rem}
-  .section{padding:3rem 1.25rem}
-  .section-title{font-size:2rem}
-  .overview-grid{grid-template-columns:1fr}
-  .detail-card{padding:1.25rem}
+  .page{padding:5rem 1.25rem 2rem}
+  .project-hero{padding:6rem 0 2rem}
+  .project-hero h1{font-size:clamp(2rem,10vw,3.5rem)}
+  .project-grid{grid-template-columns:1fr}
+  footer{padding:1.5rem 1.25rem 2rem}
 }
 </style>
 </head>
 <body>
+
 <div id="gear-container"></div>
 
 <nav>
@@ -131,112 +263,168 @@ footer{text-align:center;padding:3rem 2.5rem;border-top:1px solid rgba(0,0,0,.04
   </ul>
 </nav>
 
-<section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-glow-2"></div>
-  <div class="hero-badge fade-up">High School Shop · Grade 12</div>
-  <h1 class="fade-up fade-up-d1">High School<br><span class="accent">Projects</span></h1>
-  <p class="hero-sub fade-up fade-up-d2">Semester-long machining and woodworking projects built in a professional shop environment. Learning measurement, tolerancing, and machine error firsthand through precision metal and wood fabrication.</p>
-  <div class="hero-meta fade-up fade-up-d3">
-    <span>⏱ Grade 12 · Full Semester</span>
-    <span>🔧 Manual Lathe | Table Saw</span>
-  </div>
-</section>
+<div class="page">
 
-<section class="section">
-  <div class="section-header fade-up">
-    <span class="section-number">01</span>
-    <h2 class="section-title">Projects</h2>
+<div class="project-hero section section-d1">
+  <div class="project-glow"></div>
+  <div class="project-glow-2"></div>
+  <div class="breadcrumb">High School Shop · Grade 12</div>
+  <h1>High School<br><span class="accent">Projects</span></h1>
+  <div class="hero-meta">
+    <span>📅 Grade 12</span>
+    <span>🔧 Machining + Woodworking</span>
+    <span>📐 Semester-Long</span>
   </div>
+  <p class="hero-desc">
+    Semester-long machining and woodworking projects including a precision aluminum mallet
+    turned on a manual lathe, and a maple finger lap joint box built using dado stack blades —
+    learning measurement, tolerancing, and machine error firsthand.
+  </p>
+  <div class="project-pills">
+    <span class="pill">Manual Lathe</span>
+    <span class="pill">Metal Machining</span>
+    <span class="pill">Woodworking</span>
+    <span class="pill">Table Saw</span>
+    <span class="pill">Documentation &amp; Technical Drawing</span>
+  </div>
+</div>
 
-  <div class="detail-card fade-up">
-    <h3>Precision Aluminum Mallet</h3>
-    <p>A mallet head and handle turned entirely on a manual lathe. The project required working with 6061 aluminum stock, performing facing, turning, boring, and threading operations to create an assembled tool held together by an interference fit and set screw.</p>
-    <ul>
-      <li><strong>Material:</strong> 6061 Aluminum — chosen for machinability and corrosion resistance</li>
-      <li><strong>Operations:</strong> Facing, rough turning, finish turning, boring, internal threading, knurling, parting</li>
-      <li><strong>Tolerances:</strong> ±0.005" on critical mating surfaces</li>
-      <li><strong>Key Learning:</strong> Tool wear compensation, cutting speed optimization, surface finish control</li>
-    </ul>
-    <div class="pills-row">
-      <span class="pill">Manual Lathe</span>
-      <span class="pill">Metal Machining</span>
-      <span class="pill">Aluminum</span>
-      <span class="pill">Precision Turning</span>
+<div class="content-section section section-d2">
+  <div class="label">01</div>
+  <h2>Projects</h2>
+  <p>
+    Over the course of a semester, I completed two major hands-on fabrication projects
+    in the high school shop: one in metal machining and one in fine woodworking. Each
+    project required careful planning, precise measurement, and meticulous execution
+    with manual machine tools.
+  </p>
+
+  <div class="project-grid">
+    <div class="project-card-full">
+      <div class="subtitle">Metal Machining</div>
+      <h3>Precision Aluminum Mallet</h3>
+      <p>
+        Turned on a manual lathe from a solid aluminum billet. The project involved facing,
+        turning, knurling, parting, and boring operations — each requiring careful setup and
+        measurement with calipers and micrometers to hold tolerances within ±0.005".
+        The mallet head was bored to accept a wooden handle with an interference fit,
+        then assembled with a locking pin. The final piece is a fully functional soft-face
+        mallet suitable for assembly work.
+      </p>
+      <div class="skill-tags">
+        <span class="skill-tag">Manual Lathe</span>
+        <span class="skill-tag">Turning</span>
+        <span class="skill-tag">Knurling</span>
+        <span class="skill-tag">Boring</span>
+        <span class="skill-tag">±0.005" Tolerance</span>
+      </div>
+    </div>
+    <div class="project-card-full">
+      <div class="subtitle">Woodworking</div>
+      <h3>Maple Finger Lap Joint Box</h3>
+      <p>
+        Built from solid maple using a dado stack blade on a table saw to cut precise
+        finger joints. The project required careful layout of the finger pattern,
+        setup of the dado blade height and fence position, and test cuts on scrap before
+        cutting the actual workpiece. The box was assembled with glue and clamped square,
+        then sanded through multiple grits and finished with a clear coat. Learning to
+        account for blade kerf, material tear-out, and glue squeeze-out were key takeaways.
+      </p>
+      <div class="skill-tags">
+        <span class="skill-tag">Table Saw</span>
+        <span class="skill-tag">Dado Stack</span>
+        <span class="skill-tag">Finger Joints</span>
+        <span class="skill-tag">Sanding &amp; Finishing</span>
+      </div>
     </div>
   </div>
+</div>
 
-  <div class="detail-card fade-up fade-up-d1">
-    <h3>Maple Finger Lap Joint Box</h3>
-    <p>A finely crafted storage box made from solid maple, featuring through finger (box) joints cut on a table saw using a dado stack. Every joint was hand-fitted to achieve a seamless appearance with no visible gaps.</p>
-    <ul>
-      <li><strong>Material:</strong> Solid maple — selected for its hardness, stability, and figure</li>
-      <li><strong>Joinery:</strong> Through finger joints cut with dado stack on table saw, hand-fitted with chisel work</li>
-      <li><strong>Finish:</strong> Danish oil followed by paste wax — bringing out maple's natural warmth</li>
-      <li><strong>Key Learning:</strong> The importance of consistent glue-up pressure and how even 0.01mm errors compound over multiple fingers</li>
-    </ul>
-    <div class="pills-row">
-      <span class="pill">Woodworking</span>
-      <span class="pill">Table Saw</span>
-      <span class="pill">Maple</span>
-      <span class="pill">Finger Joints</span>
-      <span class="pill">Hand Finishing</span>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="section-header fade-up">
-    <span class="section-number">02</span>
-    <h2 class="section-title">Skills Developed</h2>
-  </div>
-  <div class="overview-grid">
-    <div class="overview-card fade-up fade-up-d1">
+<div class="content-section section section-d3">
+  <div class="label">02</div>
+  <h2>Skills Developed</h2>
+  <div class="detail-grid">
+    <div class="detail-card">
       <h3>Machining</h3>
-      <div class="detail-row"><span class="lbl">Lathe</span><span class="val">Facing, turning, boring, threading, knurling</span></div>
-      <div class="detail-row"><span class="lbl">Measurement</span><span class="val">Micrometers, calipers, dial indicators</span></div>
-      <div class="detail-row"><span class="lbl">Tooling</span><span class="val">HSS tool bit grinding, carbide inserts</span></div>
-      <div class="detail-row"><span class="lbl">Setup</span><span class="val">Work holding, concentricity, runout</span></div>
+      <p>Manual lathe operations including facing, turning, knurling, parting, and boring. Precision measurement with calipers and micrometers. Understanding of speeds, feeds, and cutting tool geometry.</p>
     </div>
-    <div class="overview-card fade-up fade-up-d2">
+    <div class="detail-card">
       <h3>Woodworking</h3>
-      <div class="detail-row"><span class="lbl">Sawing</span><span class="val">Table saw, miter saw, dado stack setup</span></div>
-      <div class="detail-row"><span class="lbl">Joinery</span><span class="val">Finger joints, glue-up, clamping strategy</span></div>
-      <div class="detail-row"><span class="lbl">Finishing</span><span class="val">Sanding sequence, oil application, wax buffing</span></div>
-      <div class="detail-row"><span class="lbl">Safety</span><span class="val">Kickback prevention, push sticks, feather boards</span></div>
+      <p>Table saw setup and safe operation, dado stack blade configuration, finger joint layout and cutting, glue-up and clamping techniques, progressive sanding, and clear coat finishing.</p>
+    </div>
+    <div class="detail-card">
+      <h3>Technical Drawing</h3>
+      <p>Created dimensioned orthographic drawings for both projects before machining. Included tolerances, surface finish requirements, and section views for internal features.</p>
+    </div>
+    <div class="detail-card">
+      <h3>Quality Control</h3>
+      <p>Developed measurement strategies using calipers, micrometers, and surface plates. Verified fit and alignment at each stage, correcting errors through re-measurement and careful re-cutting.</p>
     </div>
   </div>
-</section>
+</div>
 
-<section class="section">
-  <div class="section-header fade-up">
-    <span class="section-number">03</span>
-    <h2 class="section-title">Documentation</h2>
-  </div>
-  <div class="overview-desc fade-up" style="max-width:100%">
-    <p>Each project was documented with process photos, dimensioned technical drawings, and a written reflection analyzing what went right and what could be improved. The emphasis was on developing an intuition for material behaviour and the feel of a cut — skills that transfer directly to any engineering context where you're working with physical materials.</p>
-  </div>
-</section>
+<div class="content-section section section-d4">
+  <div class="label">03</div>
+  <h2>Documentation</h2>
+  <p>
+    Each project was documented with a complete set of technical drawings, process
+    documentation, and a written reflection. The drawings included dimensioned
+    orthographic views, isometric projections, and cutting/assembly instructions.
+    Process documentation covered machine setup, tool selection, and the sequence
+    of operations with notes on feeds, speeds, and quality checks performed at
+    each step.
+  </p>
+  <p>
+    These projects taught me the importance of measuring twice and cutting once,
+    the value of meticulous setup, and the reality that machine error and material
+    variability must always be accounted for in real-world fabrication.
+  </p>
+</div>
 
-<footer>
-  <div style="margin-bottom:1rem">
-    <a href="portfolio2.html" class="back-link"><span class="back-arrow">←</span> Back to Portfolio</a>
-  </div>
-  2026 Tanmay Poddar · Toronto, Canada
-</footer>
+<a href="portfolio2.html" class="back-link section section-d5"><span class="back-arrow">←</span> Back to Portfolio</a>
+
+</div>
+
+<footer>2026 Tanmay Poddar · Toronto, Canada</footer>
 
 <script>
 (function(){
-  'use strict';var c=document.getElementById('gear-container');if(!c)return;
-  var n='http://www.w3.org/2000/svg';
-  function gP(iR,oR,t,hR){var s=2*Math.PI/t,h=s*0.2,p=[];for(var i=0;i<t;i++){var a=i*s;var x1=iR*Math.cos(a-h),y1=iR*Math.sin(a-h),x2=oR*Math.cos(a-h*0.45),y2=oR*Math.sin(a-h*0.45),x3=oR*Math.cos(a+h*0.45),y3=oR*Math.sin(a+h*0.45),x4=iR*Math.cos(a+h),y4=iR*Math.sin(a+h);if(i===0)p.push('M'+x1.toFixed(3)+' '+y1.toFixed(3));p.push('L'+x2.toFixed(3)+' '+y2.toFixed(3));p.push('L'+x3.toFixed(3)+' '+y3.toFixed(3));p.push('L'+x4.toFixed(3)+' '+y4.toFixed(3));var nA=(i+1)*s,nX=iR*Math.cos(nA-h),nY=iR*Math.sin(nA-h);if(i<t-1)p.push('A'+iR+' '+iR+' 0 0 1 '+nX.toFixed(3)+' '+nY.toFixed(3));else{var fX=iR*Math.cos(0-h),fY=iR*Math.sin(0-h);p.push('A'+iR+' '+iR+' 0 0 1 '+fX.toFixed(3)+' '+fY.toFixed(3))}}p.push('Z');if(hR>0){var h2=hR;p.push('M'+h2+' 0 A'+h2+' '+h2+' 0 1 0 '+(-h2)+' 0 A'+h2+' '+h2+' 0 1 0 '+h2+' 0 Z')}return p.join('')}
-  function cG(iR,oR,t,hR,o2){var sz=(oR+4)*2;var s=document.createElementNS(n,'svg');s.setAttribute('viewBox',(-oR-2)+' '+(-oR-2)+' '+(oR+2)*2+' '+(oR+2)*2);s.setAttribute('width',sz);s.setAttribute('height',sz);s.style.cssText='left:'+o2.x+'%;top:'+o2.y+'%;opacity:1;pointer-events:none;z-index:-1;';var g=document.createElementNS(n,'g');g.style.transformOrigin=(oR+2)+'px '+(oR+2)+'px';var p=document.createElementNS(n,'path');p.setAttribute('d',gP(iR,oR,t,hR));p.setAttribute('fill','none');p.setAttribute('stroke','#1C1A18');p.setAttribute('stroke-width',o2.strokeWidth||2.5);p.setAttribute('opacity',o2.opacity||0.06);g.appendChild(p);if(o2.innerRing){var r=document.createElementNS(n,'circle');r.setAttribute('cx','0');r.setAttribute('cy','0');r.setAttribute('r',o2.innerRing);r.setAttribute('fill','none');r.setAttribute('stroke','#1C1A18');r.setAttribute('stroke-width','2.0');r.setAttribute('opacity',(o2.opacity||0.06)*0.7);g.appendChild(r)}if(o2.spokes){for(var s2=0;s2<o2.spokes;s2++){var ang=(s2/o2.spokes)*2*Math.PI;var r1=hR||iR*0.35;var r2=iR*0.85;var l=document.createElementNS(n,'line');l.setAttribute('x1',r1*Math.cos(ang));l.setAttribute('y1',r1*Math.sin(ang));l.setAttribute('x2',r2*Math.cos(ang));l.setAttribute('y2',r2*Math.sin(ang));l.setAttribute('stroke','#1C1A18');l.setAttribute('stroke-width','1.5');l.setAttribute('opacity',(o2.opacity||0.06)*0.6);g.appendChild(l)}}s.appendChild(g);c.appendChild(s);var d=o2.duration||30;g.style.animation='spin '+d+'s linear infinite';g.style.animationDirection=o2.dir||'normal'}
-  cG(95,114,24,20,{x:82,y:-6,opacity:.2,duration:50,dir:'normal',strokeWidth:4.5,innerRing:68,spokes:8});
-  cG(62,80,18,16,{x:2,y:-10,opacity:.17,duration:35,dir:'reverse',strokeWidth:4,innerRing:46,spokes:6});
-  cG(44,56,14,10,{x:54,y:-4,opacity:.18,duration:22,dir:'normal',strokeWidth:4,innerRing:30,spokes:4});
-  cG(30,38,10,7,{x:18,y:10,opacity:.16,duration:14,dir:'reverse',strokeWidth:3.5,innerRing:20,spokes:3});
-  cG(18,24,8,4,{x:46,y:28,opacity:.14,duration:9,dir:'normal',strokeWidth:3.5,innerRing:12,spokes:3});
-  cG(14,18,6,3,{x:90,y:20,opacity:.12,duration:6,dir:'reverse',strokeWidth:3,spokes:2});
+  var c=document.getElementById('gear-container');if(!c)return;
+  var ns='http://www.w3.org/2000/svg';
+  function gp(ir,or,t,hr){
+    var s=2*Math.PI/t,h=s*0.2,p=[];
+    for(var i=0;i<t;i++){var a=i*s;
+      p.push((i?'L':'M')+(ir*Math.cos(a-h)).toFixed(3)+' '+(ir*Math.sin(a-h)).toFixed(3));
+      p.push('L'+(or*Math.cos(a-h*0.45)).toFixed(3)+' '+(or*Math.sin(a-h*0.45)).toFixed(3));
+      p.push('L'+(or*Math.cos(a+h*0.45)).toFixed(3)+' '+(or*Math.sin(a+h*0.45)).toFixed(3));
+      p.push('L'+(ir*Math.cos(a+h)).toFixed(3)+' '+(ir*Math.sin(a+h)).toFixed(3));
+      var na=(i+1)*s,nx=ir*Math.cos(na-h),ny=ir*Math.sin(na-h);
+      p.push('A'+ir+' '+ir+' 0 0 1 '+(i<t-1?nx.toFixed(3):ir*Math.cos(0-h).toFixed(3))+' '+(i<t-1?ny.toFixed(3):ir*Math.sin(0-h).toFixed(3)));
+    }
+    p.push('Z');if(hr>0){var hh=hr;p.push('M'+hh+' 0 A'+hh+' '+hh+' 0 1 0 '+(-hh)+' 0 A'+hh+' '+hh+' 0 1 0 '+hh+' 0 Z')}
+    return p.join('');
+  }
+  function cg(ir,or,t,hr,o){
+    var sz=(or+4)*2,s=document.createElementNS(ns,'svg');
+    s.setAttribute('viewBox',(-or-2)+' '+(-or-2)+' '+(or+2)*2+' '+(or+2)*2);
+    s.setAttribute('width',sz);s.setAttribute('height',sz);
+    s.style.cssText='left:'+o.x+'%;top:'+o.y+'%;opacity:1;pointer-events:none;z-index:-1;';
+    var g=document.createElementNS(ns,'g');g.style.transformOrigin=(or+2)+'px '+(or+2)+'px';
+    var p=document.createElementNS(ns,'path');p.setAttribute('d',gp(ir,or,t,hr));
+    p.setAttribute('fill','none');p.setAttribute('stroke','#1C1A18');
+    p.setAttribute('stroke-width',o.strokeWidth||2.5);p.setAttribute('opacity',o.opacity||0.06);
+    g.appendChild(p);
+    if(o.innerRing){var r=document.createElementNS(ns,'circle');r.setAttribute('cx','0');r.setAttribute('cy','0');r.setAttribute('r',o.innerRing);r.setAttribute('fill','none');r.setAttribute('stroke','#1C1A18');r.setAttribute('stroke-width','2.0');r.setAttribute('opacity',(o.opacity||0.06)*0.7);g.appendChild(r)}
+    if(o.spokes){for(var i=0;i<o.spokes;i++){var a=i/o.spokes*2*Math.PI,r1=hr||ir*0.35,r2=ir*0.85,l=document.createElementNS(ns,'line');l.setAttribute('x1',r1*Math.cos(a));l.setAttribute('y1',r1*Math.sin(a));l.setAttribute('x2',r2*Math.cos(a));l.setAttribute('y2',r2*Math.sin(a));l.setAttribute('stroke','#1C1A18');l.setAttribute('stroke-width','1.5');l.setAttribute('opacity',(o.opacity||0.06)*0.6);g.appendChild(l)}}
+    s.appendChild(g);c.appendChild(s);
+    var d=o.duration||30;g.style.animation='spin '+d+'s linear infinite';g.style.animationDirection=o.dir||'normal';
+  }
+  cg(95,114,24,20,{x:82,y:-6,opacity:.2,duration:50,dir:'normal',strokeWidth:4.5,innerRing:68,spokes:8});
+  cg(62,80,18,16,{x:2,y:-10,opacity:.17,duration:35,dir:'reverse',strokeWidth:4,innerRing:46,spokes:6});
+  cg(44,56,14,10,{x:54,y:-4,opacity:.18,duration:22,dir:'normal',strokeWidth:4,innerRing:30,spokes:4});
+  cg(30,38,10,7,{x:18,y:10,opacity:.16,duration:14,dir:'reverse',strokeWidth:3.5,innerRing:20,spokes:3});
+  cg(18,24,8,4,{x:46,y:28,opacity:.14,duration:9,dir:'normal',strokeWidth:3.5,innerRing:12,spokes:3});
+  cg(14,18,6,3,{x:90,y:20,opacity:.12,duration:6,dir:'reverse',strokeWidth:3,spokes:2});
 })();
 </script>
 </body>
