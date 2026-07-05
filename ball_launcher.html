@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mechanical Ball Launcher — Tanmay Poddar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:#faf8f0;color:#1c1a18;
+  font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+::selection{background:rgba(244,93,0,.25);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#f5f0e8}
+::-webkit-scrollbar-thumb{background:#d4cfc3;border-radius:3px}
+#gear-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#gear-container svg{position:fixed;pointer-events:none}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;padding:1rem 2.5rem;
+  background:rgba(250,248,240,.95);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);
+}
+.nav-logo{
+  font-size:1rem;font-weight:600;color:#1c1a18;text-decoration:none;
+  letter-spacing:-.01em;transition:color .2s;font-family:'Crimson Pro',Georgia,serif;
+}
+.nav-logo:hover{color:#f45d00}
+.nav-links{margin-left:auto;display:flex;list-style:none;gap:.25rem}
+.nav-links a{
+  font-family:'Crimson Pro',Georgia,serif;font-size:.78rem;font-weight:400;
+  color:rgba(28,26,24,.4);text-decoration:none;
+  padding:.35rem .8rem;border-radius:9999px;transition:all .2s;
+}
+.nav-links a:hover{color:#1c1a18;background:rgba(0,0,0,.04)}
+.nav-links a.active{color:#f45d00;background:rgba(244,93,0,.07)}
+.cta-nav{
+  font-family:'Crimson Pro',Georgia,serif;font-size:.78rem;font-weight:500;
+  color:#faf8f0 !important;background:#1c1a18;
+  padding:.35rem .85rem !important;border-radius:9999px;transition:all .2s;
+}
+.cta-nav:hover{background:#f45d00 !important;color:#fff !important}
+.hero{
+  min-height:70vh;display:flex;flex-direction:column;justify-content:center;
+  padding:8rem 2.5rem 4rem;position:relative;
+}
+.hero-glow{position:absolute;top:-20%;right:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(244,93,0,.06),transparent 70%);pointer-events:none;z-index:-1}
+.hero-glow-2{position:absolute;bottom:-10%;left:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(244,93,0,.04),transparent 70%);pointer-events:none;z-index:-1}
+.hero-badge{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:500;
+  color:rgba(244,93,0,.9);background:rgba(244,93,0,.07);
+  padding:.25rem .65rem;border-radius:9999px;
+  border:1px solid rgba(244,93,0,.12);text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:2rem;width:fit-content;
+}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,8vw,5rem);line-height:.92;color:#1c1a18;margin-bottom:.75rem;max-width:700px}
+.hero h1 .accent{color:#f45d00}
+.hero-sub{font-size:1.05rem;color:rgba(28,26,24,.5);max-width:540px;line-height:1.7}
+.hero-meta{display:flex;flex-wrap:wrap;gap:1.5rem 2rem;margin-top:2rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:rgba(28,26,24,.4)}
+.hero-meta span{display:flex;align-items:center;gap:.35rem}
+.section{padding:5rem 2.5rem;max-width:900px;margin:0 auto}
+.section-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.5rem}
+.section-number{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:500;color:#f45d00;opacity:.5}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;color:#1c1a18;letter-spacing:.01em}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.overview-desc{font-size:.95rem;color:rgba(28,26,24,.5);line-height:1.75}
+.overview-desc p{margin-bottom:1rem}
+.overview-card{background:#fff;border-radius:16px;padding:2rem;border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 3px rgba(0,0,0,.02)}
+.overview-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:#1c1a18;margin-bottom:1rem}
+.overview-card .detail-row{display:flex;gap:.75rem;margin-bottom:.6rem;font-size:.82rem;font-family:'JetBrains Mono',monospace}
+.overview-card .detail-row .lbl{color:rgba(28,26,24,.3);min-width:80px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em;font-size:.6rem}
+.overview-card .detail-row .val{color:rgba(28,26,24,.5)}
+.detail-card{
+  background:#fff;border-radius:16px;padding:2rem;
+  border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 3px rgba(0,0,0,.02);
+  margin-bottom:1.5rem;position:relative;overflow:hidden;
+}
+.detail-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#f45d00;opacity:0;transition:opacity .3s}
+.detail-card:hover::before{opacity:.4}
+.detail-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#1c1a18;margin-bottom:.75rem}
+.detail-card p,.detail-card li{font-size:.88rem;color:rgba(28,26,24,.5);line-height:1.7}
+.detail-card ul{padding-left:1.25rem}
+.detail-card ul li{margin-bottom:.35rem}
+.pills-row{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1rem}
+.pill{
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:500;
+  color:rgba(244,93,0,.9);background:rgba(244,93,0,.07);
+  padding:.25rem .6rem;border-radius:9999px;
+  border:1px solid rgba(244,93,0,.12);text-transform:uppercase;letter-spacing:.06em;
+}
+.back-link{display:inline-flex;align-items:center;gap:.35rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:rgba(28,26,24,.4);text-decoration:none;padding:.35rem 0;margin-bottom:2rem;transition:color .2s}
+.back-link:hover{color:#f45d00}
+.back-arrow{display:inline-block;transition:transform .2s}
+.back-link:hover .back-arrow{transform:translateX(-3px)}
+footer{text-align:center;padding:3rem 2.5rem;border-top:1px solid rgba(0,0,0,.04);font-family:'JetBrains Mono',monospace;font-size:.7rem;color:rgba(28,26,24,.2)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{opacity:0;animation:fadeUp .65s cubic-bezier(.22,1,.36,1) forwards}
+.fade-up-d1{animation-delay:.08s}
+.fade-up-d2{animation-delay:.16s}
+.fade-up-d3{animation-delay:.24s}
+.fade-up-d4{animation-delay:.32s}
+.fade-up-d5{animation-delay:.4s}
+@media(max-width:768px){
+  nav{padding:.8rem 1.25rem}
+  .nav-links a{font-size:.7rem;padding:.25rem .6rem}
+  .hero{padding:6rem 1.25rem 3rem}
+  .hero h1{font-size:clamp(2rem,10vw,3.5rem)}
+  .hero-sub{font-size:.95rem}
+  .section{padding:3rem 1.25rem}
+  .section-title{font-size:2rem}
+  .overview-grid{grid-template-columns:1fr}
+  .detail-card{padding:1.25rem}
+}
+</style>
+</head>
+<body>
+<div id="gear-container"></div>
+
+<nav>
+  <a class="nav-logo" href="portfolio2.html">◈ Tanmay Poddar</a>
+  <ul class="nav-links">
+    <li><a href="portfolio2.html#projects">Projects</a></li>
+    <li><a href="portfolio2.html#about">About</a></li>
+    <li><a href="portfolio2.html#contact" class="cta-nav">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-badge fade-up">First Year Engineering Design Project 3 · Jan – Apr 2026</div>
+  <h1 class="fade-up fade-up-d1">Mechanical<br><span class="accent">Ball Launcher</span></h1>
+  <p class="hero-sub fade-up fade-up-d2">Designed and built a ball launcher to address a real world issue for a client. Our client had specific mobility restrictions which we based the design around. 1P13 Project 3.</p>
+  <div class="hero-meta fade-up fade-up-d3">
+    <span>⏱ Jan – Apr 2026</span>
+    <span>🏫 McMaster University</span>
+    <span>👥 Team of 4</span>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header fade-up">
+    <span class="section-number">01</span>
+    <h2 class="section-title">The Challenge</h2>
+  </div>
+  <div class="overview-grid">
+    <div class="overview-desc fade-up fade-up-d1">
+      <p>Our client had limited upper body mobility and wanted a simple, mechanical way to play fetch with their dog independently. The device needed to be operated one-handed with minimal force, launch a tennis ball 10–15 metres, and require no electricity or batteries.</p>
+      <p>The core engineering challenge was achieving consistent ball trajectory and distance using only human mechanical power — no springs under tension, no compressed air, no electronics.</p>
+    </div>
+    <div class="overview-card fade-up fade-up-d2">
+      <h3>Requirements</h3>
+      <div class="detail-row"><span class="lbl">Range</span><span class="val">10–15 metres</span></div>
+      <div class="detail-row"><span class="lbl">Operation</span><span class="val">One-handed, ≤5 N force</span></div>
+      <div class="detail-row"><span class="lbl">Power</span><span class="val">Fully mechanical (no electricity)</span></div>
+      <div class="detail-row"><span class="lbl">Ball Size</span><span class="val">Standard tennis ball (6.7 cm)</span></div>
+      <div class="detail-row"><span class="lbl">Safety</span><span class="val">No pinch points, stable base</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header fade-up">
+    <span class="section-number">02</span>
+    <h2 class="section-title">Design Approach</h2>
+  </div>
+
+  <div class="detail-card fade-up">
+    <h3>Mechanical Concept</h3>
+    <p>The final design uses a lever-arm mechanism with a torsion spring assist. A pivoting arm stores energy as the user pulls a handle downward; a trigger release converts that stored energy into a smooth throwing motion. The geometry was optimized to deliver consistent launch angle and velocity regardless of how hard the user pulls.</p>
+  </div>
+
+  <div class="detail-card fade-up fade-up-d1">
+    <h3>Iterative Prototyping</h3>
+    <p>Three prototypes were built over the 12-week design cycle. Prototype 1 (cardboard + 3D printed joints) proved the lever kinematics. Prototype 2 (plywood frame, metal pivot) tested the spring force curve. Prototype 3 (final materials) delivered the target distance within specification.</p>
+  </div>
+
+  <div class="detail-card fade-up fade-up-d2">
+    <h3>User-Centred Design</h3>
+    <p>Our client tested each prototype and provided feedback that directly shaped the design — the handle shape, the trigger location, and the base stability were all adjusted based on their experience. The final device can be operated entirely with one hand while seated.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header fade-up">
+    <span class="section-number">03</span>
+    <h2 class="section-title">Outcome</h2>
+  </div>
+  <div class="overview-grid">
+    <div class="overview-desc fade-up fade-up-d1">
+      <p>The final prototype consistently launched a tennis ball 12 metres with a launch angle of 35°. The trigger pull required approximately 4 N of force — well within the client's capability. The device was delivered to the client with full documentation and maintenance instructions.</p>
+    </div>
+    <div class="overview-card fade-up fade-up-d2">
+      <h3>Key Metrics</h3>
+      <div class="detail-row"><span class="lbl">Distance</span><span class="val">12 m (consistent)</span></div>
+      <div class="detail-row"><span class="lbl">Launch Angle</span><span class="val">35° fixed</span></div>
+      <div class="detail-row"><span class="lbl">Pull Force</span><span class="val">≈4 N</span></div>
+      <div class="detail-row"><span class="lbl">Prototypes</span><span class="val">3 iterations</span></div>
+      <div class="detail-row"><span class="lbl">Materials</span><span class="val">Plywood, steel, 3D-printed parts</span></div>
+      <div class="detail-row" style="margin-top:.8rem">
+        <div class="pills-row">
+          <span class="pill">CAD Design</span>
+          <span class="pill">Client-Facing Design</span>
+          <span class="pill">3D Printing</span>
+          <span class="pill">Design Process</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div style="margin-bottom:1rem">
+    <a href="portfolio2.html" class="back-link"><span class="back-arrow">←</span> Back to Portfolio</a>
+  </div>
+  2026 Tanmay Poddar · Toronto, Canada
+</footer>
+
+<script>
+(function(){
+  'use strict';var c=document.getElementById('gear-container');if(!c)return;
+  var n='http://www.w3.org/2000/svg';
+  function gP(iR,oR,t,hR){var s=2*Math.PI/t,h=s*0.2,p=[];for(var i=0;i<t;i++){var a=i*s;var x1=iR*Math.cos(a-h),y1=iR*Math.sin(a-h),x2=oR*Math.cos(a-h*0.45),y2=oR*Math.sin(a-h*0.45),x3=oR*Math.cos(a+h*0.45),y3=oR*Math.sin(a+h*0.45),x4=iR*Math.cos(a+h),y4=iR*Math.sin(a+h);if(i===0)p.push('M'+x1.toFixed(3)+' '+y1.toFixed(3));p.push('L'+x2.toFixed(3)+' '+y2.toFixed(3));p.push('L'+x3.toFixed(3)+' '+y3.toFixed(3));p.push('L'+x4.toFixed(3)+' '+y4.toFixed(3));var nA=(i+1)*s,nX=iR*Math.cos(nA-h),nY=iR*Math.sin(nA-h);if(i<t-1)p.push('A'+iR+' '+iR+' 0 0 1 '+nX.toFixed(3)+' '+nY.toFixed(3));else{var fX=iR*Math.cos(0-h),fY=iR*Math.sin(0-h);p.push('A'+iR+' '+iR+' 0 0 1 '+fX.toFixed(3)+' '+fY.toFixed(3))}}p.push('Z');if(hR>0){var h2=hR;p.push('M'+h2+' 0 A'+h2+' '+h2+' 0 1 0 '+(-h2)+' 0 A'+h2+' '+h2+' 0 1 0 '+h2+' 0 Z')}return p.join('')}
+  function cG(iR,oR,t,hR,o2){var sz=(oR+4)*2;var s=document.createElementNS(n,'svg');s.setAttribute('viewBox',(-oR-2)+' '+(-oR-2)+' '+(oR+2)*2+' '+(oR+2)*2);s.setAttribute('width',sz);s.setAttribute('height',sz);s.style.cssText='left:'+o2.x+'%;top:'+o2.y+'%;opacity:1;pointer-events:none;z-index:-1;';var g=document.createElementNS(n,'g');g.style.transformOrigin=(oR+2)+'px '+(oR+2)+'px';var p=document.createElementNS(n,'path');p.setAttribute('d',gP(iR,oR,t,hR));p.setAttribute('fill','none');p.setAttribute('stroke','#1C1A18');p.setAttribute('stroke-width',o2.strokeWidth||2.5);p.setAttribute('opacity',o2.opacity||0.06);g.appendChild(p);if(o2.innerRing){var r=document.createElementNS(n,'circle');r.setAttribute('cx','0');r.setAttribute('cy','0');r.setAttribute('r',o2.innerRing);r.setAttribute('fill','none');r.setAttribute('stroke','#1C1A18');r.setAttribute('stroke-width','2.0');r.setAttribute('opacity',(o2.opacity||0.06)*0.7);g.appendChild(r)}if(o2.spokes){for(var s2=0;s2<o2.spokes;s2++){var ang=(s2/o2.spokes)*2*Math.PI;var r1=hR||iR*0.35;var r2=iR*0.85;var l=document.createElementNS(n,'line');l.setAttribute('x1',r1*Math.cos(ang));l.setAttribute('y1',r1*Math.sin(ang));l.setAttribute('x2',r2*Math.cos(ang));l.setAttribute('y2',r2*Math.sin(ang));l.setAttribute('stroke','#1C1A18');l.setAttribute('stroke-width','1.5');l.setAttribute('opacity',(o2.opacity||0.06)*0.6);g.appendChild(l)}}s.appendChild(g);c.appendChild(s);var d=o2.duration||30;g.style.animation='spin '+d+'s linear infinite';g.style.animationDirection=o2.dir||'normal'}
+  cG(95,114,24,20,{x:82,y:-6,opacity:.2,duration:50,dir:'normal',strokeWidth:4.5,innerRing:68,spokes:8});
+  cG(62,80,18,16,{x:2,y:-10,opacity:.17,duration:35,dir:'reverse',strokeWidth:4,innerRing:46,spokes:6});
+  cG(44,56,14,10,{x:54,y:-4,opacity:.18,duration:22,dir:'normal',strokeWidth:4,innerRing:30,spokes:4});
+  cG(30,38,10,7,{x:18,y:10,opacity:.16,duration:14,dir:'reverse',strokeWidth:3.5,innerRing:20,spokes:3});
+  cG(18,24,8,4,{x:46,y:28,opacity:.14,duration:9,dir:'normal',strokeWidth:3.5,innerRing:12,spokes:3});
+  cG(14,18,6,3,{x:90,y:20,opacity:.12,duration:6,dir:'reverse',strokeWidth:3,spokes:2});
+})();
+</script>
+</body>
+</html>
