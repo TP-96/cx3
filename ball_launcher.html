@@ -212,6 +212,36 @@ nav{
   margin-top:.1rem;
 }
 
+/* ═══════════════ MEDIA GALLERY ═══════════════ */
+.media-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;
+  margin:1.5rem 0;
+}
+.media-item{
+  background:#fff;border:1px solid rgba(0,0,0,.06);
+  border-radius:12px;overflow:hidden;
+  transition:all .25s;box-shadow:0 1px 3px rgba(0,0,0,.02);
+}
+.media-item:hover{
+  border-color:rgba(244,93,0,.15);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+.media-placeholder{
+  width:100%;aspect-ratio:16/10;
+  background:linear-gradient(135deg,rgba(244,93,0,.08),rgba(28,26,18,.03));
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.media-placeholder .icon{font-size:2rem;opacity:.3;color:#1c1a18}
+.media-caption{
+  padding:.75rem 1rem .85rem;
+  font-family:'Crimson Pro',Georgia,serif;
+  font-size:.82rem;color:rgba(28,26,24,.5);
+  font-style:italic;line-height:1.5;
+  border-top:1px solid rgba(0,0,0,.04);
+}
+
 footer{
   text-align:center;padding:2rem 2.5rem 3rem;
   font-size:.7rem;font-family:'JetBrains Mono',monospace;
@@ -349,11 +379,36 @@ footer{
   <p>
     The experience taught me that the best engineering solutions are not necessarily the most
     technically complex — they are the ones that best fit the user's actual needs, constraints,
-    and context.
+    context, and constraints.
   </p>
 </div>
 
-<a href="portfolio2.html" class="back-link section section-d6"><span class="back-arrow">←</span> Back to Portfolio</a>
+<div class="content-section section section-d6">
+  <div class="label">05</div>
+  <h2>Images &amp; Media</h2>
+  <div class="media-grid">
+    <div class="media-item">
+      <div class="media-placeholder"><span class="icon">🖼️</span></div>
+      <div class="media-caption">CAD model of the ball launcher showing the spring-loaded plunger mechanism, ratcheting tension adjuster, and ergonomic handle design.</div>
+    </div>
+    <div class="media-item">
+      <div class="media-placeholder"><span class="icon">🖼️</span></div>
+      <div class="media-caption">Cardboard mock-up used in the first iteration to evaluate ergonomics, trigger placement, and overall form factor with client feedback.</div>
+    </div>
+    <div class="media-item video">
+      <div class="media-placeholder" style="background:#111;position:relative">
+        <span style="position:absolute;font-size:3rem;opacity:.3;color:#fff">▶</span>
+      </div>
+      <div class="media-caption">Testing video: the launcher in operation at various tension settings, demonstrating consistent ball trajectory and adjustable range from 3 to 10 metres.</div>
+    </div>
+    <div class="media-item">
+      <div class="media-placeholder"><span class="icon">🖼️</span></div>
+      <div class="media-caption">3D-printed prototype components — PLA housing, spring guide, trigger mechanism, and base plate with non-slip feet for stability during use.</div>
+    </div>
+  </div>
+</div>
+
+<a href="portfolio2.html" class="back-link section section-d7"><span class="back-arrow">←</span> Back to Portfolio</a>
 
 </div>
 
