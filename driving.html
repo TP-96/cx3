@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>DRIVESIM — Driving Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #07090a; }
+  body {
+    font-family: 'Share Tech Mono', monospace;
+    background: radial-gradient(circle at 50% 30%, #0e1416 0%, #07090a 70%);
+    color: #00ff9c;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  canvas { display: block; position: absolute; inset: 0; }
+
+  /* ── Loading ── */
+  .loading-screen {
+    position: fixed; inset: 0; background: #04060a; z-index: 9999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.6s ease;
+  }
+  .loading-screen.fade-out { opacity: 0; pointer-events: none; }
+  .loading-text {
+    font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 0.3em;
+    color: #00ff9c; text-shadow: 0 0 30px rgba(0,255,156,0.5);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+  .loading-sub { margin-top: 1rem; font-size: 0.8rem; color: rgba(0,255,156,0.5); letter-spacing: 0.2em; }
+
+  /* ── Menu / overlay ── */
+  .overlay {
+    position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center;
+    background: rgba(4,6,10,0.82); backdrop-filter: blur(4px);
+  }
+  .panel {
+    width: min(92vw, 520px); border: 1px solid rgba(0,255,156,0.35);
+    background: rgba(8,12,14,0.92); border-radius: 14px; padding: 2rem;
+    box-shadow: 0 0 40px rgba(0,255,156,0.12);
+  }
+  .panel h1 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 3.4rem; letter-spacing: 0.18em;
+    color: #00ff9c; text-shadow: 0 0 24px rgba(0,255,156,0.4); line-height: 1;
+  }
+  .panel .tag { color: rgba(0,255,156,0.55); font-size: 0.8rem; letter-spacing: 0.25em; margin-bottom: 1.2rem; }
+  .panel p { color: rgba(220,255,240,0.7); font-size: 0.9rem; line-height: 1.7; margin-bottom: 0.6rem; }
+  .panel kbd {
+    display: inline-block; padding: 0.1rem 0.5rem; border: 1px solid rgba(0,255,156,0.4);
+    border-radius: 5px; background: rgba(0,255,156,0.06); color: #00ff9c; font-size: 0.78rem; margin: 0 0.1rem;
+  }
+  .btn {
+    margin-top: 1.4rem; width: 100%; padding: 0.85rem; cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.25em;
+    color: #04060a; background: #00ff9c; border: none; border-radius: 10px;
+    transition: transform 0.12s, box-shadow 0.2s;
+  }
+  .btn:hover { box-shadow: 0 0 24px rgba(0,255,156,0.5); transform: translateY(-1px); }
+  .btn:active { transform: scale(0.98); }
+
+  /* ── HUD ── */
+  .hud { position: fixed; z-index: 300; pointer-events: none; }
+  #hud-tl { top: 14px; left: 14px; }
+  #hud-tr { top: 14px; right: 14px; text-align: right; }
+  .hud-box {
+    border: 1px solid rgba(0,255,156,0.25); background: rgba(6,10,12,0.6);
+    border-radius: 8px; padding: 0.6rem 0.9rem; margin-bottom: 8px;
+    backdrop-filter: blur(3px);
+  }
+  .hud-label { font-size: 0.6rem; letter-spacing: 0.22em; color: rgba(0,255,156,0.45); }
+  .hud-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; line-height: 1; color: #00ff9c; }
+  .hud-val .unit { font-size: 0.8rem; color: rgba(0,255,156,0.5); margin-left: 3px; }
+  .hud-gear { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: #ffcc00; }
+  .hud-warn { color: #ff4d4d !important; text-shadow: 0 0 12px rgba(255,77,77,0.6); }
+
+  /* big speedo bottom-center */
+  #speedo {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 300;
+    text-align: center; pointer-events: none;
+  }
+  #speedo .num { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; line-height: 0.85; color: #00ff9c; text-shadow: 0 0 20px rgba(0,255,156,0.35); }
+  #speedo .num.crash { color: #ff4d4d; text-shadow: 0 0 20px rgba(255,77,77,0.6); }
+  #speedo .lbl { font-size: 0.7rem; letter-spacing: 0.4em; color: rgba(0,255,156,0.5); }
+
+  /* minimap */
+  #minimap {
+    position: fixed; bottom: 16px; left: 16px; z-index: 300;
+    border: 1px solid rgba(0,255,156,0.3); border-radius: 8px;
+    background: rgba(4,8,10,0.7); box-shadow: 0 0 18px rgba(0,0,0,0.5);
+  }
+
+  /* touch controls */
+  #touch { position: fixed; inset: 0; z-index: 400; pointer-events: none; display: none; }
+  .tbtn {
+    position: absolute; pointer-events: auto; width: 74px; height: 74px;
+    border: 1px solid rgba(0,255,156,0.4); border-radius: 50%;
+    background: rgba(0,255,156,0.08); color: #00ff9c;
+    font-size: 1.8rem; display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  .tbtn:active { background: rgba(0,255,156,0.25); }
+  #t-left  { left: 18px;  bottom: 110px; }
+  #t-right { left: 110px; bottom: 110px; }
+  #t-gas   { right: 110px; bottom: 110px; }
+  #t-brake { right: 18px;  bottom: 110px; }
+  #t-reset { right: 18px;  top: 18px; width: 52px; height: 52px; font-size: 1.1rem; }
+
+  .hidden { display: none !important; }
+  .vignette { position: fixed; inset: 0; z-index: 200; pointer-events: none;
+    box-shadow: inset 0 0 180px rgba(0,0,0,0.85); }
+  .scan { position: fixed; inset: 0; z-index: 201; pointer-events: none; opacity: 0.06;
+    background: repeating-linear-gradient(to bottom, #fff 0 1px, transparent 1px 3px); }
+</style>
+</head>
+<body>
+
+<canvas id="game"></canvas>
+<div class="vignette"></div>
+<div class="scan"></div>
+
+<!-- HUD -->
+<div class="hud" id="hud-tl">
+  <div class="hud-box">
+    <div class="hud-label">GEAR</div>
+    <div class="hud-gear" id="gear">N</div>
+  </div>
+  <div class="hud-box">
+    <div class="hud-label">ODOMETER</div>
+    <div class="hud-val" id="odo">0.00<span class="unit">km</span></div>
+  </div>
+</div>
+
+<div class="hud" id="hud-tr">
+  <div class="hud-box">
+    <div class="hud-label">TARGETS</div>
+    <div class="hud-val" id="targets">0</div>
+  </div>
+  <div class="hud-box">
+    <div class="hud-label">TIME</div>
+    <div class="hud-val" id="time">0:00</div>
+  </div>
+  <div class="hud-box">
+    <div class="hud-label">DIST TO TGT</div>
+    <div class="hud-val" id="dist">--<span class="unit">m</span></div>
+  </div>
+</div>
+
+<div id="speedo">
+  <div class="num" id="speed">0</div>
+  <div class="lbl">KM / H</div>
+</div>
+
+<canvas id="minimap" width="160" height="160"></canvas>
+
+<!-- Touch -->
+<div id="touch">
+  <div class="tbtn" id="t-left">◀</div>
+  <div class="tbtn" id="t-right">▶</div>
+  <div class="tbtn" id="t-gas">▲</div>
+  <div class="tbtn" id="t-brake">▼</div>
+  <div class="tbtn" id="t-reset">⟲</div>
+</div>
+
+<!-- Loading -->
+<div class="loading-screen" id="loading">
+  <div class="loading-text">DRIVESIM</div>
+  <div class="loading-sub">INITIALIZING VEHICLE SYSTEMS…</div>
+</div>
+
+<!-- Menu -->
+<div class="overlay" id="menu">
+  <div class="panel">
+    <h1>DRIVESIM</h1>
+    <div class="tag">TOP-DOWN DRIVING SIMULATOR</div>
+    <p>Drive the city grid. Reach the glowing <span style="color:#ffcc00">target</span> markers to score. Avoid the buildings — collisions cost speed.</p>
+    <p><kbd>↑</kbd>/<kbd>W</kbd> accelerate &nbsp; <kbd>↓</kbd>/<kbd>S</kbd> brake / reverse</p>
+    <p><kbd>←</kbd><kbd>→</kbd>/<kbd>A</kbd><kbd>D</kbd> steer &nbsp; <kbd>R</kbd> reset</p>
+    <p style="color:rgba(0,255,156,0.45);font-size:0.78rem">On phone: use the on-screen pads.</p>
+    <button class="btn" id="startBtn">START ENGINE</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ════════════════════════════════════════════════════
+  //  CANVAS + VIEWPORT
+  // ════════════════════════════════════════════════════
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const mini = document.getElementById('minimap');
+  const mctx = mini.getContext('2d');
+  let VW = 0, VH = 0;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    VW = window.innerWidth;
+    VH = window.innerHeight;
+    canvas.width = VW * dpr;
+    canvas.height = VH * dpr;
+    canvas.style.width = VW + 'px';
+    canvas.style.height = VH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ════════════════════════════════════════════════════
+  //  CITY GENERATION
+  // ════════════════════════════════════════════════════
+  const BLOCK = 420;     // block pitch
+  const ROAD = 96;       // road width
+  const MARGIN = 34;     // building inset from sidewalk
+  const GRID = 8;        // blocks per side
+  const WORLD = BLOCK * GRID; // 3360
+
+  const buildings = [];
+  for (let gy = 0; gy < GRID; gy++) {
+    for (let gx = 0; gx < GRID; gx++) {
+      const x0 = gx * BLOCK + ROAD + MARGIN;
+      const y0 = gy * BLOCK + ROAD + MARGIN;
+      const w = BLOCK - ROAD - MARGIN * 2;
+      const h = BLOCK - ROAD - MARGIN * 2;
+      // subtle height variety for shading
+      const shade = 18 + ((gx * 7 + gy * 13) % 10);
+      buildings.push({ x: x0, y: y0, w: w, h: h, shade: shade });
+    }
+  }
+
+  // ════════════════════════════════════════════════════
+  //  VEHICLE
+  // ════════════════════════════════════════════════════
+  const car = {
+    x: BLOCK * 1 + ROAD / 2,
+    y: BLOCK * 1 + ROAD / 2,
+    angle: 0,        // radians, 0 = facing +x (right)
+    speed: 0,        // px/s, signed (negative = reverse)
+    radius: 15
+  };
+
+  const MAX_FWD = 560;     // px/s forward
+  const MAX_REV = -200;    // px/s reverse
+  const ACCEL = 460;       // px/s^2
+  const BRAKE = 720;       // px/s^2
+  const DRAG = 0.6;        // passive decel factor per sec
+  const TURN = 2.7;        // rad/s at full steer
+  const TURN_REF = 130;    // speed (px/s) at which full turn is reached
+
+  // ════════════════════════════════════════════════════
+  //  GAME STATE
+  // ════════════════════════════════════════════════════
+  const G = {
+    state: 'menu',     // menu | playing
+    targets: 0,
+    odometer: 0,       // px traveled
+    startTime: 0,
+    elapsed: 0,
+    waypoint: null,
+    crashFlash: 0,
+    combo: 0
+  };
+
+  function newWaypoint() {
+    // spawn on a road intersection (always reachable — no building there)
+    // gx/gy in 0..GRID-1 so the point stays inside the WORLD bounds
+    const gx = (Math.random() * GRID) | 0;
+    const gy = (Math.random() * GRID) | 0;
+    G.waypoint = { x: gx * BLOCK + ROAD / 2, y: gy * BLOCK + ROAD / 2 };
+  }
+  newWaypoint();
+
+  function resetCar() {
+    car.x = BLOCK * 1 + ROAD / 2;
+    car.y = BLOCK * 1 + ROAD / 2;
+    car.angle = 0;
+    car.speed = 0;
+    G.odometer = 0;
+    G.targets = 0;
+    G.combo = 0;
+    G.startTime = performance.now();
+    newWaypoint();
+  }
+
+  // ════════════════════════════════════════════════════
+  //  INPUT
+  // ════════════════════════════════════════════════════
+  const input = { up: false, down: false, left: false, right: false };
+
+  function setKey(e, down) {
+    switch (e.key) {
+      case 'ArrowUp': case 'w': case 'W': input.up = down; break;
+      case 'ArrowDown': case 's': case 'S': input.down = down; break;
+      case 'ArrowLeft': case 'a': case 'A': input.left = down; break;
+      case 'ArrowRight': case 'd': case 'D': input.right = down; break;
+      case 'r': case 'R': if (down) resetCar(); break;
+      default: return;
+    }
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+  }
+  window.addEventListener('keydown', e => setKey(e, true));
+  window.addEventListener('keyup', e => setKey(e, false));
+
+  // Touch
+  const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  if (isTouch) {
+    document.getElementById('touch').style.display = 'block';
+    const bind = (id, prop) => {
+      const el = document.getElementById(id);
+      const on = e => { e.preventDefault(); input[prop] = true; };
+      const off = e => { e.preventDefault(); input[prop] = false; };
+      el.addEventListener('touchstart', on, { passive: false });
+      el.addEventListener('touchend', off, { passive: false });
+      el.addEventListener('touchcancel', off, { passive: false });
+      el.addEventListener('mousedown', on);
+      el.addEventListener('mouseup', off);
+      el.addEventListener('mouseleave', off);
+    };
+    bind('t-left', 'left');
+    bind('t-right', 'right');
+    bind('t-gas', 'up');
+    bind('t-brake', 'down');
+    document.getElementById('t-reset').addEventListener('click', e => { e.preventDefault(); resetCar(); });
+  }
+
+  // ════════════════════════════════════════════════════
+  //  PHYSICS
+  // ════════════════════════════════════════════════════
+  function update(dt) {
+    // longitudinal
+    if (input.up) {
+      car.speed += ACCEL * dt;
+    } else if (input.down) {
+      // brake if moving forward, else reverse
+      if (car.speed > 5) car.speed -= BRAKE * dt;
+      else car.speed -= ACCEL * dt;
+    } else {
+      // engine drag toward 0
+      const d = DRAG * 60 * dt;
+      if (car.speed > 0) car.speed = Math.max(0, car.speed - d);
+      else if (car.speed < 0) car.speed = Math.min(0, car.speed + d);
+    }
+    car.speed = Math.max(MAX_REV, Math.min(MAX_FWD, car.speed));
+
+    // steering — proportional to speed, reverses when backing up
+    let steer = 0;
+    if (input.left) steer -= 1;
+    if (input.right) steer += 1;
+    const sp = Math.abs(car.speed);
+    const turnFactor = Math.min(sp / TURN_REF, 1);
+    const dir = car.speed >= 0 ? 1 : -1;
+    car.angle += steer * TURN * turnFactor * dir * dt;
+
+    // integrate position
+    const dx = Math.cos(car.angle) * car.speed * dt;
+    const dy = Math.sin(car.angle) * car.speed * dt;
+    car.x += dx;
+    car.y += dy;
+    G.odometer += Math.hypot(dx, dy);
+
+    // world bounds
+    if (car.x < car.radius) { car.x = car.radius; car.speed *= 0.4; }
+    if (car.x > WORLD - car.radius) { car.x = WORLD - car.radius; car.speed *= 0.4; }
+    if (car.y < car.radius) { car.y = car.radius; car.speed *= 0.4; }
+    if (car.y > WORLD - car.radius) { car.y = WORLD - car.radius; car.speed *= 0.4; }
+
+    // building collisions
+    for (let i = 0; i < buildings.length; i++) {
+      const b = buildings[i];
+      resolveCollision(b);
+    }
+
+    // waypoint capture
+    if (G.waypoint) {
+      const wd = Math.hypot(car.x - G.waypoint.x, car.y - G.waypoint.y);
+      if (wd < 46) {
+        G.targets++;
+        G.combo++;
+        newWaypoint();
+      }
+    }
+
+    if (G.crashFlash > 0) G.crashFlash = Math.max(0, G.crashFlash - dt * 2);
+
+    G.elapsed = (performance.now() - G.startTime) / 1000;
+  }
+
+  function resolveCollision(b) {
+    const cx = car.x, cy = car.y, r = car.radius;
+    // closest point on rect
+    let nx = Math.max(b.x, Math.min(cx, b.x + b.w));
+    let ny = Math.max(b.y, Math.min(cy, b.y + b.h));
+    let dx = cx - nx, dy = cy - ny;
+    let d2 = dx * dx + dy * dy;
+    if (d2 >= r * r) return; // no collision
+
+    // handle car center inside rect
+    if (cx > b.x && cx < b.x + b.w && cy > b.y && cy < b.y + b.h) {
+      const left = cx - b.x, right = b.x + b.w - cx;
+      const top = cy - b.y, bottom = b.y + b.h - cy;
+      const m = Math.min(left, right, top, bottom);
+      if (m === left) { nx = b.x; ny = cy; }
+      else if (m === right) { nx = b.x + b.w; ny = cy; }
+      else if (m === top) { nx = cx; ny = b.y; }
+      else { nx = cx; ny = b.y + b.h; }
+      dx = cx - nx; dy = cy - ny;
+      d2 = dx * dx + dy * dy;
+      if (d2 === 0) { dx = 1; dy = 0; d2 = 1; } // fallback
+    }
+
+    const dist = Math.sqrt(d2);
+    const ux = dx / dist, uy = dy / dist;
+    // push out
+    car.x = nx + ux * r;
+    car.y = ny + uy * r;
+    // lose speed, flash
+    if (Math.abs(car.speed) > 60) {
+      G.crashFlash = 1;
+      car.speed *= 0.25;
+    } else {
+      car.speed *= 0.5;
+    }
+  }
+
+  // ════════════════════════════════════════════════════
+  //  RENDER — WORLD
+  // ════════════════════════════════════════════════════
+  const cam = { x: 0, y: 0 };
+
+  function drawWorld() {
+    // grass / ground
+    ctx.fillStyle = '#0c1410';
+    ctx.fillRect(0, 0, VW, VH);
+
+    ctx.save();
+    ctx.translate(-cam.x, -cam.y);
+
+    // roads
+    ctx.fillStyle = '#161b1e';
+    for (let gy = 0; gy <= GRID; gy++) {
+      ctx.fillRect(0, gy * BLOCK, WORLD, ROAD);
+    }
+    for (let gx = 0; gx <= GRID; gx++) {
+      ctx.fillRect(gx * BLOCK, 0, ROAD, WORLD);
+    }
+
+    // lane dashes (center of each road)
+    ctx.strokeStyle = 'rgba(255,204,0,0.35)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([14, 16]);
+    ctx.beginPath();
+    for (let gy = 0; gy <= GRID; gy++) {
+      const y = gy * BLOCK + ROAD / 2;
+      ctx.moveTo(0, y); ctx.lineTo(WORLD, y);
+    }
+    for (let gx = 0; gx <= GRID; gx++) {
+      const x = gx * BLOCK + ROAD / 2;
+      ctx.moveTo(x, 0); ctx.lineTo(x, WORLD);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // buildings (culled)
+    const viewL = cam.x - 40, viewT = cam.y - 40;
+    const viewR = cam.x + VW + 40, viewB = cam.y + VH + 40;
+    for (let i = 0; i < buildings.length; i++) {
+      const b = buildings[i];
+      if (b.x > viewR || b.x + b.w < viewL || b.y > viewB || b.y + b.h < viewT) continue;
+      // shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      ctx.fillRect(b.x + 6, b.y + 6, b.w, b.h);
+      // body
+      const s = b.shade;
+      ctx.fillStyle = 'rgb(' + s + ',' + (s + 8) + ',' + (s + 14) + ')';
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+      // roof outline
+      ctx.strokeStyle = 'rgba(0,255,156,0.18)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w, b.h);
+      // window grid
+      ctx.fillStyle = 'rgba(0,255,156,0.06)';
+      const step = 26;
+      for (let wx = b.x + 12; wx < b.x + b.w - 10; wx += step) {
+        for (let wy = b.y + 12; wy < b.y + b.h - 10; wy += step) {
+          ctx.fillRect(wx, wy, 9, 9);
+        }
+      }
+    }
+
+    // waypoint
+    if (G.waypoint) {
+      const t = performance.now() / 400;
+      const pulse = 14 + Math.sin(t) * 6;
+      ctx.beginPath();
+      ctx.arc(G.waypoint.x, G.waypoint.y, pulse, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,204,0,0.18)';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(G.waypoint.x, G.waypoint.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffcc00';
+      ctx.fill();
+    }
+
+    // car
+    drawCar();
+
+    ctx.restore();
+  }
+
+  function drawCar() {
+    ctx.save();
+    ctx.translate(car.x, car.y);
+    ctx.rotate(car.angle);
+    // shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    roundRect(-13, -8 + 2, 26, 16, 4); ctx.fill();
+    // body
+    const grad = ctx.createLinearGradient(-13, 0, 13, 0);
+    grad.addColorStop(0, '#0a3b2a');
+    grad.addColorStop(1, '#00ff9c');
+    ctx.fillStyle = grad;
+    roundRect(-13, -8, 26, 16, 4); ctx.fill();
+    // windshield
+    ctx.fillStyle = 'rgba(4,20,16,0.85)';
+    roundRect(2, -6, 8, 12, 2); ctx.fill();
+    // headlights
+    ctx.fillStyle = '#eafff5';
+    ctx.fillRect(12, -7, 2, 3);
+    ctx.fillRect(12, 4, 2, 3);
+    ctx.restore();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // ════════════════════════════════════════════════════
+  //  RENDER — MINIMAP
+  // ════════════════════════════════════════════════════
+  function drawMini() {
+    const W = mini.width, H = mini.height;
+    const sc = W / WORLD;
+    mctx.clearRect(0, 0, W, H);
+    mctx.fillStyle = '#0c1410';
+    mctx.fillRect(0, 0, W, H);
+    // roads
+    mctx.fillStyle = '#1b2226';
+    for (let gy = 0; gy <= GRID; gy++) mctx.fillRect(0, gy * BLOCK * sc, W, ROAD * sc);
+    for (let gx = 0; gx <= GRID; gx++) mctx.fillRect(gx * BLOCK * sc, 0, ROAD * sc, H);
+    // buildings
+    mctx.fillStyle = 'rgba(0,255,156,0.25)';
+    for (let i = 0; i < buildings.length; i++) {
+      const b = buildings[i];
+      mctx.fillRect(b.x * sc, b.y * sc, b.w * sc, b.h * sc);
+    }
+    // waypoint
+    if (G.waypoint) {
+      mctx.fillStyle = '#ffcc00';
+      mctx.beginPath();
+      mctx.arc(G.waypoint.x * sc, G.waypoint.y * sc, 3, 0, Math.PI * 2);
+      mctx.fill();
+    }
+    // car
+    mctx.fillStyle = '#00ff9c';
+    mctx.beginPath();
+    mctx.arc(car.x * sc, car.y * sc, 3.5, 0, Math.PI * 2);
+    mctx.fill();
+  }
+
+  // ════════════════════════════════════════════════════
+  //  HUD UPDATE
+  // ════════════════════════════════════════════════════
+  const elSpeed = document.getElementById('speed');
+  const elGear = document.getElementById('gear');
+  const elOdo = document.getElementById('odo');
+  const elTargets = document.getElementById('targets');
+  const elTime = document.getElementById('time');
+  const elDist = document.getElementById('dist');
+
+  function updateHUD() {
+    const kmh = Math.round(Math.abs(car.speed) * 0.32);
+    elSpeed.textContent = kmh;
+    if (G.crashFlash > 0.05) elSpeed.classList.add('crash'); else elSpeed.classList.remove('crash');
+
+    let gear = 'N';
+    if (car.speed < -5) gear = 'R';
+    else if (car.speed > 5) gear = 'D';
+    elGear.textContent = gear;
+    elGear.style.color = gear === 'R' ? '#ff4d4d' : (gear === 'D' ? '#00ff9c' : '#ffcc00');
+
+    const km = (G.odometer / 1000 * 0.32).toFixed(2);
+    elOdo.innerHTML = km + '<span class="unit">km</span>';
+
+    elTargets.textContent = G.targets;
+
+    const m = Math.floor(G.elapsed / 60);
+    const s = Math.floor(G.elapsed % 60);
+    elTime.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+    if (G.waypoint) {
+      const d = Math.hypot(car.x - G.waypoint.x, car.y - G.waypoint.y) / 10;
+      elDist.innerHTML = Math.round(d) + '<span class="unit">m</span>';
+    }
+  }
+
+  // ════════════════════════════════════════════════════
+  //  MAIN LOOP
+  // ════════════════════════════════════════════════════
+  let last = performance.now();
+  function loop(now) {
+    let dt = (now - last) / 1000;
+    last = now;
+    if (dt > 0.05) dt = 0.05; // clamp big gaps
+
+    if (G.state === 'playing') {
+      update(dt);
+    }
+
+    // camera follows car
+    cam.x = car.x - VW / 2;
+    cam.y = car.y - VH / 2;
+    cam.x = Math.max(0, Math.min(WORLD - VW, cam.x));
+    cam.y = Math.max(0, Math.min(WORLD - VH, cam.y));
+
+    drawWorld();
+    drawMini();
+    if (G.state === 'playing') updateHUD();
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // ════════════════════════════════════════════════════
+  //  UI FLOW
+  // ════════════════════════════════════════════════════
+  const loadingEl = document.getElementById('loading');
+  const menuEl = document.getElementById('menu');
+  const startBtn = document.getElementById('startBtn');
+
+  // simulate boot, then show menu
+  setTimeout(() => {
+    loadingEl.classList.add('fade-out');
+    setTimeout(() => loadingEl.classList.add('hidden'), 700);
+  }, 900);
+
+  startBtn.addEventListener('click', () => {
+    resetCar();
+    G.state = 'playing';
+    menuEl.classList.add('hidden');
+  });
+
+  // expose for debugging
+  window.__DRIVESIM__ = { car, G, buildings, WORLD, input, resetCar };
+
+})();
+</script>
+</body>
+</html>
