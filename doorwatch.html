@@ -133,6 +133,7 @@
   let modelsReady = false;
   let KNOWN = [];                  // [{id, name, descriptor:[...]}]
   const tracks = new Map();
+  const LOGMEM = []; // in-memory mirror of the log, used by automated testing
   let nextTrackId = 1;
   const detOptions = (typeof faceapi !== 'undefined')
     ? new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 })
@@ -255,54 +256,58 @@
         .detectAllFaces(video, detOptions)
         .withFaceLandmarks()
         .withFaceDescriptors();
-
       draw(results);
-
-      const now = Date.now();
-      for (const r of results) {
-        const b = r.detection.box;
-        const cx = b.x + b.width / 2, cy = b.y + b.height / 2, area = b.width * b.height;
-        const { name, dist } = recognize(r.descriptor);
-
-        let bestTrack = null, bestD = 1e9;
-        for (const t of tracks.values()) {
-          if (t.closed) continue;
-          const d = Math.hypot(t.cx - cx, t.cy - cy);
-          if (d < bestD) { bestD = d; bestTrack = t; }
-        }
-        if (bestTrack && bestD < Math.max(90, b.width * 0.9)) {
-          bestTrack.cx = cx; bestTrack.cy = cy; bestTrack.area = area;
-          bestTrack.lastSeen = now; bestTrack.missing = 0; bestTrack.seen++;
-          if (name !== 'Unknown') bestTrack.name = name;       // once known, stay known
-          bestTrack.conf = 1 - Math.min(1, dist);
-          bestTrack.sizes.push(area); if (bestTrack.sizes.length > 12) bestTrack.sizes.shift();
-        } else {
-          tracks.set(nextTrackId, {
-            id: nextTrackId++, cx, cy, area, name, conf: 1 - Math.min(1, dist),
-            firstSeen: now, lastSeen: now, missing: 0, seen: 1, sizes: [area], closed: false, loggedEnter: false
-          });
-        }
-      }
-
-      // finalize events
-      for (const t of tracks.values()) {
-        if (!t.closed && t.seen >= 2 && !t.loggedEnter) {
-          t.loggedEnter = true;
-          const detail = trend(t.sizes) >= 0 ? 'approaching' : 'arrived';
-          addLog({ name: t.name, direction: 'ENTER', detail, conf: t.conf });
-        }
-        if (!t.closed && (now - t.lastSeen) > MISS_CLOSE_MS) {
-          t.closed = true;
-          const detail = trend(t.sizes) < 0 ? 'departing' : 'left';
-          addLog({ name: t.name, direction: 'EXIT', detail, conf: t.conf });
-        }
-      }
-      for (const [id, t] of tracks) if (t.closed && (now - t.lastSeen) > 6000) tracks.delete(id);
-
+      await processDetections(results, Date.now());
     } catch (e) {
       console.warn('detection error', e);
     }
     if (running) setTimeout(loop, DETECT_MS);
+  }
+
+  // Core tracking + event logic, isolated so it can be driven by real
+  // detections OR by an automated test harness with synthetic data.
+  async function processDetections(results, now) {
+    for (const r of results) {
+      const b = r.detection.box;
+      const cx = b.x + b.width / 2, cy = b.y + b.height / 2, area = b.width * b.height;
+      const { name, dist } = recognize(r.descriptor);
+
+      let bestTrack = null, bestD = 1e9;
+      for (const t of tracks.values()) {
+        if (t.closed) continue;
+        const d = Math.hypot(t.cx - cx, t.cy - cy);
+        if (d < bestD) { bestD = d; bestTrack = t; }
+      }
+      if (bestTrack && bestD < Math.max(90, b.width * 0.9)) {
+        bestTrack.cx = cx; bestTrack.cy = cy; bestTrack.area = area;
+        bestTrack.lastSeen = now; bestTrack.missing = 0; bestTrack.seen++;
+        if (name !== 'Unknown') bestTrack.name = name;       // once known, stay known
+        bestTrack.conf = 1 - Math.min(1, dist);
+        bestTrack.sizes.push(area); if (bestTrack.sizes.length > 12) bestTrack.sizes.shift();
+      } else {
+        tracks.set(nextTrackId, {
+          id: nextTrackId++, cx, cy, area, name, conf: 1 - Math.min(1, dist),
+          firstSeen: now, lastSeen: now, missing: 0, seen: 1, sizes: [area], closed: false, loggedEnter: false
+        });
+      }
+    }
+
+    // finalize events
+    for (const t of tracks.values()) {
+      if (!t.closed && t.seen >= 2 && !t.loggedEnter) {
+        t.loggedEnter = true;
+        const detail = trend(t.sizes) >= 0 ? 'approaching' : 'arrived';
+        addLog({ name: t.name, direction: 'ENTER', detail, conf: t.conf });
+      }
+      if (!t.closed && (now - t.lastSeen) > MISS_CLOSE_MS) {
+        t.closed = true;
+        if (t.loggedEnter) {   // only log an exit for a track we confirmed entering
+          const detail = trend(t.sizes) < 0 ? 'departing' : 'left';
+          addLog({ name: t.name, direction: 'EXIT', detail, conf: t.conf });
+        }
+      }
+    }
+    for (const [id, t] of tracks) if (t.closed && (now - t.lastSeen) > 6000) tracks.delete(id);
   }
 
   function draw(results) {
@@ -324,6 +329,7 @@
   async function addLog(entry) {
     entry.ts = Date.now();
     entry.thumb = snapshot();
+    LOGMEM.push(entry);
     try { await idbAdd('log', entry); } catch (e) { console.warn('log store failed', e); }
     renderLogRow(entry);
   }
@@ -419,6 +425,15 @@
     existing.forEach(renderLogRow);
     if (existing.length) logBody.querySelector('.empty') && (logBody.innerHTML = '');
   }).catch(e => setStatus('Storage unavailable: ' + e, true));
+
+  // ── Test hook (harmless; used by the automated 400-cycle harness) ──
+  window.__dw = {
+    setKnown(arr) { KNOWN = (arr || []).map((d, i) => ({ id: i + 1, name: d.name, descriptor: d.descriptor })); },
+    step(results, now) { return processDetections(results || [], now || Date.now()); },
+    state() { return { tracks: tracks.size, known: KNOWN.length, logMem: LOGMEM.length }; },
+    getLog() { return LOGMEM.slice(); },
+    clearLog() { LOGMEM.length = 0; }
+  };
 
 })();
 </script>
