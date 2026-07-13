@@ -109,7 +109,7 @@
       <div class="logwrap">
         <table>
           <thead><tr><th>Time</th><th>Person</th><th>Event</th><th>Shot</th></tr></thead>
-          <tbody id="logBody"><tr><td colspan="4" style="color:rgba(0,255,156,0.35)">No events yet.</td></tr></tbody>
+          <tbody id="logBody"><tr class="empty"><td colspan="4" style="color:rgba(0,255,156,0.35)">No events yet.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -230,6 +230,7 @@
     await video.play().catch(() => {});
     overlay.width = video.videoWidth || 640;
     overlay.height = video.videoHeight || 480;
+    tracks.clear();
     running = true;
     setStatus('Camera live. Detecting faces…');
     loop();
@@ -237,6 +238,7 @@
 
   function stopCamera() {
     running = false;
+    tracks.clear();
     if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
     video.srcObject = null;
     octx.clearRect(0, 0, overlay.width, overlay.height);
@@ -374,6 +376,16 @@
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
+  function renderEmptyLog() {
+    logBody.innerHTML = '<tr class="empty"><td colspan="4" style="color:rgba(0,255,156,0.35)">No events yet.</td></tr>';
+  }
+
+  function csvCell(s) {
+    s = String(s == null ? '' : s);
+    if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
   // ── Known faces ──
   async function loadKnown() {
     KNOWN = await idbAll('known');
@@ -434,16 +446,23 @@
 
   // ── Export ──
   async function exportCsv() {
-    const rows = await idbAll('log');
-    let csv = 'timestamp,epoch,name,direction,detail,confidence\n';
-    rows.forEach(r => {
-      csv += '"' + new Date(r.ts).toISOString() + '",' + r.ts + ',"' + (r.name || '') + '",' + r.direction + ',"' + (r.detail || '') + '",' + (r.conf || '') + '\n';
-    });
-    download('doorwatch-log.csv', csv, 'text/csv');
+    try {
+      const rows = await idbAll('log');
+      let csv = 'timestamp,epoch,name,direction,detail,confidence\n';
+      rows.forEach(r => {
+        csv += [new Date(r.ts).toISOString(), r.ts, r.name || '', r.direction, r.detail || '', r.conf || '']
+          .map(csvCell).join(',') + '\n';
+      });
+      download('doorwatch-log.csv', csv, 'text/csv');
+      setStatus('Exported ' + rows.length + ' rows to CSV.');
+    } catch (e) { setStatus('CSV export failed: ' + e, true); }
   }
   async function exportJson() {
-    const rows = await idbAll('log');
-    download('doorwatch-log.json', JSON.stringify(rows, null, 2), 'application/json');
+    try {
+      const rows = await idbAll('log');
+      download('doorwatch-log.json', JSON.stringify(rows, null, 2), 'application/json');
+      setStatus('Exported ' + rows.length + ' rows to JSON.');
+    } catch (e) { setStatus('JSON export failed: ' + e, true); }
   }
   function download(name, content, type) {
     const blob = new Blob([content], { type });
@@ -468,7 +487,7 @@
   });
   document.getElementById('clearLogBtn').addEventListener('click', async () => {
     if (!confirm('Delete the entire entry/exit log?')) return;
-    await idbClear('log'); logBody.innerHTML = '<tr><td colspan="4" style="color:rgba(0,255,156,0.35)">No events yet.</td></tr>';
+    await idbClear('log'); LOGMEM.length = 0; renderEmptyLog();
   });
   document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
   document.getElementById('exportJsonBtn').addEventListener('click', exportJson);
@@ -478,7 +497,7 @@
     await loadKnown();
     // render any existing log rows (newest first)
     const existing = await idbAll('log');
-    existing.sort((a, b) => b.ts - a.ts);
+    existing.sort((a, b) => a.ts - b.ts);
     existing.forEach(renderLogRow);
     if (existing.length) logBody.querySelector('.empty') && (logBody.innerHTML = '');
   }).catch(e => setStatus('Storage unavailable: ' + e, true));
@@ -489,6 +508,7 @@
     step(results, now) { return processDetections(results || [], now || Date.now()); },
     state() { return { tracks: tracks.size, known: KNOWN.length, logMem: LOGMEM.length }; },
     getLog() { return LOGMEM.slice(); },
+    getKnown() { return KNOWN.slice(); },
     clearLog() { LOGMEM.length = 0; }
   };
 
