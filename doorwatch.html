@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>DOORWATCH — Facial Entry Log</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; min-height: 100%; }
+  body {
+    font-family: 'Share Tech Mono', monospace;
+    background: radial-gradient(circle at 50% 0%, #0e1518 0%, #06090a 70%);
+    color: #00ff9c; overflow-x: hidden; padding: 1rem;
+  }
+  header {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    border-bottom: 1px solid rgba(0,255,156,0.25); padding-bottom: .8rem; margin-bottom: 1rem;
+  }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; letter-spacing: .18em;
+    color: #00ff9c; text-shadow: 0 0 20px rgba(0,255,156,0.35); line-height: 1; }
+  .badge { font-size: .6rem; letter-spacing: .18em; color: rgba(0,255,156,0.5);
+    border: 1px solid rgba(0,255,156,0.3); padding: .25rem .6rem; border-radius: 999px; }
+  .privacy { margin-left: auto; font-size: .62rem; color: rgba(0,255,156,0.45); max-width: 320px; line-height: 1.5; }
+  .layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; align-items: start; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .panel { border: 1px solid rgba(0,255,156,0.22); background: rgba(8,13,15,0.7);
+    border-radius: 12px; padding: 1rem; }
+  .panel h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: .12em;
+    color: #00ff9c; margin-bottom: .6rem; }
+  .stage { position: relative; width: 100%; background: #000; border-radius: 10px; overflow: hidden; }
+  video { display: block; width: 100%; height: auto; background: #000; }
+  #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .controls { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .8rem; }
+  button, .btn {
+    font-family: 'Share Tech Mono', monospace; font-size: .78rem; cursor: pointer;
+    color: #04060a; background: #00ff9c; border: none; border-radius: 8px; padding: .55rem .9rem;
+    transition: transform .1s, box-shadow .2s; letter-spacing: .05em;
+  }
+  button:hover { box-shadow: 0 0 16px rgba(0,255,156,0.4); transform: translateY(-1px); }
+  button:active { transform: scale(.97); }
+  button.ghost { background: transparent; color: #00ff9c; border: 1px solid rgba(0,255,156,0.4); }
+  button.danger { background: #ff4d4d; color: #140404; }
+  .status { font-size: .7rem; color: rgba(0,255,156,0.55); margin-top: .6rem; min-height: 1.2em; }
+  .status.err { color: #ff4d4d; }
+  .known { display: flex; flex-direction: column; gap: .4rem; max-height: 180px; overflow-y: auto; }
+  .known .row { display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+    font-size: .78rem; padding: .4rem .6rem; border: 1px solid rgba(0,255,156,0.15); border-radius: 6px; }
+  .known .row .nm { color: #00ff9c; }
+  .known .row .meta { color: rgba(0,255,156,0.4); font-size: .64rem; }
+  .known .empty { color: rgba(0,255,156,0.35); font-size: .74rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .72rem; }
+  th, td { text-align: left; padding: .4rem .5rem; border-bottom: 1px solid rgba(0,255,156,0.1); }
+  th { color: rgba(0,255,156,0.5); font-weight: 400; letter-spacing: .08em; font-size: .62rem; }
+  td .dir-IN { color: #00ff9c; } td .dir-OUT { color: #ffcc00; }
+  td .nm { color: #00ff9c; } td .unk { color: #ff4d4d; }
+  .thumb { width: 48px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(0,255,156,0.2); }
+  .logwrap { max-height: 380px; overflow-y: auto; }
+  .row-tools { display: flex; gap: .4rem; }
+  .hint { font-size: .66rem; color: rgba(0,255,156,0.4); line-height: 1.5; margin-top: .4rem; }
+  .vignette { position: fixed; inset: 0; pointer-events: none; box-shadow: inset 0 0 200px rgba(0,0,0,0.8); z-index: 50; }
+</style>
+</head>
+<body>
+<div class="vignette"></div>
+<header>
+  <h1>DOORWATCH</h1>
+  <span class="badge">FACIAL ENTRY LOG</span>
+  <div class="privacy">🔒 100% client-side. Video &amp; faces never leave this device. All logs &amp; face data are stored locally in your browser (IndexedDB). Use only where you have legal authority (your own home) and comply with local surveillance/consent laws.</div>
+</header>
+
+<div class="layout">
+  <!-- CAMERA PANEL -->
+  <div class="panel">
+    <h2>LIVE CAMERA</h2>
+    <div class="stage">
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="overlay"></canvas>
+    </div>
+    <div class="controls">
+      <button id="startBtn">▶ START CAMERA</button>
+      <button id="stopBtn" class="ghost">■ STOP</button>
+      <button id="regBtn" class="ghost">＋ REGISTER FACE</button>
+      <button id="clearKnownBtn" class="ghost danger">✕ CLEAR FACES</button>
+    </div>
+    <div class="status" id="status">Idle. Click START CAMERA to begin.</div>
+    <div class="hint">Point any webcam at your door. Register people once; the app then logs ENTER/EXIT events with a snapshot. Direction is a heuristic based on whether the face grows (approaching) or shrinks (leaving) in frame.</div>
+  </div>
+
+  <!-- SIDE PANELS -->
+  <div>
+    <div class="panel" style="margin-bottom:1rem;">
+      <h2>KNOWN FACES</h2>
+      <div class="known" id="knownList"><div class="empty">No faces registered yet.</div></div>
+      <div class="hint">Tip: register in good light, facing the camera. You can register the same person multiple times for robustness.</div>
+    </div>
+    <div class="panel">
+      <h2>ENTRY / EXIT LOG</h2>
+      <div class="controls" style="margin-bottom:.6rem;">
+        <button id="exportCsvBtn" class="ghost">⤓ CSV</button>
+        <button id="exportJsonBtn" class="ghost">⤓ JSON</button>
+        <button id="clearLogBtn" class="ghost danger">✕ CLEAR LOG</button>
+      </div>
+      <div class="logwrap">
+        <table>
+          <thead><tr><th>Time</th><th>Person</th><th>Event</th><th>Shot</th></tr></thead>
+          <tbody id="logBody"><tr><td colspan="4" style="color:rgba(0,255,156,0.35)">No events yet.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+  const THRESHOLD = 0.55;          // descriptor distance below which we call it a match
+  const DETECT_MS = 600;           // detection loop interval
+  const MISS_CLOSE_MS = 1500;      // a track unseen this long is considered gone -> log EXIT
+
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+  const octx = overlay.getContext('2d');
+  const statusEl = document.getElementById('status');
+  const knownListEl = document.getElementById('knownList');
+  const logBody = document.getElementById('logBody');
+
+  let running = false;
+  let stream = null;
+  let modelsReady = false;
+  let KNOWN = [];                  // [{id, name, descriptor:[...]}]
+  const tracks = new Map();
+  let nextTrackId = 1;
+  const detOptions = (typeof faceapi !== 'undefined')
+    ? new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 })
+    : null;
+
+  // ── IndexedDB ──
+  let db = null;
+  function openDB() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('doorwatch', 1);
+      r.onupgradeneeded = e => {
+        const d = e.target.result;
+        if (!d.objectStoreNames.contains('known')) d.createObjectStore('known', { keyPath: 'id', autoIncrement: true });
+        if (!d.objectStoreNames.contains('log')) d.createObjectStore('log', { keyPath: 'id', autoIncrement: true });
+      };
+      r.onsuccess = e => { db = e.target.result; res(db); };
+      r.onerror = e => rej(e);
+    });
+  }
+  function idbAll(store) {
+    return new Promise((res, rej) => {
+      const tx = db.transaction(store, 'readonly');
+      const r = tx.objectStore(store).getAll();
+      r.onsuccess = () => res(r.result || []);
+      r.onerror = () => rej(r.error);
+    });
+  }
+  function idbAdd(store, val) {
+    return new Promise((res, rej) => {
+      const tx = db.transaction(store, 'readwrite');
+      const r = tx.objectStore(store).add(val);
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+  }
+  function idbClear(store) {
+    return new Promise((res, rej) => {
+      const tx = db.transaction(store, 'readwrite');
+      const r = tx.objectStore(store).clear();
+      r.onsuccess = () => res();
+      r.onerror = () => rej(r.error);
+    });
+  }
+
+  function setStatus(msg, isErr) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (isErr ? ' err' : '');
+  }
+
+  // ── Models ──
+  async function ensureModels() {
+    if (modelsReady) return true;
+    if (typeof faceapi === 'undefined') { setStatus('face-api.js failed to load (offline?).', true); return false; }
+    setStatus('Loading face models…');
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+    modelsReady = true;
+    return true;
+  }
+
+  // ── Camera ──
+  async function startCamera() {
+    if (typeof faceapi === 'undefined') { setStatus('face-api.js not loaded — check your connection.', true); return; }
+    if (!await ensureModels()) return;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+    } catch (e) {
+      setStatus('Camera error: ' + (e && e.message ? e.message : e) + ' (grant permission or use a device with a camera).', true);
+      return;
+    }
+    video.srcObject = stream;
+    await video.play().catch(() => {});
+    overlay.width = video.videoWidth || 640;
+    overlay.height = video.videoHeight || 480;
+    running = true;
+    setStatus('Camera live. Detecting faces…');
+    loop();
+  }
+
+  function stopCamera() {
+    running = false;
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    video.srcObject = null;
+    octx.clearRect(0, 0, overlay.width, overlay.height);
+    setStatus('Stopped.');
+  }
+
+  // ── Recognition ──
+  function recognize(descriptor) {
+    let best = null, bestDist = Infinity;
+    for (const k of KNOWN) {
+      const d = faceapi.euclideanDistance(descriptor, k.descriptor);
+      if (d < bestDist) { bestDist = d; best = k; }
+    }
+    if (best && bestDist < THRESHOLD) return { name: best.name, dist: bestDist };
+    return { name: 'Unknown', dist: bestDist };
+  }
+
+  function trend(sizes) {
+    if (sizes.length < 2) return 0;
+    return sizes[sizes.length - 1] - sizes[0];
+  }
+
+  function snapshot() {
+    try {
+      const c = document.createElement('canvas');
+      c.width = 96; c.height = 72;
+      const cx = c.getContext('2d');
+      cx.drawImage(video, 0, 0, c.width, c.height);
+      return c.toDataURL('image/jpeg', 0.5);
+    } catch (e) { return ''; }
+  }
+
+  // ── Detection loop + tracking ──
+  async function loop() {
+    if (!running) return;
+    try {
+      const results = await faceapi
+        .detectAllFaces(video, detOptions)
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+
+      draw(results);
+
+      const now = Date.now();
+      for (const r of results) {
+        const b = r.detection.box;
+        const cx = b.x + b.width / 2, cy = b.y + b.height / 2, area = b.width * b.height;
+        const { name, dist } = recognize(r.descriptor);
+
+        let bestTrack = null, bestD = 1e9;
+        for (const t of tracks.values()) {
+          if (t.closed) continue;
+          const d = Math.hypot(t.cx - cx, t.cy - cy);
+          if (d < bestD) { bestD = d; bestTrack = t; }
+        }
+        if (bestTrack && bestD < Math.max(90, b.width * 0.9)) {
+          bestTrack.cx = cx; bestTrack.cy = cy; bestTrack.area = area;
+          bestTrack.lastSeen = now; bestTrack.missing = 0; bestTrack.seen++;
+          if (name !== 'Unknown') bestTrack.name = name;       // once known, stay known
+          bestTrack.conf = 1 - Math.min(1, dist);
+          bestTrack.sizes.push(area); if (bestTrack.sizes.length > 12) bestTrack.sizes.shift();
+        } else {
+          tracks.set(nextTrackId, {
+            id: nextTrackId++, cx, cy, area, name, conf: 1 - Math.min(1, dist),
+            firstSeen: now, lastSeen: now, missing: 0, seen: 1, sizes: [area], closed: false, loggedEnter: false
+          });
+        }
+      }
+
+      // finalize events
+      for (const t of tracks.values()) {
+        if (!t.closed && t.seen >= 2 && !t.loggedEnter) {
+          t.loggedEnter = true;
+          const detail = trend(t.sizes) >= 0 ? 'approaching' : 'arrived';
+          addLog({ name: t.name, direction: 'ENTER', detail, conf: t.conf });
+        }
+        if (!t.closed && (now - t.lastSeen) > MISS_CLOSE_MS) {
+          t.closed = true;
+          const detail = trend(t.sizes) < 0 ? 'departing' : 'left';
+          addLog({ name: t.name, direction: 'EXIT', detail, conf: t.conf });
+        }
+      }
+      for (const [id, t] of tracks) if (t.closed && (now - t.lastSeen) > 6000) tracks.delete(id);
+
+    } catch (e) {
+      console.warn('detection error', e);
+    }
+    if (running) setTimeout(loop, DETECT_MS);
+  }
+
+  function draw(results) {
+    octx.clearRect(0, 0, overlay.width, overlay.height);
+    if (!results) return;
+    for (const r of results) {
+      const b = r.detection.box;
+      const { name } = recognize(r.descriptor);
+      const col = name === 'Unknown' ? '#ff4d4d' : '#00ff9c';
+      octx.strokeStyle = col; octx.lineWidth = 2;
+      octx.strokeRect(b.x, b.y, b.width, b.height);
+      octx.fillStyle = col;
+      octx.font = '14px "Share Tech Mono", monospace';
+      octx.fillText(name, b.x, b.y > 16 ? b.y - 4 : b.y + b.height + 14);
+    }
+  }
+
+  // ── Logging ──
+  async function addLog(entry) {
+    entry.ts = Date.now();
+    entry.thumb = snapshot();
+    try { await idbAdd('log', entry); } catch (e) { console.warn('log store failed', e); }
+    renderLogRow(entry);
+  }
+
+  function renderLogRow(entry) {
+    if (logBody.querySelector('.empty')) logBody.innerHTML = '';
+    const tr = document.createElement('tr');
+    const d = new Date(entry.ts);
+    const time = d.toLocaleString();
+    const nmCls = entry.name === 'Unknown' ? 'unk' : 'nm';
+    const dirCls = entry.direction === 'ENTER' ? 'dir-IN' : 'dir-OUT';
+    tr.innerHTML =
+      '<td>' + time + '</td>' +
+      '<td><span class="' + nmCls + '">' + escapeHtml(entry.name) + '</span></td>' +
+      '<td><span class="' + dirCls + '">' + entry.direction + '</span> <span style="color:rgba(0,255,156,0.4)">(' + (entry.detail || '') + ')</span></td>' +
+      '<td>' + (entry.thumb ? '<img class="thumb" src="' + entry.thumb + '">' : '') + '</td>';
+    logBody.insertBefore(tr, logBody.firstChild);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // ── Known faces ──
+  async function loadKnown() {
+    KNOWN = await idbAll('known');
+    renderKnown();
+  }
+  function renderKnown() {
+    if (!KNOWN.length) { knownListEl.innerHTML = '<div class="empty">No faces registered yet.</div>'; return; }
+    knownListEl.innerHTML = '';
+    KNOWN.forEach(k => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = '<span class="nm">' + escapeHtml(k.name) + '</span><span class="meta">#' + k.id + '</span>';
+      knownListEl.appendChild(row);
+    });
+  }
+
+  async function registerFace() {
+    if (!modelsReady && !await ensureModels()) return;
+    if (!running) { setStatus('Start the camera first, then register.', true); return; }
+    const res = await faceapi.detectSingleFace(video, detOptions).withFaceLandmarks().withFaceDescriptor();
+    if (!res) { setStatus('No face detected — center your face in frame.', true); return; }
+    const name = prompt('Name for this face:');
+    if (!name) return;
+    await idbAdd('known', { name: name.trim(), descriptor: Array.from(res.descriptor) });
+    await loadKnown();
+    setStatus('Registered "' + name.trim() + '".');
+  }
+
+  // ── Export ──
+  async function exportCsv() {
+    const rows = await idbAll('log');
+    let csv = 'timestamp,epoch,name,direction,detail,confidence\n';
+    rows.forEach(r => {
+      csv += '"' + new Date(r.ts).toISOString() + '",' + r.ts + ',"' + (r.name || '') + '",' + r.direction + ',"' + (r.detail || '') + '",' + (r.conf || '') + '\n';
+    });
+    download('doorwatch-log.csv', csv, 'text/csv');
+  }
+  async function exportJson() {
+    const rows = await idbAll('log');
+    download('doorwatch-log.json', JSON.stringify(rows, null, 2), 'application/json');
+  }
+  function download(name, content, type) {
+    const blob = new Blob([content], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  // ── Wire up ──
+  document.getElementById('startBtn').addEventListener('click', startCamera);
+  document.getElementById('stopBtn').addEventListener('click', stopCamera);
+  document.getElementById('regBtn').addEventListener('click', registerFace);
+  document.getElementById('clearKnownBtn').addEventListener('click', async () => {
+    if (!confirm('Delete all registered faces?')) return;
+    await idbClear('known'); await loadKnown(); setStatus('Faces cleared.');
+  });
+  document.getElementById('clearLogBtn').addEventListener('click', async () => {
+    if (!confirm('Delete the entire entry/exit log?')) return;
+    await idbClear('log'); logBody.innerHTML = '<tr><td colspan="4" style="color:rgba(0,255,156,0.35)">No events yet.</td></tr>';
+  });
+  document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+  document.getElementById('exportJsonBtn').addEventListener('click', exportJson);
+
+  // init
+  openDB().then(async () => {
+    await loadKnown();
+    // render any existing log rows (newest first)
+    const existing = await idbAll('log');
+    existing.sort((a, b) => b.ts - a.ts);
+    existing.forEach(renderLogRow);
+    if (existing.length) logBody.querySelector('.empty') && (logBody.innerHTML = '');
+  }).catch(e => setStatus('Storage unavailable: ' + e, true));
+
+})();
+</script>
+</body>
+</html>
