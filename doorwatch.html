@@ -93,7 +93,11 @@
     <div class="panel" style="margin-bottom:1rem;">
       <h2>KNOWN FACES</h2>
       <div class="known" id="knownList"><div class="empty">No faces registered yet.</div></div>
-      <div class="hint">Tip: register in good light, facing the camera. You can register the same person multiple times for robustness.</div>
+      <div class="controls" style="margin-top:.6rem;">
+        <button id="uploadBtn" class="ghost">⬆ UPLOAD FACE</button>
+        <input type="file" id="faceFile" accept="image/*" hidden>
+      </div>
+      <div class="hint">Tip: register in good light, facing the camera — or hit <b>UPLOAD FACE</b> with a clear photo (no camera needed). Register the same person a few times for robustness.</div>
     </div>
     <div class="panel">
       <h2>ENTRY / EXIT LOG</h2>
@@ -116,7 +120,12 @@
 (function () {
   'use strict';
 
-  const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+  const MODEL_CANDIDATES = [
+    'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@v0.22.2/weights',
+    'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights',
+    'https://justadudewhohacks.github.io/face-api.js/models'
+  ];
+  let MODEL_URL = MODEL_CANDIDATES[0];
   const THRESHOLD = 0.55;          // descriptor distance below which we call it a match
   const DETECT_MS = 600;           // detection loop interval
   const MISS_CLOSE_MS = 1500;      // a track unseen this long is considered gone -> log EXIT
@@ -136,7 +145,7 @@
   const LOGMEM = []; // in-memory mirror of the log, used by automated testing
   let nextTrackId = 1;
   const detOptions = (typeof faceapi !== 'undefined')
-    ? new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 })
+    ? new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 })
     : null;
 
   // ── IndexedDB ──
@@ -186,13 +195,24 @@
   // ── Models ──
   async function ensureModels() {
     if (modelsReady) return true;
-    if (typeof faceapi === 'undefined') { setStatus('face-api.js failed to load (offline?).', true); return false; }
-    setStatus('Loading face models…');
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-    modelsReady = true;
-    return true;
+    if (typeof faceapi === 'undefined') {
+      setStatus('face-api.js failed to load (no internet?). The page needs to fetch the library once.', true);
+      return false;
+    }
+    for (const url of MODEL_CANDIDATES) {
+      setStatus('Loading face models from ' + url + ' …');
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri(url);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(url);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(url);
+        modelsReady = true;
+        MODEL_URL = url;
+        setStatus('Models ready.');
+        return true;
+      } catch (e) { /* try next candidate */ }
+    }
+    setStatus('Could not load face models from any source. Check your connection.', true);
+    return false;
   }
 
   // ── Camera ──
@@ -381,6 +401,36 @@
     setStatus('Registered "' + name.trim() + '".');
   }
 
+  // Register a known face from an uploaded image (no camera needed).
+  function fileToImage(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image decode failed')); };
+      img.src = url;
+    });
+  }
+
+  async function registerFromImage(file) {
+    if (!file) return;
+    if (!await ensureModels()) return;
+    setStatus('Reading face from "' + file.name + '"…');
+    let img;
+    try { img = await fileToImage(file); }
+    catch (e) { setStatus('Could not read that image file.', true); return; }
+    let res;
+    try {
+      res = await faceapi.detectSingleFace(img, detOptions).withFaceLandmarks().withFaceDescriptor();
+    } catch (e) { setStatus('Face detection failed on that image.', true); return; }
+    if (!res) { setStatus('No face found in that image. Use a clear, front-facing photo.', true); return; }
+    const name = prompt('Name for this face:');
+    if (!name) { setStatus('Cancelled.'); return; }
+    await idbAdd('known', { name: name.trim(), descriptor: Array.from(res.descriptor) });
+    await loadKnown();
+    setStatus('Registered "' + name.trim() + '" from upload.');
+  }
+
   // ── Export ──
   async function exportCsv() {
     const rows = await idbAll('log');
@@ -405,6 +455,12 @@
   document.getElementById('startBtn').addEventListener('click', startCamera);
   document.getElementById('stopBtn').addEventListener('click', stopCamera);
   document.getElementById('regBtn').addEventListener('click', registerFace);
+  document.getElementById('uploadBtn').addEventListener('click', () => document.getElementById('faceFile').click());
+  document.getElementById('faceFile').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) registerFromImage(f);
+    e.target.value = '';
+  });
   document.getElementById('clearKnownBtn').addEventListener('click', async () => {
     if (!confirm('Delete all registered faces?')) return;
     await idbClear('known'); await loadKnown(); setStatus('Faces cleared.');
