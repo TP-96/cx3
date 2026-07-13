@@ -80,12 +80,13 @@
     </div>
     <div class="controls">
       <button id="startBtn">▶ START CAMERA</button>
+      <button id="flipBtn" class="ghost">📷 REAR ↺</button>
       <button id="stopBtn" class="ghost">■ STOP</button>
       <button id="regBtn" class="ghost">＋ REGISTER FACE</button>
       <button id="clearKnownBtn" class="ghost danger">✕ CLEAR FACES</button>
     </div>
     <div class="status" id="status">Idle. Click START CAMERA to begin.</div>
-    <div class="hint">Point any webcam at your door. Register people once; the app then logs ENTER/EXIT events with a snapshot. Direction is a heuristic based on whether the face grows (approaching) or shrinks (leaving) in frame.</div>
+    <div class="hint">Point any webcam at your door. Register people once; the app then logs ENTER/EXIT events with a snapshot. Direction is a heuristic based on whether the face grows (approaching) or shrinks (leaving) in frame. On mobile, tap 📷 FLIP CAMERA to switch between front and rear cameras.</div>
   </div>
 
   <!-- SIDE PANELS -->
@@ -135,11 +136,13 @@
   const overlay = document.getElementById('overlay');
   const octx = overlay.getContext('2d');
   const statusEl = document.getElementById('status');
+  const flipBtn = document.getElementById('flipBtn');
   const knownListEl = document.getElementById('knownList');
   const logBody = document.getElementById('logBody');
 
   let running = false;
   let stream = null;
+  let facingMode = 'environment';    // 'user' = front camera, 'environment' = rear camera
   let modelsReady = false;
   let KNOWN = [];                  // [{id, name, descriptor:[...]}]
   const tracks = new Map();
@@ -221,7 +224,8 @@
     if (typeof faceapi === 'undefined') { setStatus('face-api.js not loaded — check your connection.', true); return; }
     if (!await ensureModels()) return;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+      const vconstraint = { width: 640, height: 480, facingMode: { ideal: facingMode } };
+      stream = await navigator.mediaDevices.getUserMedia({ video: vconstraint, audio: false });
     } catch (e) {
       setStatus('Camera error: ' + (e && e.message ? e.message : e) + ' (grant permission or use a device with a camera).', true);
       return;
@@ -243,6 +247,22 @@
     video.srcObject = null;
     octx.clearRect(0, 0, overlay.width, overlay.height);
     setStatus('Stopped.');
+  }
+
+  // ── Camera flip (mobile front/rear) ──
+  function updateFlipLabel() {
+    flipBtn.textContent = (facingMode === 'user') ? '🤳 FRONT ↺' : '📷 REAR ↺';
+  }
+  async function flipCamera() {
+    facingMode = (facingMode === 'user') ? 'environment' : 'user';
+    updateFlipLabel();
+    if (running) {
+      setStatus('Switching to ' + (facingMode === 'user' ? 'front' : 'rear') + ' camera…');
+      stopCamera();
+      await startCamera();
+    } else {
+      setStatus('Camera will use the ' + (facingMode === 'user' ? 'front' : 'rear') + ' camera on next START.');
+    }
   }
 
   // ── Recognition ──
@@ -474,6 +494,10 @@
   // ── Wire up ──
   document.getElementById('startBtn').addEventListener('click', startCamera);
   document.getElementById('stopBtn').addEventListener('click', stopCamera);
+  flipBtn.addEventListener('click', flipCamera);
+  updateFlipLabel();
+  // Flip camera is only meaningful on touch devices (front/rear). Hide it on desktop.
+  if (!('ontouchstart' in window) && !(navigator.maxTouchPoints > 0)) flipBtn.style.display = 'none';
   document.getElementById('regBtn').addEventListener('click', registerFace);
   document.getElementById('uploadBtn').addEventListener('click', () => document.getElementById('faceFile').click());
   document.getElementById('faceFile').addEventListener('change', e => {
